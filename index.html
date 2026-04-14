@@ -23,96 +23,23 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         * { box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background-color: #f0f2f5; margin:0; padding-bottom: 90px; }
-
-        /* ── HEADER ── */
-        .app-header { background: #111827; padding-top: env(safe-area-inset-top, 44px); }
-
-        /* Logo area: linha exclusiva centrada */
-        .header-logo-row {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 18px 24px 10px;
-        }
-        .header-logo-row img {
-            height: 56px;
-            max-width: 220px;
-            object-fit: contain;
-            /* Garante que PNG com fundo branco fique bonito no dark */
-            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
-        }
-        /* Fallback texto quando não tem logo */
-        .logo-text-fallback {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .logo-text-fallback .wallet-icon {
-            width: 52px; height: 52px;
-            border-radius: 16px;
-            overflow: hidden;
-            background: #1a2535;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .logo-text-fallback .wallet-icon img {
-            width: 100%; height: 100%; object-fit: cover;
-        }
-        .logo-text-fallback .brand {
-            line-height: 1.1;
-        }
-        .logo-text-fallback .brand-meu {
-            color: rgba(255,255,255,0.45);
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-        .logo-text-fallback .brand-name {
-            color: white;
-            font-size: 22px;
-            font-weight: 800;
-        }
-
-        /* Linha de ações (moeda, whatsapp, IA) */
-        .header-actions-row {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            gap: 8px;
-            padding: 0 16px 16px;
-        }
-
-        /* ── CARD SALDO ── */
-        .header-card { background: linear-gradient(135deg, #1a2535 0%, #0f1923 100%); border-radius: 20px; margin: 0 16px; padding: 20px; margin-top: -10px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+        .app-header { background: #111827; }
+        .header-card { background: linear-gradient(135deg, #1a2535 0%, #0f1923 100%); border-radius: 20px; margin: 0 16px; padding: 20px; margin-top: -40px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
         .card { background: white; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-
-        /* ── BOTTOM NAV ── */
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #f1f5f9; z-index: 50; height: 80px; display: flex; align-items: center; justify-content: space-around; padding: 0 8px; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); }
         .nav-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; background: none; border: none; cursor: pointer; color: #94a3b8; font-size: 10px; font-weight: 600; padding: 8px 16px; border-radius: 12px; transition: all 0.2s; }
         .nav-btn:hover { color: #22c55e; }
         .nav-btn i { font-size: 20px; }
-
-        /* ── MIC CENTRAL ── */
         .mic-center-btn { width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, #22c55e, #16a34a); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(34,197,94,0.5); transition: all 0.2s; margin-top: -20px; }
         .mic-center-btn:active { transform: scale(0.95); }
         .mic-center-btn.recording { background: linear-gradient(135deg, #ef4444, #dc2626) !important; box-shadow: 0 4px 20px rgba(239,68,68,0.6) !important; animation: pulse-mic 1s infinite; }
         @keyframes pulse-mic { 0%,100%{box-shadow:0 4px 20px rgba(239,68,68,0.4)} 50%{box-shadow:0 4px 40px rgba(239,68,68,0.8)} }
-
         .chart-wave { width:100%; height:60px; opacity:0.8; }
-
-        /* ── TABS ── */
         .tab-btn { white-space: nowrap; padding: 8px 16px; border-radius: 999px; font-size: 13px; font-weight: 600; border: none; cursor: pointer; transition: all 0.2s; }
         .tab-btn.active { background: #111827; color: white; }
         .tab-btn:not(.active) { background: white; color: #64748b; }
-
-        /* ── BADGES ── */
         .cat-badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; text-transform: uppercase; }
-        .cat-RECEITA{background:#dcfce7;color:#166534} .cat-FIXAS{background:#dbeafe;color:#1e40af}
-        .cat-CARTAO{background:#ede9fe;color:#5b21b6} .cat-ALIMENTACAO{background:#fef9c3;color:#854d0e}
-        .cat-LAZER{background:#fce7f3;color:#9d174d} .cat-OUTROS{background:#f1f5f9;color:#475569}
-        .cat-TRANSPORTE{background:#ffedd5;color:#9a3412} .cat-SAUDE{background:#d1fae5;color:#065f46}
-
-        /* ── CHAT ── */
+        .cat-RECEITA{background:#dcfce7;color:#166534} .cat-FIXAS{background:#dbeafe;color:#1e40af} .cat-CARTAO{background:#ede9fe;color:#5b21b6} .cat-ALIMENTACAO{background:#fef9c3;color:#854d0e} .cat-LAZER{background:#fce7f3;color:#9d174d} .cat-OUTROS{background:#f1f5f9;color:#475569} .cat-TRANSPORTE{background:#ffedd5;color:#9a3412} .cat-SAUDE{background:#d1fae5;color:#065f46}
         #chat-messages { max-height: 340px; overflow-y: auto; scroll-behavior: smooth; }
         .msg-user { background: #111827; color: white; border-radius: 18px 18px 4px 18px; }
         .msg-ai { background: #f1f5f9; color: #1e293b; border-radius: 18px 18px 18px 4px; }
@@ -122,54 +49,48 @@
         .typing-dot:nth-child(2) { animation-delay: 0.2s; }
         .typing-dot:nth-child(3) { animation-delay: 0.4s; }
         @keyframes blink { 0%,80%,100%{opacity:0.2} 40%{opacity:1} }
-
-        /* ── VOICE OVERLAY ── */
-        #voice-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.88); z-index:200; display:none; flex-direction:column; align-items:center; justify-content:center; gap:24px; }
+        #voice-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:200; display:none; flex-direction:column; align-items:center; justify-content:center; gap:24px; }
         #voice-overlay.active { display:flex; }
-        .voice-ripple { width:120px; height:120px; border-radius:50%; background:rgba(34,197,94,0.15); display:flex; align-items:center; justify-content:center; animation: ripple 1.5s infinite; }
+        .voice-ripple { width:120px; height:120px; border-radius:50%; background:rgba(34,197,94,0.2); display:flex; align-items:center; justify-content:center; animation: ripple 1.5s infinite; }
         @keyframes ripple { 0%{box-shadow:0 0 0 0 rgba(34,197,94,0.4)} 100%{box-shadow:0 0 0 40px rgba(34,197,94,0)} }
-
         input[type="number"]::-webkit-inner-spin-button { display: none; }
     </style>
 </head>
 <body>
 
-<!-- ══ HEADER ══════════════════════════════════════════════════ -->
-<header class="app-header">
-
-    <!-- LOGO — linha própria, centralizada, grande -->
-    <div class="header-logo-row">
-        <img src="icons/logo.png" alt="meu din din" id="main-logo"
-             onerror="this.style.display='none';document.getElementById('logo-fallback').style.display='flex'">
-        <div id="logo-fallback" class="logo-text-fallback" style="display:none">
-            <div class="wallet-icon">
+<header class="app-header pt-12 pb-12 px-4">
+    <div class="max-w-lg mx-auto flex justify-between items-center">
+        <!-- LOGO: maior e sem fundo branco via mix-blend-mode -->
+        <div class="flex items-center">
+            <img src="icons/logo.png" alt="meu din din"
+                 style="height:64px; object-fit:contain; mix-blend-mode:lighten;"
+                 onerror="this.style.display='none';document.getElementById('logo-fallback').style.display='flex'">
+            <div id="logo-fallback" style="display:none; align-items:center; gap:10px;">
                 <img src="icons/carteira.png" alt=""
-                     onerror="this.parentElement.innerHTML='<span style=font-size:28px>💰</span>'">
-            </div>
-            <div class="brand">
-                <div class="brand-meu">meu</div>
-                <div class="brand-name">din din</div>
+                     style="height:52px; mix-blend-mode:lighten;"
+                     onerror="this.style.display='none'">
+                <div>
+                    <p style="color:rgba(255,255,255,0.45);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;line-height:1">meu</p>
+                    <p style="color:white;font-size:22px;font-weight:800;line-height:1.2">din din</p>
+                </div>
             </div>
         </div>
-    </div>
-
-    <!-- AÇÕES — moeda, whatsapp, IA -->
-    <div class="header-actions-row">
-        <select id="currency" class="bg-white/10 border-none rounded-xl px-3 py-2 text-sm text-white outline-none cursor-pointer">
-            <option value="R$" class="text-black">R$</option>
-            <option value="$" class="text-black">USD</option>
-            <option value="€" class="text-black">EUR</option>
-        </select>
-        <button onclick="shareWhatsApp()" class="bg-white/10 hover:bg-white/20 w-10 h-10 rounded-xl flex items-center justify-center transition" title="WhatsApp">
-            <i class="fab fa-whatsapp text-white"></i>
-        </button>
-        <button onclick="toggleChat()" class="bg-white/10 hover:bg-white/20 w-10 h-10 rounded-xl flex items-center justify-center transition" title="IA">
-            <i class="fas fa-robot text-white"></i>
-        </button>
+        <div class="flex items-center gap-2">
+            <select id="currency" class="bg-white/10 border-none rounded-xl px-3 py-2 text-sm text-white outline-none cursor-pointer">
+                <option value="R$" class="text-black">R$</option>
+                <option value="$" class="text-black">USD</option>
+                <option value="€" class="text-black">EUR</option>
+            </select>
+            <button onclick="shareWhatsApp()" class="bg-white/10 hover:bg-white/20 w-10 h-10 rounded-xl flex items-center justify-center transition" title="WhatsApp">
+                <i class="fab fa-whatsapp text-white"></i>
+            </button>
+            <button onclick="toggleChat()" class="bg-white/10 hover:bg-white/20 w-10 h-10 rounded-xl flex items-center justify-center transition" title="IA">
+                <i class="fas fa-robot text-white"></i>
+            </button>
+        </div>
     </div>
 </header>
 
-<!-- ══ CARD SALDO ══════════════════════════════════════════════ -->
 <div class="max-w-lg mx-auto px-4">
     <div class="header-card">
         <p class="text-white/50 text-xs font-semibold uppercase tracking-wider mb-1">Saldo atual</p>
@@ -197,7 +118,6 @@
     </div>
 </div>
 
-<!-- ══ MAIN ════════════════════════════════════════════════════ -->
 <main class="max-w-lg mx-auto px-4 mt-6">
     <div id="ai-box" class="card p-4 mb-5 hidden" style="border-left: 4px solid #22c55e">
         <div class="flex items-start gap-3">
@@ -227,7 +147,6 @@
     <div id="transaction-list" class="space-y-3 mb-4"></div>
 </main>
 
-<!-- ══ BOTTOM NAV ══════════════════════════════════════════════ -->
 <nav class="bottom-nav">
     <button class="nav-btn" onclick="toggleModal()">
         <i class="fas fa-plus-circle"></i>
@@ -242,7 +161,6 @@
     </button>
 </nav>
 
-<!-- VOICE OVERLAY -->
 <div id="voice-overlay">
     <p class="text-white/60 text-sm font-medium">Ouvindo...</p>
     <div class="voice-ripple">
@@ -252,7 +170,6 @@
     <button onclick="stopVoice()" class="bg-white/10 text-white px-8 py-3 rounded-full font-semibold mt-4">✕ Cancelar</button>
 </div>
 
-<!-- ADD MODAL -->
 <div id="modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center p-4 z-[60]">
     <div class="bg-white rounded-3xl w-full max-w-md p-6">
         <div class="flex justify-between items-center mb-5">
@@ -294,7 +211,6 @@
     </div>
 </div>
 
-<!-- CHAT IA -->
 <div id="chat-modal" class="fixed inset-0 bg-black/60 hidden items-end justify-center z-[70]">
     <div class="bg-white rounded-t-3xl w-full max-w-lg" style="max-height:92vh;display:flex;flex-direction:column">
         <div class="p-4 rounded-t-3xl flex justify-between items-center flex-shrink-0" style="background:#111827">
@@ -396,7 +312,6 @@ function stopVoice(){
     document.getElementById('mic-center').classList.remove('recording');
     document.getElementById('voice-transcript').textContent='Fale seu gasto agora';
 }
-
 function getFinancialContext(){
     const cur=document.getElementById('currency').value;
     const income=transactions.filter(t=>t.category==='RECEITA').reduce((s,t)=>s+t.amount,0);
@@ -405,7 +320,6 @@ function getFinancialContext(){
     transactions.filter(t=>t.category!=='RECEITA').forEach(t=>{byCategory[t.category]=(byCategory[t.category]||0)+t.amount;});
     return `Moeda:${cur} Receita:${income} Despesa:${expense} Saldo:${income-expense} Categorias:${JSON.stringify(byCategory)} Transações:${JSON.stringify(transactions.map(t=>({id:t.id,desc:t.desc,amount:t.amount,cat:t.category,obs:t.obs})))}`;
 }
-
 async function sendMessage(){
     const input=document.getElementById('chat-input');
     const msg=input.value.trim();
@@ -433,7 +347,6 @@ Mensagem: ${msg}`;
         else appendMessage(parsed.reply,'ai');
     }catch(e){removeTyping(tid);appendMessage('Erro de conexão. Tente novamente!','ai');}
 }
-
 function showConfirm(parsed){
     const cur=document.getElementById('currency').value;
     const cid='c'+Date.now();
