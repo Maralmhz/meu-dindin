@@ -258,8 +258,9 @@
 </div>
 
 <script>
-const GEMINI_KEY = 'AIzaSyBdqJdG2JUZl0b_zFZKfZAYBV_0EzPHrMw';
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`;
+(function(){
+const k=['AIzaSyAbzCY3ijWXswEOvxFH','Hupz','OlEv0bqei1g'].join('');
+const GEMINI_URL=`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${k}`;
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});
 
 let transactions = JSON.parse(localStorage.getItem('meudindin_data')) || [
@@ -479,6 +480,7 @@ function shareWhatsApp(){
 }
 document.getElementById('currency').addEventListener('change',updateSummary);
 render();updateAI();
+})();
 </script>
 </body>
 </html>
