@@ -219,7 +219,7 @@
                 </div>
                 <div>
                     <h3 class="font-black text-white text-sm">IA meu din din</h3>
-                    <p class="text-white/40 text-xs">Powered by Gemini • fale ou escreva</p>
+                    <p class="text-white/40 text-xs">Powered by Llama 3.3 • fale ou escreva</p>
                 </div>
             </div>
             <button onclick="toggleChat()" class="text-white/60 hover:text-white"><i class="fas fa-times text-lg"></i></button>
@@ -258,8 +258,9 @@
 </div>
 
 <script>
-const GEMINI_KEY = 'AIzaSyAbzCY3ijWXswEOvxFHHupzOlEv0bqei1g';
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_KEY}`;
+const AI_KEY = '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';
+const AI_URL = 'https://openrouter.ai/api/v1/chat/completions';
+const AI_MODEL = 'meta-llama/llama-3.3-70b-instruct:free';
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});
 
 let transactions = JSON.parse(localStorage.getItem('meudindin_data')) || [
@@ -329,17 +330,21 @@ async function sendMessage(){
     const tid=showTyping();
     const prompt=`Você é a IA financeira do app "meu din din". Detecte se é uma transação ou conversa.
 CATEGORIAS: RECEITA, FIXAS, CARTAO, ALIMENTACAO, TRANSPORTE, SAUDE, LAZER, OUTROS
-Se ADD: {"action":"ADD","desc":"...","amount":0,"category":"...","obs":"..."}
-Se UPDATE: {"action":"UPDATE","targetDesc":"...","newAmount":0}
-Se CHAT: {"action":"CHAT","reply":"..."}
-Retorne APENAS JSON válido sem markdown.
+Se for transação nova: {"action":"ADD","desc":"...","amount":0,"category":"...","obs":"..."}
+Se for atualização: {"action":"UPDATE","targetDesc":"...","newAmount":0}
+Se for conversa: {"action":"CHAT","reply":"..."}
+Retorne APENAS JSON válido, sem markdown, sem texto extra.
 ${getFinancialContext()}
-Mensagem: ${msg}`;
+Mensagem do usuário: ${msg}`;
     try{
-        const res=await fetch(GEMINI_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})});
+        const res=await fetch(AI_URL,{
+            method:'POST',
+            headers:{'Content-Type':'application/json','Authorization':`Bearer ${AI_KEY}`,'HTTP-Referer':'https://meu-dindin.pages.dev','X-Title':'meu din din'},
+            body:JSON.stringify({model:AI_MODEL,messages:[{role:'user',content:prompt}],temperature:0.2,max_tokens:300})
+        });
         const data=await res.json();
         removeTyping(tid);
-        let raw=(data?.candidates?.[0]?.content?.parts?.[0]?.text||'').replace(/```json/g,'').replace(/```/g,'').trim();
+        let raw=(data?.choices?.[0]?.message?.content||'').replace(/```json/g,'').replace(/```/g,'').trim();
         let parsed;try{parsed=JSON.parse(raw);}catch(e){parsed={action:'CHAT',reply:raw||'Não entendi. Tente novamente!'};}
         if(parsed.action==='ADD')showConfirm(parsed);
         else if(parsed.action==='UPDATE')handleUpdate(parsed);
