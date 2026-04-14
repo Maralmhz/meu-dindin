@@ -259,7 +259,7 @@
 
 <script>
 const GEMINI_KEY = 'AIzaSyAbzCY3ijWXswEOvxFHHupzOlEv0bqei1g';
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`;
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_KEY}`;
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});
 
 let transactions = JSON.parse(localStorage.getItem('meudindin_data')) || [
