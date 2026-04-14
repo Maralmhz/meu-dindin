@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MeuDindin 💰</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .card { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .btn-primary { background: #2563eb; color: white; transition: all 0.2s; }
+        .btn-primary:hover { background: #1d4ed8; }
+        .gradient-bg { background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); }
+        input[type="number"]::-webkit-inner-spin-button { display: none; }
+    </style>
+</head>
+<body class="pb-24">
+    <!-- Header -->
+    <header class="gradient-bg text-white p-6 pb-20">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold flex items-center gap-2">
+                <span class="bg-white text-blue-600 p-2 rounded-lg text-xl">💰</span>
+                MeuDindin
+            </h1>
+            <div class="flex items-center gap-4">
+                <select id="currency" class="bg-white/20 border-none rounded-lg px-2 py-1 text-sm outline-none cursor-pointer" onchange="updateSummary()">
+                    <option value="R$" class="text-black">R$ Real</option>
+                    <option value="$" class="text-black">$ Dollar</option>
+                    <option value="€" class="text-black">€ Euro</option>
+                </select>
+                <button onclick="shareWhatsApp()" class="bg-white/20 hover:bg-white/30 p-2 rounded-lg transition">
+                    <i class="fab fa-whatsapp"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-4 -mt-12">
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="card p-4">
+                <p class="text-slate-500 text-sm font-medium">Saldo Atual</p>
+                <h3 id="total-balance" class="text-2xl font-bold text-slate-800">R$ 0,00</h3>
+            </div>
+            <div class="card p-4 border-l-4 border-green-500">
+                <p class="text-slate-500 text-sm font-medium">Receitas</p>
+                <h3 id="total-income" class="text-xl font-bold text-green-600">R$ 0,00</h3>
+            </div>
+            <div class="card p-4 border-l-4 border-red-500">
+                <p class="text-slate-500 text-sm font-medium">Despesas</p>
+                <h3 id="total-expenses" class="text-xl font-bold text-red-600">R$ 0,00</h3>
+            </div>
+        </div>
+
+        <!-- IA Suggestion Box -->
+        <div id="ai-box" class="card p-4 mb-6 bg-blue-50 border border-blue-100 hidden">
+            <div class="flex items-start gap-3">
+                <div class="bg-blue-600 text-white p-2 rounded-lg">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div>
+                    <h4 class="font-bold text-blue-800 text-sm">Dica da IA MeuDindin</h4>
+                    <p id="ai-text" class="text-blue-700 text-sm mt-1">Analisando suas finanças... que tal economizar nas despesas variáveis este mês?</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex gap-2 mb-4 overflow-x-auto pb-2">
+            <button onclick="switchTab('all')" class="tab-btn active bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap">Tudo</button>
+            <button onclick="switchTab('FIXAS')" class="tab-btn bg-white text-slate-600 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap">Fixas</button>
+            <button onclick="switchTab('CARTAO')" class="tab-btn bg-white text-slate-600 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap">Cartões</button>
+            <button onclick="switchTab('LAZER')" class="tab-btn bg-white text-slate-600 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap">Lazer</button>
+            <button onclick="switchTab('RECEITA')" class="tab-btn bg-white text-slate-600 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap">Receitas</button>
+        </div>
+
+        <!-- Transaction List -->
+        <div id="transaction-list" class="space-y-3 mb-6">
+            <!-- Items injected by JS -->
+        </div>
+
+        <!-- Add Button (Floating) -->
+        <button onclick="toggleModal()" class="fixed bottom-24 right-6 w-14 h-14 gradient-bg text-white rounded-full shadow-lg flex items-center justify-center text-2xl z-40">
+            <i class="fas fa-plus"></i>
+        </button>
+    </main>
+
+    <!-- Footer Promo -->
+    <footer class="fixed bottom-0 left-0 right-0 bg-white border-t p-4 text-center z-50">
+        <div class="flex flex-col items-center gap-1">
+            <p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Powered by Hallz Branding</p>
+            <a href="https://maralmhz.github.io/checkauto/" target="_blank" class="text-blue-600 text-xs font-semibold hover:underline flex items-center gap-1">
+                Use o CheckAuto 🚗 <i class="fas fa-external-link-alt text-[8px]"></i>
+            </a>
+        </div>
+    </footer>
+
+    <!-- Modal -->
+    <div id="modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-[60]">
+        <div class="bg-white rounded-2xl w-full max-w-md p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold">Nova Transação</h2>
+                <button onclick="toggleModal()"><i class="fas fa-times text-slate-400"></i></button>
+            </div>
+            <form id="transaction-form" onsubmit="saveTransaction(event)">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Descrição</label>
+                        <input type="text" id="desc" required class="w-full p-3 rounded-xl border border-slate-200 outline-blue-500" placeholder="Ex: Aluguel, Salário, Mercado...">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Valor</label>
+                            <input type="number" step="0.01" id="amount" required class="w-full p-3 rounded-xl border border-slate-200 outline-blue-500" placeholder="0.00">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Categoria</label>
+                            <select id="category" class="w-full p-3 rounded-xl border border-slate-200 outline-blue-500">
+                                <option value="RECEITA">Receita</option>
+                                <option value="FIXAS">Despesa Fixa</option>
+                                <option value="CARTAO">Cartão</option>
+                                <option value="ALIMENTACAO">Alimentação</option>
+                                <option value="LAZER">Lazer</option>
+                                <option value="OUTROS">Outros</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Observações</label>
+                        <input type="text" id="obs" class="w-full p-3 rounded-xl border border-slate-200 outline-blue-500" placeholder="Opcional...">
+                    </div>
+                    <button type="submit" class="w-full btn-primary py-4 rounded-xl font-bold text-lg">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let transactions = JSON.parse(localStorage.getItem('meudindin_data')) || [
+            { id: 1, desc: 'Salário', amount: 5000, category: 'RECEITA', obs: 'Receita inicial', date: new Date().toISOString() },
+            { id: 2, desc: 'Aluguel', amount: 1200, category: 'FIXAS', obs: 'Água, Luz incluídos', date: new Date().toISOString() },
+            { id: 3, desc: 'Cartão Visa', amount: 450, category: 'CARTAO', obs: 'Parcela 1/3', date: new Date().toISOString() }
+        ];
+
+        let currentTab = 'all';
+
+        function saveToLocal() {
+            localStorage.setItem('meudindin_data', JSON.stringify(transactions));
+            render();
+            updateAI();
+        }
+
+        function toggleModal() {
+            const modal = document.getElementById('modal');
+            modal.classList.toggle('hidden');
+            modal.classList.toggle('flex');
+            document.getElementById('transaction-form').reset();
+        }
+
+        function saveTransaction(e) {
+            e.preventDefault();
+            const desc = document.getElementById('desc').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            const category = document.getElementById('category').value;
+            const obs = document.getElementById('obs').value;
+
+            const newT = {
+                id: Date.now(),
+                desc,
+                amount,
+                category,
+                obs,
+                date: new Date().toISOString()
+            };
+
+            transactions.push(newT);
+            saveToLocal();
+            toggleModal();
+        }
+
+        function deleteTransaction(id) {
+            transactions = transactions.filter(t => t.id !== id);
+            saveToLocal();
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-blue-100', 'text-blue-700');
+                btn.classList.add('bg-white', 'text-slate-600');
+            });
+            event.target.classList.remove('bg-white', 'text-slate-600');
+            event.target.classList.add('bg-blue-100', 'text-blue-700');
+            render();
+        }
+
+        function updateSummary() {
+            const currency = document.getElementById('currency').value;
+            const income = transactions.filter(t => t.category === 'RECEITA').reduce((sum, t) => sum + t.amount, 0);
+            const expense = transactions.filter(t => t.category !== 'RECEITA').reduce((sum, t) => sum + t.amount, 0);
+            const balance = income - expense;
+
+            document.getElementById('total-income').innerText = `${currency} ${income.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            document.getElementById('total-expenses').innerText = `${currency} ${expense.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            document.getElementById('total-balance').innerText = `${currency} ${balance.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+        }
+
+        function render() {
+            const list = document.getElementById('transaction-list');
+            list.innerHTML = '';
+            const currency = document.getElementById('currency').value;
+
+            const filtered = currentTab === 'all' 
+                ? transactions 
+                : transactions.filter(t => t.category === currentTab);
+
+            filtered.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(t => {
+                const isIncome = t.category === 'RECEITA';
+                const div = document.createElement('div');
+                div.className = 'card p-4 flex justify-between items-center animate-fade-in';
+                div.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="${isIncome ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'} w-10 h-10 rounded-full flex items-center justify-center">
+                            <i class="fas ${isIncome ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-800">${t.desc}</h4>
+                            <p class="text-xs text-slate-400">${t.category} • ${t.obs || 'Sem obs.'}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold ${isIncome ? 'text-green-600' : 'text-slate-800'}">${isIncome ? '+' : '-'} ${currency} ${t.amount.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</p>
+                        <button onclick="deleteTransaction(${t.id})" class="text-[10px] text-red-400 hover:text-red-600 uppercase font-bold tracking-tighter">Excluir</button>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+            updateSummary();
+        }
+
+        async function updateAI() {
+            const aiBox = document.getElementById('ai-box');
+            const aiText = document.getElementById('ai-text');
+            
+            // Simulação de lógica de IA baseada nos dados enquanto não tem chave de API
+            const expense = transactions.filter(t => t.category !== 'RECEITA').reduce((sum, t) => sum + t.amount, 0);
+            const income = transactions.filter(t => t.category === 'RECEITA').reduce((sum, t) => sum + t.amount, 0);
+            
+            aiBox.classList.remove('hidden');
+            
+            if (expense > income) {
+                aiText.innerText = "Alerta: Seus gastos superaram sua receita! Considere cortar despesas de lazer ou cartões para equilibrar o mês.";
+            } else if (expense > (income * 0.7)) {
+                aiText.innerText = "Você está usando mais de 70% da sua renda. Que tal tentar poupar pelo menos 10% para uma reserva de emergência?";
+            } else {
+                aiText.innerText = "Parabéns! Suas finanças estão saudáveis. Continue assim e considere investir o saldo positivo.";
+            }
+        }
+
+        function shareWhatsApp() {
+            const currency = document.getElementById('currency').value;
+            let text = `*💰 MeuDindin - Resumo Financeiro*\n\n`;
+            const income = transactions.filter(t => t.category === 'RECEITA').reduce((sum, t) => sum + t.amount, 0);
+            const expense = transactions.filter(t => t.category !== 'RECEITA').reduce((sum, t) => sum + t.amount, 0);
+            
+            text += `✅ Receitas: ${currency} ${income}\n`;
+            text += `❌ Despesas: ${currency} ${expense}\n`;
+            text += `-------------------\n`;
+            text += `💵 Saldo: ${currency} ${income - expense}\n\n`;
+            text += `*Hallz Branding*`;
+
+            const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+            window.open(url, '_blank');
+        }
+
+        // Initial Render
+        render();
+        updateAI();
+    </script>
+</body>
+</html>
