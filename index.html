@@ -9,11 +9,11 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="meu din din">
-    <link rel="apple-touch-icon" href="icons/icon-192.png">
-    <link rel="icon" type="image/png" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" href="icons/carteira.png">
+    <link rel="icon" type="image/png" href="icons/carteira.png">
     <meta property="og:title" content="meu din din">
     <meta property="og:description" content="App de controle financeiro pessoal simples e bonito">
-    <meta property="og:image" content="icons/og-thumb.png">
+    <meta property="og:image" content="icons/logo.png">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://meu-dindin.pages.dev/">
     <meta name="twitter:card" content="summary_large_image">
@@ -23,46 +23,23 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         * { box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background-color: #f0f2f5; margin:0; padding-bottom: 90px; }
-
-        /* Header dark */
         .app-header { background: #111827; }
         .header-card { background: linear-gradient(135deg, #1a2535 0%, #0f1923 100%); border-radius: 20px; margin: 0 16px; padding: 20px; margin-top: -40px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
-
         .card { background: white; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-        .card-dark { background: #1a2535; border-radius: 16px; }
-
-        /* Bottom nav */
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #f1f5f9; z-index: 50; height: 80px; display: flex; align-items: center; justify-content: space-around; padding: 0 8px; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); }
         .nav-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; background: none; border: none; cursor: pointer; color: #94a3b8; font-size: 10px; font-weight: 600; padding: 8px 16px; border-radius: 12px; transition: all 0.2s; }
         .nav-btn:hover { color: #2563eb; }
         .nav-btn i { font-size: 20px; }
-
-        /* MIC central */
         .mic-center-btn { width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, #22c55e, #16a34a); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(34,197,94,0.5); transition: all 0.2s; margin-top: -20px; }
         .mic-center-btn:active { transform: scale(0.95); }
         .mic-center-btn.recording { background: linear-gradient(135deg, #ef4444, #dc2626) !important; box-shadow: 0 4px 20px rgba(239,68,68,0.6) !important; animation: pulse-mic 1s infinite; }
         @keyframes pulse-mic { 0%,100%{box-shadow:0 4px 20px rgba(239,68,68,0.4)} 50%{box-shadow:0 4px 40px rgba(239,68,68,0.8)} }
-
-        /* Chart line fake */
         .chart-wave { width:100%; height:60px; opacity:0.8; }
-
-        /* Tabs */
         .tab-btn { white-space: nowrap; padding: 8px 16px; border-radius: 999px; font-size: 13px; font-weight: 600; border: none; cursor: pointer; transition: all 0.2s; }
         .tab-btn.active { background: #111827; color: white; }
         .tab-btn:not(.active) { background: white; color: #64748b; }
-
-        /* Category badges */
         .cat-badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; text-transform: uppercase; }
-        .cat-RECEITA { background:#dcfce7; color:#166534; }
-        .cat-FIXAS { background:#dbeafe; color:#1e40af; }
-        .cat-CARTAO { background:#ede9fe; color:#5b21b6; }
-        .cat-ALIMENTACAO { background:#fef9c3; color:#854d0e; }
-        .cat-LAZER { background:#fce7f3; color:#9d174d; }
-        .cat-OUTROS { background:#f1f5f9; color:#475569; }
-        .cat-TRANSPORTE { background:#ffedd5; color:#9a3412; }
-        .cat-SAUDE { background:#d1fae5; color:#065f46; }
-
-        /* Chat */
+        .cat-RECEITA{background:#dcfce7;color:#166534} .cat-FIXAS{background:#dbeafe;color:#1e40af} .cat-CARTAO{background:#ede9fe;color:#5b21b6} .cat-ALIMENTACAO{background:#fef9c3;color:#854d0e} .cat-LAZER{background:#fce7f3;color:#9d174d} .cat-OUTROS{background:#f1f5f9;color:#475569} .cat-TRANSPORTE{background:#ffedd5;color:#9a3412} .cat-SAUDE{background:#d1fae5;color:#065f46}
         #chat-messages { max-height: 340px; overflow-y: auto; scroll-behavior: smooth; }
         .msg-user { background: #111827; color: white; border-radius: 18px 18px 4px 18px; }
         .msg-ai { background: #f1f5f9; color: #1e293b; border-radius: 18px 18px 18px 4px; }
@@ -72,30 +49,33 @@
         .typing-dot:nth-child(2) { animation-delay: 0.2s; }
         .typing-dot:nth-child(3) { animation-delay: 0.4s; }
         @keyframes blink { 0%,80%,100%{opacity:0.2} 40%{opacity:1} }
-
-        /* Voice overlay */
         #voice-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:200; display:none; flex-direction:column; align-items:center; justify-content:center; gap:24px; }
         #voice-overlay.active { display:flex; }
         .voice-ripple { width:120px; height:120px; border-radius:50%; background:rgba(34,197,94,0.2); display:flex; align-items:center; justify-content:center; animation: ripple 1.5s infinite; }
         @keyframes ripple { 0%{box-shadow:0 0 0 0 rgba(34,197,94,0.4)} 100%{box-shadow:0 0 0 40px rgba(34,197,94,0)} }
-
         input[type="number"]::-webkit-inner-spin-button { display: none; }
+        /* fallback logo se imagem não carregar */
+        .logo-fallback { display:none; }
+        .logo-img:not([src]), .logo-img[src=""] ~ .logo-fallback { display:flex; }
     </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <header class="app-header pt-12 pb-12 px-4">
     <div class="max-w-lg mx-auto flex justify-between items-center">
         <div class="flex items-center gap-3">
-            <!-- Logo: descomente abaixo quando subir o arquivo -->
-            <!-- <img src="icons/logo.png" alt="meu din din" style="height:40px"> -->
-            <div class="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center" style="background:white">
-                <span style="font-size:22px">💰</span>
-            </div>
-            <div>
-                <p class="text-white/60 text-xs font-medium leading-none">meu</p>
-                <p class="text-white text-lg font-black leading-tight">din din</p>
+            <!-- LOGO: mostra logo.png se existir, senão emoji fallback -->
+            <img src="icons/logo.png" alt="meu din din" style="height:40px;object-fit:contain"
+                 onerror="this.style.display='none';document.getElementById('logo-fallback').style.display='flex'">
+            <div id="logo-fallback" style="display:none;align-items:center;gap:8px">
+                <div class="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center" style="background:white">
+                    <img src="icons/carteira.png" alt="" style="width:100%;height:100%;object-fit:cover"
+                         onerror="this.parentElement.innerHTML='<span style=font-size:22px>💰</span>'">
+                </div>
+                <div>
+                    <p class="text-white/60 text-xs font-medium leading-none">meu</p>
+                    <p class="text-white text-lg font-black leading-tight">din din</p>
+                </div>
             </div>
         </div>
         <div class="flex items-center gap-2">
@@ -114,22 +94,14 @@
     </div>
 </header>
 
-<!-- SALDO CARD -->
 <div class="max-w-lg mx-auto px-4">
     <div class="header-card">
         <p class="text-white/50 text-xs font-semibold uppercase tracking-wider mb-1">Saldo atual</p>
         <h2 id="total-balance" class="text-white text-3xl font-black mb-4">R$ 0,00</h2>
-        <!-- mini chart SVG fake -->
         <svg class="chart-wave" viewBox="0 0 300 60" preserveAspectRatio="none">
             <defs>
-                <linearGradient id="gGreen" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#22c55e" stop-opacity="0.5"/>
-                    <stop offset="100%" stop-color="#22c55e" stop-opacity="0"/>
-                </linearGradient>
-                <linearGradient id="gRed" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#ef4444" stop-opacity="0.5"/>
-                    <stop offset="100%" stop-color="#ef4444" stop-opacity="0"/>
-                </linearGradient>
+                <linearGradient id="gGreen" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#22c55e" stop-opacity="0.5"/><stop offset="100%" stop-color="#22c55e" stop-opacity="0"/></linearGradient>
+                <linearGradient id="gRed" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ef4444" stop-opacity="0.5"/><stop offset="100%" stop-color="#ef4444" stop-opacity="0"/></linearGradient>
             </defs>
             <path d="M0,40 C30,35 60,20 90,25 C120,30 150,10 180,15 C210,20 240,30 300,20 L300,60 L0,60Z" fill="url(#gGreen)"/>
             <path d="M0,40 C30,35 60,20 90,25 C120,30 150,10 180,15 C210,20 240,30 300,20" fill="none" stroke="#22c55e" stroke-width="2"/>
@@ -149,10 +121,7 @@
     </div>
 </div>
 
-<!-- MAIN -->
 <main class="max-w-lg mx-auto px-4 mt-6">
-
-    <!-- AI TIP -->
     <div id="ai-box" class="card p-4 mb-5 hidden" style="border-left: 4px solid #22c55e">
         <div class="flex items-start gap-3">
             <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#111827">
@@ -166,7 +135,6 @@
         </div>
     </div>
 
-    <!-- TABS -->
     <div class="flex gap-2 mb-4 overflow-x-auto pb-1" style="scrollbar-width:none">
         <button onclick="switchTab('all',this)" class="tab-btn active">Tudo</button>
         <button onclick="switchTab('RECEITA',this)" class="tab-btn">Receitas</button>
@@ -179,18 +147,14 @@
         <button onclick="switchTab('OUTROS',this)" class="tab-btn">Outros</button>
     </div>
 
-    <!-- LIST -->
     <div id="transaction-list" class="space-y-3 mb-4"></div>
-
 </main>
 
-<!-- BOTTOM NAV -->
 <nav class="bottom-nav">
     <button class="nav-btn" onclick="toggleModal()">
         <i class="fas fa-plus-circle"></i>
         <span>Adicionar</span>
     </button>
-    <!-- MIC CENTRAL -->
     <button id="mic-center" class="mic-center-btn" onclick="toggleVoiceOverlay()" title="Registrar por voz">
         <i class="fas fa-microphone text-white text-2xl"></i>
     </button>
@@ -200,33 +164,15 @@
     </button>
 </nav>
 
-<!-- VOICE OVERLAY -->
 <div id="voice-overlay">
     <p class="text-white/60 text-sm font-medium">Ouvindo...</p>
     <div class="voice-ripple">
         <i class="fas fa-microphone text-green-400 text-4xl"></i>
     </div>
     <p id="voice-transcript" class="text-white text-lg font-bold text-center px-8">Fale seu gasto agora</p>
-    <button onclick="stopVoice()" class="bg-white/10 text-white px-8 py-3 rounded-full font-semibold mt-4">❌ Cancelar</button>
+    <button onclick="stopVoice()" class="bg-white/10 text-white px-8 py-3 rounded-full font-semibold mt-4">✕ Cancelar</button>
 </div>
 
-<!-- FOOTER PROMO -->
-<div class="fixed bottom-20 left-0 right-0 flex justify-center z-40 pointer-events-none">
-    <!-- empty spacer -->
-</div>
-<div class="text-center py-2 pb-1" style="position:fixed;bottom:80px;left:0;right:0;z-index:49;pointer-events:none">
-    <!-- rodapé interno -->
-</div>
-
-<!-- Footer branding abaixo do nav -->
-<div style="position:fixed;bottom:0;left:0;right:0;height:80px;z-index:48;display:flex;align-items:flex-end;justify-content:center;pointer-events:none;padding-bottom:4px">
-    <div style="pointer-events:auto">
-        <span style="font-size:9px;color:#cbd5e1;font-weight:700;letter-spacing:1px;text-transform:uppercase">Powered by Hallz Branding · </span>
-        <a href="https://maralmhz.github.io/checkauto/" target="_blank" style="font-size:9px;color:#93c5fd;font-weight:700;text-decoration:none">CheckAuto 🚗</a>
-    </div>
-</div>
-
-<!-- ADD MODAL -->
 <div id="modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center p-4 z-[60]">
     <div class="bg-white rounded-3xl w-full max-w-md p-6">
         <div class="flex justify-between items-center mb-5">
@@ -268,7 +214,6 @@
     </div>
 </div>
 
-<!-- CHAT IA -->
 <div id="chat-modal" class="fixed inset-0 bg-black/60 hidden items-end justify-center z-[70]">
     <div class="bg-white rounded-t-3xl w-full max-w-lg" style="max-height:92vh;display:flex;flex-direction:column">
         <div class="p-4 rounded-t-3xl flex justify-between items-center flex-shrink-0" style="background:#111827">
@@ -290,10 +235,9 @@
                 </div>
                 <div class="msg-ai px-4 py-3 text-sm" style="max-width:85%">
                     Olá! 👋 Sou a IA do <strong>meu din din</strong>.<br><br>
-                    Fale ou escreva seus gastos e eu lanço automaticamente! Exemplos:<br>
+                    Fale ou escreva seus gastos e eu lanço automaticamente!<br>
                     <span class="text-green-700 font-medium">• "Gastei 80 de gasolina"</span><br>
                     <span class="text-green-700 font-medium">• "Paguei 1200 de aluguel"</span><br>
-                    <span class="text-green-700 font-medium">• "Meu aluguel aumentou 150"</span><br>
                     <span class="text-green-700 font-medium">• "Recebi 3000 de salário"</span>
                 </div>
             </div>
@@ -320,139 +264,107 @@
 <script>
 const GEMINI_KEY = 'AIzaSyBdqJdG2JUZl0b_zFZKfZAYBV_0EzPHrMw';
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`;
-
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});
 
 let transactions = JSON.parse(localStorage.getItem('meudindin_data')) || [
-    { id:1, desc:'Salário', amount:5000, category:'RECEITA', obs:'Receita mensal', date:new Date().toISOString() },
-    { id:2, desc:'Aluguel', amount:1200, category:'FIXAS', obs:'Despesa fixa', date:new Date().toISOString() },
-    { id:3, desc:'Cartão Visa', amount:450, category:'CARTAO', obs:'Parcela 1/3', date:new Date().toISOString() },
-    { id:4, desc:'Gasolina', amount:80, category:'TRANSPORTE', obs:'Posto Shell', date:new Date().toISOString() },
-    { id:5, desc:'Lanchonete', amount:25, category:'ALIMENTACAO', obs:'Almoco', date:new Date().toISOString() }
+    {id:1,desc:'Salário',amount:5000,category:'RECEITA',obs:'Receita mensal',date:new Date().toISOString()},
+    {id:2,desc:'Aluguel',amount:1200,category:'FIXAS',obs:'Despesa fixa',date:new Date().toISOString()},
+    {id:3,desc:'Cartão Visa',amount:450,category:'CARTAO',obs:'Parcela 1/3',date:new Date().toISOString()},
+    {id:4,desc:'Gasolina',amount:80,category:'TRANSPORTE',obs:'Posto Shell',date:new Date().toISOString()},
+    {id:5,desc:'Lanchonete',amount:25,category:'ALIMENTACAO',obs:'Almoço',date:new Date().toISOString()}
 ];
-let currentTab = 'all';
-let recognition = null;
-let isRecording = false;
-let voiceMode = 'overlay'; // 'overlay' ou 'chat'
+let currentTab='all', recognition=null, isRecording=false, voiceMode='overlay';
 
-// CAT CONFIG
-const CAT_CONFIG = {
-    RECEITA:     { icon:'fa-arrow-up',    bg:'bg-green-100',  text:'text-green-600',  label:'Receita' },
-    FIXAS:       { icon:'fa-home',        bg:'bg-blue-100',   text:'text-blue-600',   label:'Fixa' },
-    CARTAO:      { icon:'fa-credit-card', bg:'bg-purple-100', text:'text-purple-600', label:'Cartão' },
-    ALIMENTACAO: { icon:'fa-utensils',    bg:'bg-yellow-100', text:'text-yellow-600', label:'Alimentação' },
-    TRANSPORTE:  { icon:'fa-car',         bg:'bg-orange-100', text:'text-orange-600', label:'Transporte' },
-    SAUDE:       { icon:'fa-heartbeat',   bg:'bg-emerald-100',text:'text-emerald-600',label:'Saúde' },
-    LAZER:       { icon:'fa-gamepad',     bg:'bg-pink-100',   text:'text-pink-600',   label:'Lazer' },
-    OUTROS:      { icon:'fa-box',         bg:'bg-slate-100',  text:'text-slate-600',  label:'Outros' }
+const CAT_CONFIG={
+    RECEITA:{icon:'fa-arrow-up',bg:'bg-green-100',text:'text-green-600',label:'Receita'},
+    FIXAS:{icon:'fa-home',bg:'bg-blue-100',text:'text-blue-600',label:'Fixa'},
+    CARTAO:{icon:'fa-credit-card',bg:'bg-purple-100',text:'text-purple-600',label:'Cartão'},
+    ALIMENTACAO:{icon:'fa-utensils',bg:'bg-yellow-100',text:'text-yellow-600',label:'Alimentação'},
+    TRANSPORTE:{icon:'fa-car',bg:'bg-orange-100',text:'text-orange-600',label:'Transporte'},
+    SAUDE:{icon:'fa-heartbeat',bg:'bg-emerald-100',text:'text-emerald-600',label:'Saúde'},
+    LAZER:{icon:'fa-gamepad',bg:'bg-pink-100',text:'text-pink-600',label:'Lazer'},
+    OUTROS:{icon:'fa-box',bg:'bg-slate-100',text:'text-slate-600',label:'Outros'}
 };
 
-// ── VOICE OVERLAY (botão central) ─────────────────────
-function toggleVoiceOverlay() {
-    voiceMode = 'overlay';
-    if (isRecording) { stopVoice(); return; }
-    startVoice();
-}
-function toggleVoiceChat() {
-    voiceMode = 'chat';
-    if (isRecording) { stopVoice(); return; }
-    startVoice();
-    document.getElementById('mic-chat-btn').classList.add('!bg-red-100');
-}
-function startVoice() {
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) { alert('Use o Chrome para reconhecimento de voz.'); return; }
-    recognition = new SR();
-    recognition.lang = 'pt-BR';
-    recognition.interimResults = true;
-    recognition.maxAlternatives = 1;
-    recognition.onstart = () => {
-        isRecording = true;
-        if (voiceMode === 'overlay') {
-            document.getElementById('voice-overlay').classList.add('active');
-            document.getElementById('mic-center').classList.add('recording');
-        }
-    };
-    recognition.onresult = (e) => {
-        const transcript = Array.from(e.results).map(r=>r[0].transcript).join('');
-        if (voiceMode === 'overlay') {
-            document.getElementById('voice-transcript').textContent = transcript;
-        } else {
-            document.getElementById('chat-input').value = transcript;
-        }
-        if (e.results[e.results.length-1].isFinal) {
-            document.getElementById('chat-input').value = transcript;
+function toggleVoiceOverlay(){voiceMode='overlay';if(isRecording){stopVoice();return;}startVoice();}
+function toggleVoiceChat(){voiceMode='chat';if(isRecording){stopVoice();return;}startVoice();}
+function startVoice(){
+    const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+    if(!SR){alert('Use o Chrome para reconhecimento de voz.');return;}
+    recognition=new SR();recognition.lang='pt-BR';recognition.interimResults=true;recognition.maxAlternatives=1;
+    recognition.onstart=()=>{isRecording=true;if(voiceMode==='overlay'){document.getElementById('voice-overlay').classList.add('active');document.getElementById('mic-center').classList.add('recording');}};
+    recognition.onresult=(e)=>{
+        const transcript=Array.from(e.results).map(r=>r[0].transcript).join('');
+        if(voiceMode==='overlay')document.getElementById('voice-transcript').textContent=transcript;
+        else document.getElementById('chat-input').value=transcript;
+        if(e.results[e.results.length-1].isFinal){
+            document.getElementById('chat-input').value=transcript;
             stopVoice();
             sendMessage();
-            if (!document.getElementById('chat-modal').classList.contains('flex')) {
-                toggleChat();
-            }
+            if(!document.getElementById('chat-modal').classList.contains('flex'))toggleChat();
         }
     };
-    recognition.onend = () => stopVoice();
-    recognition.onerror = () => stopVoice();
+    recognition.onend=()=>stopVoice();
+    recognition.onerror=()=>stopVoice();
     recognition.start();
 }
-function stopVoice() {
-    isRecording = false;
-    if (recognition) { try { recognition.stop(); } catch(e){} }
+function stopVoice(){
+    isRecording=false;
+    if(recognition){try{recognition.stop();}catch(e){}}
     document.getElementById('voice-overlay').classList.remove('active');
     document.getElementById('mic-center').classList.remove('recording');
-    document.getElementById('mic-chat-btn').classList.remove('!bg-red-100');
-    document.getElementById('voice-transcript').textContent = 'Fale seu gasto agora';
+    document.getElementById('voice-transcript').textContent='Fale seu gasto agora';
 }
 
-// ── GEMINI CONTEXT ─────────────────────────────────────
-function getFinancialContext() {
-    const currency = document.getElementById('currency').value;
-    const income = transactions.filter(t=>t.category==='RECEITA').reduce((s,t)=>s+t.amount,0);
-    const expense = transactions.filter(t=>t.category!=='RECEITA').reduce((s,t)=>s+t.amount,0);
-    const byCategory = {};
-    transactions.filter(t=>t.category!=='RECEITA').forEach(t=>{ byCategory[t.category]=(byCategory[t.category]||0)+t.amount; });
-    return `CONTEXTO (moeda: ${currency}): Receita=${currency}${income.toFixed(2)}, Despesas=${currency}${expense.toFixed(2)}, Saldo=${currency}${(income-expense).toFixed(2)}, Por categoria=${JSON.stringify(byCategory)}, Transações=${JSON.stringify(transactions.map(t=>({id:t.id,desc:t.desc,amount:t.amount,cat:t.category,obs:t.obs})))}`;
+function getFinancialContext(){
+    const cur=document.getElementById('currency').value;
+    const income=transactions.filter(t=>t.category==='RECEITA').reduce((s,t)=>s+t.amount,0);
+    const expense=transactions.filter(t=>t.category!=='RECEITA').reduce((s,t)=>s+t.amount,0);
+    const byCategory={};
+    transactions.filter(t=>t.category!=='RECEITA').forEach(t=>{byCategory[t.category]=(byCategory[t.category]||0)+t.amount;});
+    return `Moeda:${cur} Receita:${income} Despesa:${expense} Saldo:${income-expense} Categorias:${JSON.stringify(byCategory)} Transações:${JSON.stringify(transactions.map(t=>({id:t.id,desc:t.desc,amount:t.amount,cat:t.category,obs:t.obs})))}`;
 }
 
-// ── SEND MESSAGE ───────────────────────────────────────
-async function sendMessage() {
-    const input = document.getElementById('chat-input');
-    const msg = input.value.trim();
-    if (!msg) return;
-    input.value = '';
-    if (!document.getElementById('chat-modal').classList.contains('flex')) toggleChat();
-    appendMessage(msg, 'user');
-    const tid = showTyping();
-    const prompt = `Você é a IA financeira do app "meu din din". Detecte se é uma transação ou conversa.
+async function sendMessage(){
+    const input=document.getElementById('chat-input');
+    const msg=input.value.trim();
+    if(!msg)return;
+    input.value='';
+    if(!document.getElementById('chat-modal').classList.contains('flex'))toggleChat();
+    appendMessage(msg,'user');
+    const tid=showTyping();
+    const prompt=`Você é a IA financeira do app "meu din din". Detecte se é uma transação ou conversa.
 CATEGORIAS: RECEITA, FIXAS, CARTAO, ALIMENTACAO, TRANSPORTE, SAUDE, LAZER, OUTROS
-Se transação ADD: {"action":"ADD","desc":"...","amount":0,"category":"...","obs":"..."}
-Se UPDATE de existente: {"action":"UPDATE","targetDesc":"...","newAmount":0}
-Se conversa: {"action":"CHAT","reply":"..."}
+Se ADD: {"action":"ADD","desc":"...","amount":0,"category":"...","obs":"..."}
+Se UPDATE: {"action":"UPDATE","targetDesc":"...","newAmount":0}
+Se CHAT: {"action":"CHAT","reply":"..."}
 Retorne APENAS JSON válido sem markdown.
 ${getFinancialContext()}
 Mensagem: ${msg}`;
-    try {
-        const res = await fetch(GEMINI_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})});
-        const data = await res.json();
+    try{
+        const res=await fetch(GEMINI_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})});
+        const data=await res.json();
         removeTyping(tid);
-        let raw = (data?.candidates?.[0]?.content?.parts?.[0]?.text||'').replace(/```json/g,'').replace(/```/g,'').trim();
-        let parsed; try { parsed=JSON.parse(raw); } catch(e){ parsed={action:'CHAT',reply:raw||'Não entendi. Tente novamente!'}; }
-        if (parsed.action==='ADD') showConfirm(parsed);
-        else if (parsed.action==='UPDATE') handleUpdate(parsed);
+        let raw=(data?.candidates?.[0]?.content?.parts?.[0]?.text||'').replace(/```json/g,'').replace(/```/g,'').trim();
+        let parsed;try{parsed=JSON.parse(raw);}catch(e){parsed={action:'CHAT',reply:raw||'Não entendi. Tente novamente!'};}
+        if(parsed.action==='ADD')showConfirm(parsed);
+        else if(parsed.action==='UPDATE')handleUpdate(parsed);
         else appendMessage(parsed.reply,'ai');
-    } catch(e) { removeTyping(tid); appendMessage('Erro de conexão. Tente novamente!','ai'); }
+    }catch(e){removeTyping(tid);appendMessage('Erro de conexão. Tente novamente!','ai');}
 }
 
-function showConfirm(parsed) {
-    const currency = document.getElementById('currency').value;
-    const cid = 'c'+Date.now();
-    const container = document.getElementById('chat-messages');
-    const d = document.createElement('div'); d.id=cid; d.className='flex gap-2';
-    const safeP = JSON.stringify(parsed).replace(/"/g,'&quot;');
+function showConfirm(parsed){
+    const cur=document.getElementById('currency').value;
+    const cid='c'+Date.now();
+    const container=document.getElementById('chat-messages');
+    const d=document.createElement('div');d.id=cid;d.className='flex gap-2';
+    const safeP=JSON.stringify(parsed).replace(/"/g,'&quot;');
     d.innerHTML=`<div class="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 mt-1" style="background:#111827"><i class="fas fa-robot text-green-400 text-xs"></i></div>
     <div class="confirm-card p-3 text-sm flex-1">
         <p class="font-bold text-blue-800 mb-2">✅ Confirma o lançamento?</p>
         <div class="bg-white rounded-xl p-2 mb-3 space-y-1">
             <p><span class="text-slate-400">Descrição:</span> <strong>${parsed.desc}</strong></p>
-            <p><span class="text-slate-400">Valor:</span> <strong class="${parsed.category==='RECEITA'?'text-green-600':'text-red-600'}">${currency} ${parseFloat(parsed.amount).toLocaleString('pt-BR',{minimumFractionDigits:2})}</strong></p>
+            <p><span class="text-slate-400">Valor:</span> <strong class="${parsed.category==='RECEITA'?'text-green-600':'text-red-600'}">${cur} ${parseFloat(parsed.amount).toLocaleString('pt-BR',{minimumFractionDigits:2})}</strong></p>
             <p><span class="text-slate-400">Categoria:</span> <span class="cat-badge cat-${parsed.category}">${parsed.category}</span></p>
             ${parsed.obs?`<p><span class="text-slate-400">Obs:</span> ${parsed.obs}</p>`:''}
         </div>
@@ -461,50 +373,44 @@ function showConfirm(parsed) {
             <button onclick="document.getElementById('${cid}').remove()" class="flex-1 bg-slate-100 text-slate-600 text-xs font-bold py-2 rounded-xl">❌ Cancelar</button>
         </div>
     </div>`;
-    container.appendChild(d); container.scrollTop=container.scrollHeight;
+    container.appendChild(d);container.scrollTop=container.scrollHeight;
 }
-
-function confirmAdd(cid, safeP) {
+function confirmAdd(cid,safeP){
     document.getElementById(cid)?.remove();
-    const parsed = JSON.parse(safeP.replace(/&quot;/g,'"'));
+    const parsed=JSON.parse(safeP.replace(/&quot;/g,'"'));
     transactions.push({id:Date.now(),desc:parsed.desc,amount:parseFloat(parsed.amount),category:parsed.category,obs:parsed.obs||'',date:new Date().toISOString()});
     saveToLocal();
     appendMessage(`✅ **${parsed.desc}** adicionado com sucesso!`,'action');
 }
-
-function handleUpdate(parsed) {
-    const match = transactions.find(t=>t.desc.toLowerCase().includes(parsed.targetDesc.toLowerCase()));
-    if (!match) { appendMessage(`Não encontrei "${parsed.targetDesc}". Tente novamente.`,'ai'); return; }
-    const currency = document.getElementById('currency').value;
-    const old = match.amount;
-    match.amount = parseFloat(parsed.newAmount);
+function handleUpdate(parsed){
+    const match=transactions.find(t=>t.desc.toLowerCase().includes(parsed.targetDesc.toLowerCase()));
+    if(!match){appendMessage(`Não encontrei "${parsed.targetDesc}". Tente novamente.`,'ai');return;}
+    const cur=document.getElementById('currency').value;
+    const old=match.amount;
+    match.amount=parseFloat(parsed.newAmount);
     saveToLocal();
-    appendMessage(`✅ **${match.desc}** atualizado: ${currency} ${old.toLocaleString('pt-BR',{minimumFractionDigits:2})} → ${currency} ${match.amount.toLocaleString('pt-BR',{minimumFractionDigits:2})}`,'action');
+    appendMessage(`✅ **${match.desc}** atualizado: ${cur} ${old.toLocaleString('pt-BR',{minimumFractionDigits:2})} → ${cur} ${match.amount.toLocaleString('pt-BR',{minimumFractionDigits:2})}`,'action');
 }
-
 function quickAsk(q){document.getElementById('chat-input').value=q;sendMessage();}
-
 function appendMessage(text,type){
     const c=document.getElementById('chat-messages');
     const d=document.createElement('div');
-    const isUser=type==='user', isAction=type==='action';
+    const isUser=type==='user',isAction=type==='action';
     d.className=`flex gap-2 ${isUser?'justify-end':''}`;
     const ft=text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
-    if(isUser){d.innerHTML=`<div class="msg-user px-4 py-3 text-sm" style="max-width:85%">${ft}</div>`;}
-    else if(isAction){d.innerHTML=`<div class="w-7 h-7 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-1"><i class="fas fa-check text-white text-xs"></i></div><div class="msg-action px-4 py-3 text-sm" style="max-width:85%">${ft}</div>`;}
-    else{d.innerHTML=`<div class="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 mt-1" style="background:#111827"><i class="fas fa-robot text-green-400 text-xs"></i></div><div class="msg-ai px-4 py-3 text-sm" style="max-width:85%;white-space:pre-line">${ft}</div>`;}
-    c.appendChild(d); c.scrollTop=c.scrollHeight;
+    if(isUser)d.innerHTML=`<div class="msg-user px-4 py-3 text-sm" style="max-width:85%">${ft}</div>`;
+    else if(isAction)d.innerHTML=`<div class="w-7 h-7 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-1"><i class="fas fa-check text-white text-xs"></i></div><div class="msg-action px-4 py-3 text-sm" style="max-width:85%">${ft}</div>`;
+    else d.innerHTML=`<div class="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 mt-1" style="background:#111827"><i class="fas fa-robot text-green-400 text-xs"></i></div><div class="msg-ai px-4 py-3 text-sm" style="max-width:85%;white-space:pre-line">${ft}</div>`;
+    c.appendChild(d);c.scrollTop=c.scrollHeight;
 }
 function showTyping(){
-    const id='t'+Date.now(), c=document.getElementById('chat-messages'), d=document.createElement('div');
-    d.id=id; d.className='flex gap-2';
+    const id='t'+Date.now(),c=document.getElementById('chat-messages'),d=document.createElement('div');
+    d.id=id;d.className='flex gap-2';
     d.innerHTML=`<div class="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0" style="background:#111827"><i class="fas fa-robot text-green-400 text-xs"></i></div><div class="msg-ai px-4 py-3 flex gap-1 items-center"><span class="typing-dot w-2 h-2 bg-slate-400 rounded-full inline-block"></span><span class="typing-dot w-2 h-2 bg-slate-400 rounded-full inline-block"></span><span class="typing-dot w-2 h-2 bg-slate-400 rounded-full inline-block"></span></div>`;
-    c.appendChild(d); c.scrollTop=c.scrollHeight; return id;
+    c.appendChild(d);c.scrollTop=c.scrollHeight;return id;
 }
 function removeTyping(id){document.getElementById(id)?.remove();}
 function toggleChat(){const m=document.getElementById('chat-modal');m.classList.toggle('hidden');m.classList.toggle('flex');}
-
-// ── CRUD ──────────────────────────────────────────────
 function saveToLocal(){localStorage.setItem('meudindin_data',JSON.stringify(transactions));render();updateAI();}
 function toggleModal(){const m=document.getElementById('modal');m.classList.toggle('hidden');m.classList.toggle('flex');document.getElementById('transaction-form').reset();}
 function saveTransaction(e){
@@ -515,7 +421,7 @@ function saveTransaction(e){
 function deleteTransaction(id){if(!confirm('Excluir?'))return;transactions=transactions.filter(t=>t.id!==id);saveToLocal();}
 function switchTab(tab,btn){
     currentTab=tab;
-    document.querySelectorAll('.tab-btn').forEach(b=>{b.classList.remove('active');});
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
     render();
 }
@@ -561,7 +467,7 @@ function render(){
     updateSummary();
 }
 function updateAI(){
-    const aiBox=document.getElementById('ai-box'), aiText=document.getElementById('ai-text');
+    const aiBox=document.getElementById('ai-box'),aiText=document.getElementById('ai-text');
     const expense=transactions.filter(t=>t.category!=='RECEITA').reduce((s,t)=>s+t.amount,0);
     const income=transactions.filter(t=>t.category==='RECEITA').reduce((s,t)=>s+t.amount,0);
     aiBox.classList.remove('hidden');
