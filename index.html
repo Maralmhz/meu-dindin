@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MeuDindin 💰</title>
+    <title>meu din din</title>
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#2563eb">
+    <meta name="theme-color" content="#111827">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="MeuDindin">
+    <meta name="apple-mobile-web-app-title" content="meu din din">
     <link rel="apple-touch-icon" href="icons/icon-192.png">
     <link rel="icon" type="image/png" href="icons/icon-192.png">
-    <meta property="og:title" content="MeuDindin 💰">
+    <meta property="og:title" content="meu din din">
     <meta property="og:description" content="App de controle financeiro pessoal simples e bonito">
     <meta property="og:image" content="icons/og-thumb.png">
     <meta property="og:type" content="website">
@@ -20,188 +20,299 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
-        .card { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .btn-primary { background: #2563eb; color: white; transition: all 0.2s; }
-        .btn-primary:hover { background: #1d4ed8; }
-        .gradient-bg { background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); }
-        input[type="number"]::-webkit-inner-spin-button { display: none; }
-        #chat-messages { max-height: 320px; overflow-y: auto; scroll-behavior: smooth; }
-        .msg-user { background: #2563eb; color: white; border-radius: 18px 18px 4px 18px; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        * { box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: #f0f2f5; margin:0; padding-bottom: 90px; }
+
+        /* Header dark */
+        .app-header { background: #111827; }
+        .header-card { background: linear-gradient(135deg, #1a2535 0%, #0f1923 100%); border-radius: 20px; margin: 0 16px; padding: 20px; margin-top: -40px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+
+        .card { background: white; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .card-dark { background: #1a2535; border-radius: 16px; }
+
+        /* Bottom nav */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #f1f5f9; z-index: 50; height: 80px; display: flex; align-items: center; justify-content: space-around; padding: 0 8px; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); }
+        .nav-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; background: none; border: none; cursor: pointer; color: #94a3b8; font-size: 10px; font-weight: 600; padding: 8px 16px; border-radius: 12px; transition: all 0.2s; }
+        .nav-btn:hover { color: #2563eb; }
+        .nav-btn i { font-size: 20px; }
+
+        /* MIC central */
+        .mic-center-btn { width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, #22c55e, #16a34a); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(34,197,94,0.5); transition: all 0.2s; margin-top: -20px; }
+        .mic-center-btn:active { transform: scale(0.95); }
+        .mic-center-btn.recording { background: linear-gradient(135deg, #ef4444, #dc2626) !important; box-shadow: 0 4px 20px rgba(239,68,68,0.6) !important; animation: pulse-mic 1s infinite; }
+        @keyframes pulse-mic { 0%,100%{box-shadow:0 4px 20px rgba(239,68,68,0.4)} 50%{box-shadow:0 4px 40px rgba(239,68,68,0.8)} }
+
+        /* Chart line fake */
+        .chart-wave { width:100%; height:60px; opacity:0.8; }
+
+        /* Tabs */
+        .tab-btn { white-space: nowrap; padding: 8px 16px; border-radius: 999px; font-size: 13px; font-weight: 600; border: none; cursor: pointer; transition: all 0.2s; }
+        .tab-btn.active { background: #111827; color: white; }
+        .tab-btn:not(.active) { background: white; color: #64748b; }
+
+        /* Category badges */
+        .cat-badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; text-transform: uppercase; }
+        .cat-RECEITA { background:#dcfce7; color:#166534; }
+        .cat-FIXAS { background:#dbeafe; color:#1e40af; }
+        .cat-CARTAO { background:#ede9fe; color:#5b21b6; }
+        .cat-ALIMENTACAO { background:#fef9c3; color:#854d0e; }
+        .cat-LAZER { background:#fce7f3; color:#9d174d; }
+        .cat-OUTROS { background:#f1f5f9; color:#475569; }
+        .cat-TRANSPORTE { background:#ffedd5; color:#9a3412; }
+        .cat-SAUDE { background:#d1fae5; color:#065f46; }
+
+        /* Chat */
+        #chat-messages { max-height: 340px; overflow-y: auto; scroll-behavior: smooth; }
+        .msg-user { background: #111827; color: white; border-radius: 18px 18px 4px 18px; }
         .msg-ai { background: #f1f5f9; color: #1e293b; border-radius: 18px 18px 18px 4px; }
         .msg-action { background: #dcfce7; color: #166534; border-radius: 12px; border: 1px solid #bbf7d0; }
+        .confirm-card { background: #eff6ff; border: 2px solid #93c5fd; border-radius: 12px; }
         .typing-dot { animation: blink 1.2s infinite; }
         .typing-dot:nth-child(2) { animation-delay: 0.2s; }
         .typing-dot:nth-child(3) { animation-delay: 0.4s; }
         @keyframes blink { 0%,80%,100%{opacity:0.2} 40%{opacity:1} }
-        .mic-btn.recording { background: #ef4444 !important; animation: pulse-red 1s infinite; }
-        @keyframes pulse-red { 0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0.4)} 50%{box-shadow:0 0 0 8px rgba(239,68,68,0)} }
-        .confirm-card { background: #eff6ff; border: 2px solid #93c5fd; border-radius: 12px; }
+
+        /* Voice overlay */
+        #voice-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:200; display:none; flex-direction:column; align-items:center; justify-content:center; gap:24px; }
+        #voice-overlay.active { display:flex; }
+        .voice-ripple { width:120px; height:120px; border-radius:50%; background:rgba(34,197,94,0.2); display:flex; align-items:center; justify-content:center; animation: ripple 1.5s infinite; }
+        @keyframes ripple { 0%{box-shadow:0 0 0 0 rgba(34,197,94,0.4)} 100%{box-shadow:0 0 0 40px rgba(34,197,94,0)} }
+
+        input[type="number"]::-webkit-inner-spin-button { display: none; }
     </style>
 </head>
-<body class="pb-24">
+<body>
 
-<header class="gradient-bg text-white p-6 pb-20">
-    <div class="max-w-4xl mx-auto flex justify-between items-center">
-        <h1 class="text-2xl font-bold flex items-center gap-2">
-            <!-- <img src="icons/logo.png" alt="MeuDindin" style="height:36px"> -->
-            <span class="bg-white text-blue-600 p-2 rounded-lg text-xl">💰</span>
-            MeuDindin
-        </h1>
+<!-- HEADER -->
+<header class="app-header pt-12 pb-12 px-4">
+    <div class="max-w-lg mx-auto flex justify-between items-center">
         <div class="flex items-center gap-3">
-            <select id="currency" class="bg-white/20 border-none rounded-lg px-2 py-1 text-sm outline-none cursor-pointer" onchange="updateSummary()">
-                <option value="R$" class="text-black">R$ Real</option>
-                <option value="$" class="text-black">$ Dollar</option>
-                <option value="€" class="text-black">€ Euro</option>
+            <!-- Logo: descomente abaixo quando subir o arquivo -->
+            <!-- <img src="icons/logo.png" alt="meu din din" style="height:40px"> -->
+            <div class="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center" style="background:white">
+                <span style="font-size:22px">💰</span>
+            </div>
+            <div>
+                <p class="text-white/60 text-xs font-medium leading-none">meu</p>
+                <p class="text-white text-lg font-black leading-tight">din din</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+            <select id="currency" class="bg-white/10 border-none rounded-xl px-3 py-2 text-sm text-white outline-none cursor-pointer">
+                <option value="R$" class="text-black">R$</option>
+                <option value="$" class="text-black">USD</option>
+                <option value="€" class="text-black">EUR</option>
             </select>
-            <button onclick="shareWhatsApp()" class="bg-white/20 hover:bg-white/30 p-2 rounded-lg transition" title="WhatsApp">
-                <i class="fab fa-whatsapp"></i>
+            <button onclick="shareWhatsApp()" class="bg-white/10 hover:bg-white/20 w-10 h-10 rounded-xl flex items-center justify-center transition" title="WhatsApp">
+                <i class="fab fa-whatsapp text-white"></i>
             </button>
-            <button onclick="toggleChat()" class="bg-white/20 hover:bg-white/30 p-2 rounded-lg transition" title="IA">
-                <i class="fas fa-robot"></i>
+            <button onclick="toggleChat()" class="bg-white/10 hover:bg-white/20 w-10 h-10 rounded-xl flex items-center justify-center transition" title="IA">
+                <i class="fas fa-robot text-white"></i>
             </button>
         </div>
     </div>
 </header>
 
-<main class="max-w-4xl mx-auto px-4 -mt-12">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div class="card p-4">
-            <p class="text-slate-500 text-sm font-medium">Saldo Atual</p>
-            <h3 id="total-balance" class="text-2xl font-bold text-slate-800">R$ 0,00</h3>
-        </div>
-        <div class="card p-4 border-l-4 border-green-500">
-            <p class="text-slate-500 text-sm font-medium">Receitas</p>
-            <h3 id="total-income" class="text-xl font-bold text-green-600">R$ 0,00</h3>
-        </div>
-        <div class="card p-4 border-l-4 border-red-500">
-            <p class="text-slate-500 text-sm font-medium">Despesas</p>
-            <h3 id="total-expenses" class="text-xl font-bold text-red-600">R$ 0,00</h3>
+<!-- SALDO CARD -->
+<div class="max-w-lg mx-auto px-4">
+    <div class="header-card">
+        <p class="text-white/50 text-xs font-semibold uppercase tracking-wider mb-1">Saldo atual</p>
+        <h2 id="total-balance" class="text-white text-3xl font-black mb-4">R$ 0,00</h2>
+        <!-- mini chart SVG fake -->
+        <svg class="chart-wave" viewBox="0 0 300 60" preserveAspectRatio="none">
+            <defs>
+                <linearGradient id="gGreen" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#22c55e" stop-opacity="0.5"/>
+                    <stop offset="100%" stop-color="#22c55e" stop-opacity="0"/>
+                </linearGradient>
+                <linearGradient id="gRed" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#ef4444" stop-opacity="0.5"/>
+                    <stop offset="100%" stop-color="#ef4444" stop-opacity="0"/>
+                </linearGradient>
+            </defs>
+            <path d="M0,40 C30,35 60,20 90,25 C120,30 150,10 180,15 C210,20 240,30 300,20 L300,60 L0,60Z" fill="url(#gGreen)"/>
+            <path d="M0,40 C30,35 60,20 90,25 C120,30 150,10 180,15 C210,20 240,30 300,20" fill="none" stroke="#22c55e" stroke-width="2"/>
+            <path d="M0,50 C40,45 80,55 120,45 C160,35 200,50 240,40 C260,35 280,45 300,42 L300,60 L0,60Z" fill="url(#gRed)"/>
+            <path d="M0,50 C40,45 80,55 120,45 C160,35 200,50 240,40 C260,35 280,45 300,42" fill="none" stroke="#ef4444" stroke-width="2"/>
+        </svg>
+        <div class="flex gap-3 mt-4">
+            <div class="flex-1 bg-white/10 rounded-xl p-3">
+                <p class="text-white/50 text-xs">Receitas</p>
+                <p id="total-income" class="text-green-400 font-bold text-sm">R$ 0,00</p>
+            </div>
+            <div class="flex-1 bg-white/10 rounded-xl p-3">
+                <p class="text-white/50 text-xs">Despesas</p>
+                <p id="total-expenses" class="text-red-400 font-bold text-sm">R$ 0,00</p>
+            </div>
         </div>
     </div>
+</div>
 
-    <div id="ai-box" class="card p-4 mb-6 bg-blue-50 border border-blue-100 hidden">
+<!-- MAIN -->
+<main class="max-w-lg mx-auto px-4 mt-6">
+
+    <!-- AI TIP -->
+    <div id="ai-box" class="card p-4 mb-5 hidden" style="border-left: 4px solid #22c55e">
         <div class="flex items-start gap-3">
-            <div class="bg-blue-600 text-white p-2 rounded-lg flex-shrink-0"><i class="fas fa-robot"></i></div>
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#111827">
+                <i class="fas fa-robot text-green-400 text-sm"></i>
+            </div>
             <div class="flex-1">
-                <h4 class="font-bold text-blue-800 text-sm">IA MeuDindin</h4>
-                <p id="ai-text" class="text-blue-700 text-sm mt-1">Analisando suas finanças...</p>
-                <button onclick="toggleChat()" class="text-xs text-blue-600 font-bold mt-2 hover:underline">💬 Falar com a IA →</button>
+                <h4 class="font-bold text-slate-800 text-sm">IA meu din din</h4>
+                <p id="ai-text" class="text-slate-500 text-sm mt-0.5">Analisando suas finanças...</p>
+                <button onclick="toggleChat()" class="text-xs text-blue-600 font-bold mt-1 hover:underline">💬 Falar com a IA →</button>
             </div>
         </div>
     </div>
 
-    <div class="flex gap-2 mb-4 overflow-x-auto pb-2">
-        <button onclick="switchTab('all',this)" class="tab-btn bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap">Tudo</button>
-        <button onclick="switchTab('FIXAS',this)" class="tab-btn bg-white text-slate-600 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap">Fixas</button>
-        <button onclick="switchTab('CARTAO',this)" class="tab-btn bg-white text-slate-600 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap">Cartões</button>
-        <button onclick="switchTab('LAZER',this)" class="tab-btn bg-white text-slate-600 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap">Lazer</button>
-        <button onclick="switchTab('RECEITA',this)" class="tab-btn bg-white text-slate-600 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap">Receitas</button>
+    <!-- TABS -->
+    <div class="flex gap-2 mb-4 overflow-x-auto pb-1" style="scrollbar-width:none">
+        <button onclick="switchTab('all',this)" class="tab-btn active">Tudo</button>
+        <button onclick="switchTab('RECEITA',this)" class="tab-btn">Receitas</button>
+        <button onclick="switchTab('FIXAS',this)" class="tab-btn">Fixas</button>
+        <button onclick="switchTab('CARTAO',this)" class="tab-btn">Cartões</button>
+        <button onclick="switchTab('ALIMENTACAO',this)" class="tab-btn">Alimentação</button>
+        <button onclick="switchTab('TRANSPORTE',this)" class="tab-btn">Transporte</button>
+        <button onclick="switchTab('SAUDE',this)" class="tab-btn">Saúde</button>
+        <button onclick="switchTab('LAZER',this)" class="tab-btn">Lazer</button>
+        <button onclick="switchTab('OUTROS',this)" class="tab-btn">Outros</button>
     </div>
 
-    <div id="transaction-list" class="space-y-3 mb-6"></div>
+    <!-- LIST -->
+    <div id="transaction-list" class="space-y-3 mb-4"></div>
 
-    <button onclick="toggleModal()" class="fixed bottom-24 right-6 w-14 h-14 gradient-bg text-white rounded-full shadow-lg flex items-center justify-center text-2xl z-40">
-        <i class="fas fa-plus"></i>
-    </button>
 </main>
 
-<footer class="fixed bottom-0 left-0 right-0 bg-white border-t p-3 text-center z-50">
-    <div class="flex items-center justify-center gap-2">
-        <span class="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Powered by Hallz Branding</span>
-        <span class="text-slate-300">·</span>
-        <a href="https://maralmhz.github.io/checkauto/" target="_blank" class="text-blue-600 text-xs font-semibold hover:underline flex items-center gap-1">CheckAuto 🚗 <i class="fas fa-external-link-alt text-[8px]"></i></a>
-    </div>
-</footer>
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+    <button class="nav-btn" onclick="toggleModal()">
+        <i class="fas fa-plus-circle"></i>
+        <span>Adicionar</span>
+    </button>
+    <!-- MIC CENTRAL -->
+    <button id="mic-center" class="mic-center-btn" onclick="toggleVoiceOverlay()" title="Registrar por voz">
+        <i class="fas fa-microphone text-white text-2xl"></i>
+    </button>
+    <button class="nav-btn" onclick="toggleChat()">
+        <i class="fas fa-robot"></i>
+        <span>IA</span>
+    </button>
+</nav>
 
-<!-- Add Modal -->
-<div id="modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-[60]">
-    <div class="bg-white rounded-2xl w-full max-w-md p-6">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-xl font-bold">Nova Transação</h2>
-            <button onclick="toggleModal()"><i class="fas fa-times text-slate-400"></i></button>
+<!-- VOICE OVERLAY -->
+<div id="voice-overlay">
+    <p class="text-white/60 text-sm font-medium">Ouvindo...</p>
+    <div class="voice-ripple">
+        <i class="fas fa-microphone text-green-400 text-4xl"></i>
+    </div>
+    <p id="voice-transcript" class="text-white text-lg font-bold text-center px-8">Fale seu gasto agora</p>
+    <button onclick="stopVoice()" class="bg-white/10 text-white px-8 py-3 rounded-full font-semibold mt-4">❌ Cancelar</button>
+</div>
+
+<!-- FOOTER PROMO -->
+<div class="fixed bottom-20 left-0 right-0 flex justify-center z-40 pointer-events-none">
+    <!-- empty spacer -->
+</div>
+<div class="text-center py-2 pb-1" style="position:fixed;bottom:80px;left:0;right:0;z-index:49;pointer-events:none">
+    <!-- rodapé interno -->
+</div>
+
+<!-- Footer branding abaixo do nav -->
+<div style="position:fixed;bottom:0;left:0;right:0;height:80px;z-index:48;display:flex;align-items:flex-end;justify-content:center;pointer-events:none;padding-bottom:4px">
+    <div style="pointer-events:auto">
+        <span style="font-size:9px;color:#cbd5e1;font-weight:700;letter-spacing:1px;text-transform:uppercase">Powered by Hallz Branding · </span>
+        <a href="https://maralmhz.github.io/checkauto/" target="_blank" style="font-size:9px;color:#93c5fd;font-weight:700;text-decoration:none">CheckAuto 🚗</a>
+    </div>
+</div>
+
+<!-- ADD MODAL -->
+<div id="modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center p-4 z-[60]">
+    <div class="bg-white rounded-3xl w-full max-w-md p-6">
+        <div class="flex justify-between items-center mb-5">
+            <h2 class="text-xl font-black">Nova Transação</h2>
+            <button onclick="toggleModal()" class="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center"><i class="fas fa-times text-slate-500 text-sm"></i></button>
         </div>
         <form id="transaction-form" onsubmit="saveTransaction(event)">
             <div class="space-y-4">
                 <div>
                     <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Descrição</label>
-                    <input type="text" id="desc" required class="w-full p-3 rounded-xl border border-slate-200 outline-blue-500" placeholder="Ex: Aluguel, Salário, Mercado...">
+                    <input type="text" id="desc" required class="w-full p-3 rounded-2xl border border-slate-200 outline-none focus:border-green-400" placeholder="Ex: Aluguel, Salário, Gasolina...">
                 </div>
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Valor</label>
-                        <input type="number" step="0.01" id="amount" required class="w-full p-3 rounded-xl border border-slate-200 outline-blue-500" placeholder="0.00">
+                        <input type="number" step="0.01" id="amount" required class="w-full p-3 rounded-2xl border border-slate-200 outline-none focus:border-green-400" placeholder="0,00">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Categoria</label>
-                        <select id="category" class="w-full p-3 rounded-xl border border-slate-200 outline-blue-500">
-                            <option value="RECEITA">Receita</option>
-                            <option value="FIXAS">Despesa Fixa</option>
-                            <option value="CARTAO">Cartão</option>
-                            <option value="ALIMENTACAO">Alimentação</option>
-                            <option value="LAZER">Lazer</option>
-                            <option value="OUTROS">Outros</option>
+                        <select id="category" class="w-full p-3 rounded-2xl border border-slate-200 outline-none focus:border-green-400">
+                            <option value="RECEITA">💰 Receita</option>
+                            <option value="FIXAS">🏠 Despesa Fixa</option>
+                            <option value="CARTAO">💳 Cartão</option>
+                            <option value="ALIMENTACAO">🍽 Alimentação</option>
+                            <option value="TRANSPORTE">🚗 Transporte</option>
+                            <option value="SAUDE">🏥 Saúde</option>
+                            <option value="LAZER">🎮 Lazer</option>
+                            <option value="OUTROS">📦 Outros</option>
                         </select>
                     </div>
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Observações</label>
-                    <input type="text" id="obs" class="w-full p-3 rounded-xl border border-slate-200 outline-blue-500" placeholder="Aluguel, Água, Luz, Internet...">
+                    <input type="text" id="obs" class="w-full p-3 rounded-2xl border border-slate-200 outline-none focus:border-green-400" placeholder="Detalhe opcional...">
                 </div>
-                <button type="submit" class="w-full btn-primary py-4 rounded-xl font-bold text-lg">Salvar</button>
+                <button type="submit" class="w-full py-4 rounded-2xl font-black text-lg text-white" style="background:#111827">Salvar</button>
             </div>
         </form>
     </div>
 </div>
 
-<!-- Chat IA -->
-<div id="chat-modal" class="fixed inset-0 bg-black/50 hidden items-end justify-center z-[70]">
+<!-- CHAT IA -->
+<div id="chat-modal" class="fixed inset-0 bg-black/60 hidden items-end justify-center z-[70]">
     <div class="bg-white rounded-t-3xl w-full max-w-lg" style="max-height:92vh;display:flex;flex-direction:column">
-        <div class="gradient-bg text-white p-4 rounded-t-3xl flex justify-between items-center flex-shrink-0">
-            <div class="flex items-center gap-2">
-                <i class="fas fa-robot text-lg"></i>
+        <div class="p-4 rounded-t-3xl flex justify-between items-center flex-shrink-0" style="background:#111827">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:#1a2535">
+                    <i class="fas fa-robot text-green-400"></i>
+                </div>
                 <div>
-                    <h3 class="font-bold text-sm">IA MeuDindin</h3>
-                    <p class="text-xs text-white/70">Fale ou escreva seus gastos • Gemini</p>
+                    <h3 class="font-black text-white text-sm">IA meu din din</h3>
+                    <p class="text-white/40 text-xs">Powered by Gemini • fale ou escreva</p>
                 </div>
             </div>
-            <button onclick="toggleChat()" class="text-white/80 hover:text-white"><i class="fas fa-times text-lg"></i></button>
+            <button onclick="toggleChat()" class="text-white/60 hover:text-white"><i class="fas fa-times text-lg"></i></button>
         </div>
-
-        <div id="chat-messages" class="flex-1 p-4 space-y-3 overflow-y-auto">
+        <div id="chat-messages" class="flex-1 p-4 space-y-3 overflow-y-auto bg-slate-50">
             <div class="flex gap-2">
-                <div class="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0 mt-1">
-                    <i class="fas fa-robot text-white text-xs"></i>
+                <div class="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 mt-1" style="background:#111827">
+                    <i class="fas fa-robot text-green-400 text-xs"></i>
                 </div>
                 <div class="msg-ai px-4 py-3 text-sm" style="max-width:85%">
-                    Olá! 👋 Sou a IA do MeuDindin.<br><br>
-                    Você pode me dizer seus gastos em linguagem natural ou por voz e eu adiciono automaticamente! Exemplos:<br>
-                    <span class="text-blue-600 font-medium">• "Gastei 50 reais no mercado"</span><br>
-                    <span class="text-blue-600 font-medium">• "Paguei 1200 de aluguel"</span><br>
-                    <span class="text-blue-600 font-medium">• "Meu aluguel aumentou 150 reais"</span><br>
-                    <span class="text-blue-600 font-medium">• "Recebi 3000 de salário"</span>
+                    Olá! 👋 Sou a IA do <strong>meu din din</strong>.<br><br>
+                    Fale ou escreva seus gastos e eu lanço automaticamente! Exemplos:<br>
+                    <span class="text-green-700 font-medium">• "Gastei 80 de gasolina"</span><br>
+                    <span class="text-green-700 font-medium">• "Paguei 1200 de aluguel"</span><br>
+                    <span class="text-green-700 font-medium">• "Meu aluguel aumentou 150"</span><br>
+                    <span class="text-green-700 font-medium">• "Recebi 3000 de salário"</span>
                 </div>
             </div>
         </div>
-
         <div class="p-4 border-t bg-white flex-shrink-0">
-            <!-- Quick actions -->
             <div class="flex gap-2 mb-3 flex-wrap">
-                <button onclick="quickAsk('Como estão meus gastos?')" class="text-xs bg-slate-100 text-slate-700 px-3 py-1 rounded-full">📊 Resumo</button>
-                <button onclick="quickAsk('Onde posso economizar?')" class="text-xs bg-slate-100 text-slate-700 px-3 py-1 rounded-full">💡 Economizar</button>
-                <button onclick="quickAsk('Como montar reserva de emergência?')" class="text-xs bg-slate-100 text-slate-700 px-3 py-1 rounded-full">🏦 Reserva</button>
+                <button onclick="quickAsk('Como estão meus gastos?')" class="text-xs bg-slate-100 text-slate-700 px-3 py-1.5 rounded-full font-semibold">📊 Resumo</button>
+                <button onclick="quickAsk('Onde posso economizar?')" class="text-xs bg-slate-100 text-slate-700 px-3 py-1.5 rounded-full font-semibold">💡 Economizar</button>
+                <button onclick="quickAsk('Como montar reserva de emergência?')" class="text-xs bg-slate-100 text-slate-700 px-3 py-1.5 rounded-full font-semibold">🏦 Reserva</button>
             </div>
             <div class="flex gap-2">
-                <button id="mic-btn" onclick="toggleVoice()" class="bg-slate-100 hover:bg-slate-200 w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 transition" title="Falar">
+                <button id="mic-chat-btn" onclick="toggleVoiceChat()" class="bg-slate-100 hover:bg-slate-200 w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 transition">
                     <i class="fas fa-microphone text-slate-600"></i>
                 </button>
-                <input id="chat-input" type="text" placeholder="Ex: gastei 80 reais de gasolina..." class="flex-1 p-3 rounded-xl border border-slate-200 outline-blue-500 text-sm" onkeydown="if(event.key==='Enter') sendMessage()">
-                <button onclick="sendMessage()" class="btn-primary w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0">
+                <input id="chat-input" type="text" placeholder="Ex: gastei 50 no mercado..." class="flex-1 p-3 rounded-2xl border border-slate-200 outline-none focus:border-green-400 text-sm" onkeydown="if(event.key==='Enter') sendMessage()">
+                <button onclick="sendMessage()" class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 text-white" style="background:#111827">
                     <i class="fas fa-paper-plane"></i>
                 </button>
             </div>
-            <p id="voice-status" class="text-xs text-slate-400 mt-1 text-center hidden">🎙️ Ouvindo... fale agora</p>
         </div>
     </div>
 </div>
@@ -214,312 +325,261 @@ if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').cat
 
 let transactions = JSON.parse(localStorage.getItem('meudindin_data')) || [
     { id:1, desc:'Salário', amount:5000, category:'RECEITA', obs:'Receita mensal', date:new Date().toISOString() },
-    { id:2, desc:'Aluguel', amount:1200, category:'FIXAS', obs:'Despesa fixa mensal', date:new Date().toISOString() },
-    { id:3, desc:'Cartão Visa', amount:450, category:'CARTAO', obs:'Parcela 1/3', date:new Date().toISOString() }
+    { id:2, desc:'Aluguel', amount:1200, category:'FIXAS', obs:'Despesa fixa', date:new Date().toISOString() },
+    { id:3, desc:'Cartão Visa', amount:450, category:'CARTAO', obs:'Parcela 1/3', date:new Date().toISOString() },
+    { id:4, desc:'Gasolina', amount:80, category:'TRANSPORTE', obs:'Posto Shell', date:new Date().toISOString() },
+    { id:5, desc:'Lanchonete', amount:25, category:'ALIMENTACAO', obs:'Almoco', date:new Date().toISOString() }
 ];
 let currentTab = 'all';
 let recognition = null;
 let isRecording = false;
+let voiceMode = 'overlay'; // 'overlay' ou 'chat'
 
-// ─── VOICE ───────────────────────────────────────────
-function toggleVoice() {
-    if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-        alert('Seu navegador não suporta reconhecimento de voz. Use o Chrome.');
-        return;
-    }
-    if (isRecording) { recognition.stop(); return; }
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    recognition = new SpeechRecognition();
+// CAT CONFIG
+const CAT_CONFIG = {
+    RECEITA:     { icon:'fa-arrow-up',    bg:'bg-green-100',  text:'text-green-600',  label:'Receita' },
+    FIXAS:       { icon:'fa-home',        bg:'bg-blue-100',   text:'text-blue-600',   label:'Fixa' },
+    CARTAO:      { icon:'fa-credit-card', bg:'bg-purple-100', text:'text-purple-600', label:'Cartão' },
+    ALIMENTACAO: { icon:'fa-utensils',    bg:'bg-yellow-100', text:'text-yellow-600', label:'Alimentação' },
+    TRANSPORTE:  { icon:'fa-car',         bg:'bg-orange-100', text:'text-orange-600', label:'Transporte' },
+    SAUDE:       { icon:'fa-heartbeat',   bg:'bg-emerald-100',text:'text-emerald-600',label:'Saúde' },
+    LAZER:       { icon:'fa-gamepad',     bg:'bg-pink-100',   text:'text-pink-600',   label:'Lazer' },
+    OUTROS:      { icon:'fa-box',         bg:'bg-slate-100',  text:'text-slate-600',  label:'Outros' }
+};
+
+// ── VOICE OVERLAY (botão central) ─────────────────────
+function toggleVoiceOverlay() {
+    voiceMode = 'overlay';
+    if (isRecording) { stopVoice(); return; }
+    startVoice();
+}
+function toggleVoiceChat() {
+    voiceMode = 'chat';
+    if (isRecording) { stopVoice(); return; }
+    startVoice();
+    document.getElementById('mic-chat-btn').classList.add('!bg-red-100');
+}
+function startVoice() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { alert('Use o Chrome para reconhecimento de voz.'); return; }
+    recognition = new SR();
     recognition.lang = 'pt-BR';
-    recognition.interimResults = false;
+    recognition.interimResults = true;
     recognition.maxAlternatives = 1;
     recognition.onstart = () => {
         isRecording = true;
-        document.getElementById('mic-btn').classList.add('recording');
-        document.getElementById('voice-status').classList.remove('hidden');
+        if (voiceMode === 'overlay') {
+            document.getElementById('voice-overlay').classList.add('active');
+            document.getElementById('mic-center').classList.add('recording');
+        }
     };
     recognition.onresult = (e) => {
-        const text = e.results[0][0].transcript;
-        document.getElementById('chat-input').value = text;
-        sendMessage();
+        const transcript = Array.from(e.results).map(r=>r[0].transcript).join('');
+        if (voiceMode === 'overlay') {
+            document.getElementById('voice-transcript').textContent = transcript;
+        } else {
+            document.getElementById('chat-input').value = transcript;
+        }
+        if (e.results[e.results.length-1].isFinal) {
+            document.getElementById('chat-input').value = transcript;
+            stopVoice();
+            sendMessage();
+            if (!document.getElementById('chat-modal').classList.contains('flex')) {
+                toggleChat();
+            }
+        }
     };
-    recognition.onend = () => {
-        isRecording = false;
-        document.getElementById('mic-btn').classList.remove('recording');
-        document.getElementById('voice-status').classList.add('hidden');
-    };
-    recognition.onerror = () => recognition.onend();
+    recognition.onend = () => stopVoice();
+    recognition.onerror = () => stopVoice();
     recognition.start();
 }
+function stopVoice() {
+    isRecording = false;
+    if (recognition) { try { recognition.stop(); } catch(e){} }
+    document.getElementById('voice-overlay').classList.remove('active');
+    document.getElementById('mic-center').classList.remove('recording');
+    document.getElementById('mic-chat-btn').classList.remove('!bg-red-100');
+    document.getElementById('voice-transcript').textContent = 'Fale seu gasto agora';
+}
 
-// ─── CONTEXT ─────────────────────────────────────────
+// ── GEMINI CONTEXT ─────────────────────────────────────
 function getFinancialContext() {
     const currency = document.getElementById('currency').value;
     const income = transactions.filter(t=>t.category==='RECEITA').reduce((s,t)=>s+t.amount,0);
     const expense = transactions.filter(t=>t.category!=='RECEITA').reduce((s,t)=>s+t.amount,0);
     const byCategory = {};
     transactions.filter(t=>t.category!=='RECEITA').forEach(t=>{ byCategory[t.category]=(byCategory[t.category]||0)+t.amount; });
-    return `CONTEXTO FINANCEIRO (moeda: ${currency}):
-- Receita: ${currency} ${income.toFixed(2)}
-- Despesas: ${currency} ${expense.toFixed(2)}
-- Saldo: ${currency} ${(income-expense).toFixed(2)}
-- Por categoria: ${JSON.stringify(byCategory)}
-- Transações: ${JSON.stringify(transactions.map(t=>({id:t.id,desc:t.desc,amount:t.amount,cat:t.category,obs:t.obs})))}`;
+    return `CONTEXTO (moeda: ${currency}): Receita=${currency}${income.toFixed(2)}, Despesas=${currency}${expense.toFixed(2)}, Saldo=${currency}${(income-expense).toFixed(2)}, Por categoria=${JSON.stringify(byCategory)}, Transações=${JSON.stringify(transactions.map(t=>({id:t.id,desc:t.desc,amount:t.amount,cat:t.category,obs:t.obs})))}`;
 }
 
-// ─── SEND MESSAGE ─────────────────────────────────────
+// ── SEND MESSAGE ───────────────────────────────────────
 async function sendMessage() {
     const input = document.getElementById('chat-input');
     const msg = input.value.trim();
     if (!msg) return;
     input.value = '';
+    if (!document.getElementById('chat-modal').classList.contains('flex')) toggleChat();
     appendMessage(msg, 'user');
-    const typingId = showTyping();
-
-    const systemPrompt = `Você é a IA financeira do app MeuDindin. Seu papel é:
-1. Detectar se o usuário está informando uma transação financeira (gasto, receita, atualização de valor)
-2. Se sim, extrair os dados e retornar um JSON de ação
-3. Se não for transação, responder normalmente como assistente financeiro
-
-CATEGORIAS DISPONÍVEIS: RECEITA, FIXAS, CARTAO, ALIMENTACAO, LAZER, OUTROS
-
-Se for uma transação, retorne OBRIGATORIAMENTE neste formato JSON (sem markdown, sem texto extra antes ou depois):
-{"action":"ADD","desc":"descrição","amount":valor_numerico,"category":"CATEGORIA","obs":"obs opcional","reply":"mensagem amigável confirmando"}
-
-Se for atualização de valor existente:
-{"action":"UPDATE","targetDesc":"nome aproximado da transação a atualizar","newAmount":novo_valor,"reply":"mensagem amigável confirmando"}
-
-Se for apenas uma pergunta ou conversa, retorne:
-{"action":"CHAT","reply":"sua resposta aqui"}
-
-Exemplos:
-- "gastei 80 de gasolina" → ADD, OUTROS, 80
-- "paguei 1200 de aluguel" → ADD, FIXAS, 1200
-- "comprei 50 reais no mercado" → ADD, ALIMENTACAO, 50
-- "recebi meu salário de 3000" → ADD, RECEITA, 3000
-- "cartão nubank 350 reais" → ADD, CARTAO, 350
-- "meu aluguel aumentou 100 reais" → UPDATE, aluguel, novo valor = atual + 100
-- "como estão meus gastos?" → CHAT
-
+    const tid = showTyping();
+    const prompt = `Você é a IA financeira do app "meu din din". Detecte se é uma transação ou conversa.
+CATEGORIAS: RECEITA, FIXAS, CARTAO, ALIMENTACAO, TRANSPORTE, SAUDE, LAZER, OUTROS
+Se transação ADD: {"action":"ADD","desc":"...","amount":0,"category":"...","obs":"..."}
+Se UPDATE de existente: {"action":"UPDATE","targetDesc":"...","newAmount":0}
+Se conversa: {"action":"CHAT","reply":"..."}
+Retorne APENAS JSON válido sem markdown.
 ${getFinancialContext()}
-
-Mensagem do usuário: ${msg}`;
-
+Mensagem: ${msg}`;
     try {
-        const res = await fetch(GEMINI_URL, {
-            method:'POST',
-            headers:{'Content-Type':'application/json'},
-            body: JSON.stringify({contents:[{parts:[{text:systemPrompt}]}]})
-        });
+        const res = await fetch(GEMINI_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})});
         const data = await res.json();
-        removeTyping(typingId);
-        let raw = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-        // limpa possível markdown ```json
-        raw = raw.replace(/```json/g,'').replace(/```/g,'').trim();
-        let parsed;
-        try { parsed = JSON.parse(raw); } catch(e) { parsed = {action:'CHAT', reply: raw || 'Não entendi. Tente novamente!'}; }
-
-        if (parsed.action === 'ADD') {
-            showConfirm(parsed);
-        } else if (parsed.action === 'UPDATE') {
-            handleUpdate(parsed);
-        } else {
-            appendMessage(parsed.reply, 'ai');
-        }
-    } catch(e) {
-        removeTyping(typingId);
-        appendMessage('Erro de conexão. Tente novamente!', 'ai');
-    }
+        removeTyping(tid);
+        let raw = (data?.candidates?.[0]?.content?.parts?.[0]?.text||'').replace(/```json/g,'').replace(/```/g,'').trim();
+        let parsed; try { parsed=JSON.parse(raw); } catch(e){ parsed={action:'CHAT',reply:raw||'Não entendi. Tente novamente!'}; }
+        if (parsed.action==='ADD') showConfirm(parsed);
+        else if (parsed.action==='UPDATE') handleUpdate(parsed);
+        else appendMessage(parsed.reply,'ai');
+    } catch(e) { removeTyping(tid); appendMessage('Erro de conexão. Tente novamente!','ai'); }
 }
 
-// ─── CONFIRM CARD (antes de adicionar) ───────────────
 function showConfirm(parsed) {
     const currency = document.getElementById('currency').value;
+    const cid = 'c'+Date.now();
     const container = document.getElementById('chat-messages');
-    const confirmId = 'confirm-' + Date.now();
-    const div = document.createElement('div');
-    div.id = confirmId;
-    div.className = 'flex gap-2';
-    div.innerHTML = `
-        <div class="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0 mt-1">
-            <i class="fas fa-robot text-white text-xs"></i>
+    const d = document.createElement('div'); d.id=cid; d.className='flex gap-2';
+    const safeP = JSON.stringify(parsed).replace(/"/g,'&quot;');
+    d.innerHTML=`<div class="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 mt-1" style="background:#111827"><i class="fas fa-robot text-green-400 text-xs"></i></div>
+    <div class="confirm-card p-3 text-sm flex-1">
+        <p class="font-bold text-blue-800 mb-2">✅ Confirma o lançamento?</p>
+        <div class="bg-white rounded-xl p-2 mb-3 space-y-1">
+            <p><span class="text-slate-400">Descrição:</span> <strong>${parsed.desc}</strong></p>
+            <p><span class="text-slate-400">Valor:</span> <strong class="${parsed.category==='RECEITA'?'text-green-600':'text-red-600'}">${currency} ${parseFloat(parsed.amount).toLocaleString('pt-BR',{minimumFractionDigits:2})}</strong></p>
+            <p><span class="text-slate-400">Categoria:</span> <span class="cat-badge cat-${parsed.category}">${parsed.category}</span></p>
+            ${parsed.obs?`<p><span class="text-slate-400">Obs:</span> ${parsed.obs}</p>`:''}
         </div>
-        <div class="confirm-card p-3 text-sm flex-1">
-            <p class="font-bold text-blue-800 mb-2">✅ Entendi! Confirma este lançamento?</p>
-            <div class="bg-white rounded-lg p-2 mb-3 space-y-1">
-                <p><span class="text-slate-500">Descrição:</span> <strong>${parsed.desc}</strong></p>
-                <p><span class="text-slate-500">Valor:</span> <strong class="${parsed.category==='RECEITA'?'text-green-600':'text-red-600'}">${currency} ${parseFloat(parsed.amount).toLocaleString('pt-BR',{minimumFractionDigits:2})}</strong></p>
-                <p><span class="text-slate-500">Categoria:</span> <strong>${parsed.category}</strong></p>
-                ${parsed.obs ? `<p><span class="text-slate-500">Obs:</span> ${parsed.obs}</p>` : ''}
-            </div>
-            <div class="flex gap-2">
-                <button onclick="confirmAdd('${confirmId}', ${JSON.stringify(parsed).replace(/'/g,"&#39;")})" class="flex-1 bg-blue-600 text-white text-xs font-bold py-2 rounded-lg">✅ Confirmar</button>
-                <button onclick="document.getElementById('${confirmId}').remove()" class="flex-1 bg-slate-200 text-slate-700 text-xs font-bold py-2 rounded-lg">❌ Cancelar</button>
-            </div>
-        </div>`;
-    container.appendChild(div);
-    container.scrollTop = container.scrollHeight;
+        <div class="flex gap-2">
+            <button onclick="confirmAdd('${cid}','${safeP}')" class="flex-1 text-white text-xs font-bold py-2 rounded-xl" style="background:#111827">✅ Confirmar</button>
+            <button onclick="document.getElementById('${cid}').remove()" class="flex-1 bg-slate-100 text-slate-600 text-xs font-bold py-2 rounded-xl">❌ Cancelar</button>
+        </div>
+    </div>`;
+    container.appendChild(d); container.scrollTop=container.scrollHeight;
 }
 
-function confirmAdd(confirmId, parsed) {
-    document.getElementById(confirmId)?.remove();
-    const newT = {
-        id: Date.now(),
-        desc: parsed.desc,
-        amount: parseFloat(parsed.amount),
-        category: parsed.category,
-        obs: parsed.obs || '',
-        date: new Date().toISOString()
-    };
-    transactions.push(newT);
+function confirmAdd(cid, safeP) {
+    document.getElementById(cid)?.remove();
+    const parsed = JSON.parse(safeP.replace(/&quot;/g,'"'));
+    transactions.push({id:Date.now(),desc:parsed.desc,amount:parseFloat(parsed.amount),category:parsed.category,obs:parsed.obs||'',date:new Date().toISOString()});
     saveToLocal();
-    appendMessage(`✅ Lançado! **${parsed.desc}** adicionado com sucesso.`, 'action');
+    appendMessage(`✅ **${parsed.desc}** adicionado com sucesso!`,'action');
 }
 
 function handleUpdate(parsed) {
-    const match = transactions.find(t => t.desc.toLowerCase().includes(parsed.targetDesc.toLowerCase()));
-    if (!match) {
-        appendMessage(`Não encontrei uma transação chamada "${parsed.targetDesc}". Verifique o nome e tente novamente.`, 'ai');
-        return;
-    }
+    const match = transactions.find(t=>t.desc.toLowerCase().includes(parsed.targetDesc.toLowerCase()));
+    if (!match) { appendMessage(`Não encontrei "${parsed.targetDesc}". Tente novamente.`,'ai'); return; }
     const currency = document.getElementById('currency').value;
-    const oldAmount = match.amount;
+    const old = match.amount;
     match.amount = parseFloat(parsed.newAmount);
     saveToLocal();
-    appendMessage(`✅ Atualizado! **${match.desc}**: ${currency} ${oldAmount.toLocaleString('pt-BR',{minimumFractionDigits:2})} → ${currency} ${match.amount.toLocaleString('pt-BR',{minimumFractionDigits:2})}`, 'action');
+    appendMessage(`✅ **${match.desc}** atualizado: ${currency} ${old.toLocaleString('pt-BR',{minimumFractionDigits:2})} → ${currency} ${match.amount.toLocaleString('pt-BR',{minimumFractionDigits:2})}`,'action');
 }
 
-function quickAsk(q) {
-    document.getElementById('chat-input').value = q;
-    sendMessage();
-}
+function quickAsk(q){document.getElementById('chat-input').value=q;sendMessage();}
 
-function appendMessage(text, type) {
-    const container = document.getElementById('chat-messages');
-    const div = document.createElement('div');
-    const isUser = type === 'user';
-    const isAction = type === 'action';
-    div.className = `flex gap-2 ${isUser ? 'justify-end' : ''}`;
-    const formattedText = text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
-    if (isUser) {
-        div.innerHTML = `<div class="msg-user px-4 py-3 text-sm" style="max-width:85%">${formattedText}</div>`;
-    } else if (isAction) {
-        div.innerHTML = `
-            <div class="w-7 h-7 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-1"><i class="fas fa-check text-white text-xs"></i></div>
-            <div class="msg-action px-4 py-3 text-sm" style="max-width:85%">${formattedText}</div>`;
-    } else {
-        div.innerHTML = `
-            <div class="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0 mt-1"><i class="fas fa-robot text-white text-xs"></i></div>
-            <div class="msg-ai px-4 py-3 text-sm" style="max-width:85%;white-space:pre-line">${formattedText}</div>`;
-    }
-    container.appendChild(div);
-    container.scrollTop = container.scrollHeight;
+function appendMessage(text,type){
+    const c=document.getElementById('chat-messages');
+    const d=document.createElement('div');
+    const isUser=type==='user', isAction=type==='action';
+    d.className=`flex gap-2 ${isUser?'justify-end':''}`;
+    const ft=text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+    if(isUser){d.innerHTML=`<div class="msg-user px-4 py-3 text-sm" style="max-width:85%">${ft}</div>`;}
+    else if(isAction){d.innerHTML=`<div class="w-7 h-7 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-1"><i class="fas fa-check text-white text-xs"></i></div><div class="msg-action px-4 py-3 text-sm" style="max-width:85%">${ft}</div>`;}
+    else{d.innerHTML=`<div class="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 mt-1" style="background:#111827"><i class="fas fa-robot text-green-400 text-xs"></i></div><div class="msg-ai px-4 py-3 text-sm" style="max-width:85%;white-space:pre-line">${ft}</div>`;}
+    c.appendChild(d); c.scrollTop=c.scrollHeight;
 }
+function showTyping(){
+    const id='t'+Date.now(), c=document.getElementById('chat-messages'), d=document.createElement('div');
+    d.id=id; d.className='flex gap-2';
+    d.innerHTML=`<div class="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0" style="background:#111827"><i class="fas fa-robot text-green-400 text-xs"></i></div><div class="msg-ai px-4 py-3 flex gap-1 items-center"><span class="typing-dot w-2 h-2 bg-slate-400 rounded-full inline-block"></span><span class="typing-dot w-2 h-2 bg-slate-400 rounded-full inline-block"></span><span class="typing-dot w-2 h-2 bg-slate-400 rounded-full inline-block"></span></div>`;
+    c.appendChild(d); c.scrollTop=c.scrollHeight; return id;
+}
+function removeTyping(id){document.getElementById(id)?.remove();}
+function toggleChat(){const m=document.getElementById('chat-modal');m.classList.toggle('hidden');m.classList.toggle('flex');}
 
-function showTyping() {
-    const id = 'typing-' + Date.now();
-    const container = document.getElementById('chat-messages');
-    const div = document.createElement('div');
-    div.id = id; div.className = 'flex gap-2';
-    div.innerHTML = `<div class="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0"><i class="fas fa-robot text-white text-xs"></i></div>
-        <div class="msg-ai px-4 py-3 flex gap-1 items-center">
-            <span class="typing-dot w-2 h-2 bg-slate-400 rounded-full inline-block"></span>
-            <span class="typing-dot w-2 h-2 bg-slate-400 rounded-full inline-block"></span>
-            <span class="typing-dot w-2 h-2 bg-slate-400 rounded-full inline-block"></span></div>`;
-    container.appendChild(div);
-    container.scrollTop = container.scrollHeight;
-    return id;
-}
-function removeTyping(id) { document.getElementById(id)?.remove(); }
-
-function toggleChat() {
-    const m = document.getElementById('chat-modal');
-    m.classList.toggle('hidden');
-    m.classList.toggle('flex');
-}
-
-// ─── CRUD ─────────────────────────────────────────────
-function saveToLocal() {
-    localStorage.setItem('meudindin_data', JSON.stringify(transactions));
-    render(); updateAI();
-}
-function toggleModal() {
-    const m = document.getElementById('modal');
-    m.classList.toggle('hidden'); m.classList.toggle('flex');
-    document.getElementById('transaction-form').reset();
-}
-function saveTransaction(e) {
+// ── CRUD ──────────────────────────────────────────────
+function saveToLocal(){localStorage.setItem('meudindin_data',JSON.stringify(transactions));render();updateAI();}
+function toggleModal(){const m=document.getElementById('modal');m.classList.toggle('hidden');m.classList.toggle('flex');document.getElementById('transaction-form').reset();}
+function saveTransaction(e){
     e.preventDefault();
-    transactions.push({ id:Date.now(), desc:document.getElementById('desc').value, amount:parseFloat(document.getElementById('amount').value), category:document.getElementById('category').value, obs:document.getElementById('obs').value, date:new Date().toISOString() });
-    saveToLocal(); toggleModal();
+    transactions.push({id:Date.now(),desc:document.getElementById('desc').value,amount:parseFloat(document.getElementById('amount').value),category:document.getElementById('category').value,obs:document.getElementById('obs').value,date:new Date().toISOString()});
+    saveToLocal();toggleModal();
 }
-function deleteTransaction(id) {
-    if (!confirm('Excluir esta transação?')) return;
-    transactions = transactions.filter(t=>t.id!==id);
-    saveToLocal();
-}
-function switchTab(tab, btn) {
-    currentTab = tab;
-    document.querySelectorAll('.tab-btn').forEach(b=>{ b.classList.remove('bg-blue-100','text-blue-700'); b.classList.add('bg-white','text-slate-600'); });
-    btn.classList.remove('bg-white','text-slate-600'); btn.classList.add('bg-blue-100','text-blue-700');
+function deleteTransaction(id){if(!confirm('Excluir?'))return;transactions=transactions.filter(t=>t.id!==id);saveToLocal();}
+function switchTab(tab,btn){
+    currentTab=tab;
+    document.querySelectorAll('.tab-btn').forEach(b=>{b.classList.remove('active');});
+    btn.classList.add('active');
     render();
 }
-function updateSummary() {
-    const currency = document.getElementById('currency').value;
-    const income = transactions.filter(t=>t.category==='RECEITA').reduce((s,t)=>s+t.amount,0);
-    const expense = transactions.filter(t=>t.category!=='RECEITA').reduce((s,t)=>s+t.amount,0);
-    const fmt = v=>`${currency} ${v.toLocaleString('pt-BR',{minimumFractionDigits:2})}`;
-    document.getElementById('total-income').innerText = fmt(income);
-    document.getElementById('total-expenses').innerText = fmt(expense);
-    document.getElementById('total-balance').innerText = fmt(income-expense);
+function updateSummary(){
+    const cur=document.getElementById('currency').value;
+    const income=transactions.filter(t=>t.category==='RECEITA').reduce((s,t)=>s+t.amount,0);
+    const expense=transactions.filter(t=>t.category!=='RECEITA').reduce((s,t)=>s+t.amount,0);
+    const fmt=v=>`${cur} ${v.toLocaleString('pt-BR',{minimumFractionDigits:2})}`;
+    document.getElementById('total-income').innerText=fmt(income);
+    document.getElementById('total-expenses').innerText=fmt(expense);
+    document.getElementById('total-balance').innerText=fmt(income-expense);
 }
-function render() {
-    const list = document.getElementById('transaction-list');
-    list.innerHTML = '';
-    const currency = document.getElementById('currency').value;
-    const filtered = currentTab==='all' ? transactions : transactions.filter(t=>t.category===currentTab);
-    if (!filtered.length) { list.innerHTML='<p class="text-center text-slate-400 py-8">Nenhuma transação encontrada.</p>'; updateSummary(); return; }
+function render(){
+    const list=document.getElementById('transaction-list');
+    list.innerHTML='';
+    const cur=document.getElementById('currency').value;
+    const filtered=currentTab==='all'?transactions:transactions.filter(t=>t.category===currentTab);
+    if(!filtered.length){list.innerHTML='<p class="text-center text-slate-400 py-10">Nenhuma transação encontrada.</p>';updateSummary();return;}
     filtered.sort((a,b)=>new Date(b.date)-new Date(a.date)).forEach(t=>{
-        const isIncome = t.category==='RECEITA';
-        const div = document.createElement('div');
-        div.className = 'card p-4 flex justify-between items-center';
-        div.innerHTML = `
+        const isIncome=t.category==='RECEITA';
+        const cfg=CAT_CONFIG[t.category]||CAT_CONFIG.OUTROS;
+        const div=document.createElement('div');
+        div.className='card p-4 flex justify-between items-center';
+        div.innerHTML=`
             <div class="flex items-center gap-3">
-                <div class="${isIncome?'bg-green-100 text-green-600':'bg-red-100 text-red-600'} w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
-                    <i class="fas ${isIncome?'fa-arrow-up':'fa-arrow-down'}"></i></div>
-                <div><h4 class="font-bold text-slate-800">${t.desc}</h4>
-                <p class="text-xs text-slate-400">${t.category}${t.obs?' · '+t.obs:''}</p></div>
+                <div class="${cfg.bg} ${cfg.text} w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0">
+                    <i class="fas ${cfg.icon} text-base"></i>
+                </div>
+                <div>
+                    <h4 class="font-bold text-slate-800 text-sm">${t.desc}</h4>
+                    <div class="flex items-center gap-2 mt-0.5">
+                        <span class="cat-badge cat-${t.category}">${cfg.label}</span>
+                        ${t.obs?`<span class="text-xs text-slate-400">${t.obs}</span>`:''}
+                    </div>
+                </div>
             </div>
             <div class="text-right flex-shrink-0 ml-2">
-                <p class="font-bold ${isIncome?'text-green-600':'text-red-600'}">${isIncome?'+':'-'} ${currency} ${t.amount.toLocaleString('pt-BR',{minimumFractionDigits:2})}</p>
-                <button onclick="deleteTransaction(${t.id})" class="text-[10px] text-red-400 hover:text-red-600 uppercase font-bold tracking-tighter">Excluir</button>
+                <p class="font-black text-base ${isIncome?'text-green-500':'text-red-500'}">${isIncome?'+':'-'} ${cur} ${t.amount.toLocaleString('pt-BR',{minimumFractionDigits:2})}</p>
+                <button onclick="deleteTransaction(${t.id})" class="text-[10px] text-slate-300 hover:text-red-400 uppercase font-bold">excluir</button>
             </div>`;
         list.appendChild(div);
     });
     updateSummary();
 }
-function updateAI() {
-    const aiBox = document.getElementById('ai-box');
-    const aiText = document.getElementById('ai-text');
-    const expense = transactions.filter(t=>t.category!=='RECEITA').reduce((s,t)=>s+t.amount,0);
-    const income = transactions.filter(t=>t.category==='RECEITA').reduce((s,t)=>s+t.amount,0);
+function updateAI(){
+    const aiBox=document.getElementById('ai-box'), aiText=document.getElementById('ai-text');
+    const expense=transactions.filter(t=>t.category!=='RECEITA').reduce((s,t)=>s+t.amount,0);
+    const income=transactions.filter(t=>t.category==='RECEITA').reduce((s,t)=>s+t.amount,0);
     aiBox.classList.remove('hidden');
-    if (!income) { aiText.innerText='Adicione sua receita para receber dicas da IA!'; return; }
-    if (expense>income) aiText.innerText='⚠️ Gastos superaram a receita! Fale com a IA para ajuda.';
-    else if (expense>income*0.7) aiText.innerText='💡 Mais de 70% da renda gasta. A IA pode sugerir cortes.';
-    else if (expense<income*0.5) aiText.innerText='🎉 Ótimo! Menos de 50% gasto. Pergunte à IA onde investir.';
+    if(!income){aiText.innerText='Adicione sua receita para receber dicas da IA!';return;}
+    if(expense>income)aiText.innerText='⚠️ Gastos superaram a receita! Toque em IA para ajuda.';
+    else if(expense>income*0.7)aiText.innerText='💡 Mais de 70% da renda gasta. A IA pode sugerir cortes.';
+    else if(expense<income*0.5)aiText.innerText='🎉 Ótimo controle! Pergunte à IA onde investir o saldo.';
     else aiText.innerText='✅ Finanças equilibradas. Quer dicas personalizadas?';
 }
-function shareWhatsApp() {
-    const currency = document.getElementById('currency').value;
-    const income = transactions.filter(t=>t.category==='RECEITA').reduce((s,t)=>s+t.amount,0);
-    const expense = transactions.filter(t=>t.category!=='RECEITA').reduce((s,t)=>s+t.amount,0);
-    const fmt = v=>`${currency} ${v.toLocaleString('pt-BR',{minimumFractionDigits:2})}`;
-    let text=`*💰 MeuDindin - Resumo do Mês*\n\n✅ Receitas: ${fmt(income)}\n❌ Despesas: ${fmt(expense)}\n─────────────────\n💵 Saldo: ${fmt(income-expense)}\n\n_meu-dindin.pages.dev · Hallz Branding_`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`,'_blank');
+function shareWhatsApp(){
+    const cur=document.getElementById('currency').value;
+    const income=transactions.filter(t=>t.category==='RECEITA').reduce((s,t)=>s+t.amount,0);
+    const expense=transactions.filter(t=>t.category!=='RECEITA').reduce((s,t)=>s+t.amount,0);
+    const fmt=v=>`${cur} ${v.toLocaleString('pt-BR',{minimumFractionDigits:2})}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(`*💰 meu din din - Resumo do Mês*\n\n✅ Receitas: ${fmt(income)}\n❌ Despesas: ${fmt(expense)}\n─────────────────\n💵 Saldo: ${fmt(income-expense)}\n\n_meu-dindin.pages.dev · Hallz Branding_`)}`,'_blank');
 }
-
-render(); updateAI();
+document.getElementById('currency').addEventListener('change',updateSummary);
+render();updateAI();
 </script>
 </body>
 </html>
