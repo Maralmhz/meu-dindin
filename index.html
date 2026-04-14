@@ -4,6 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MeuDindin 💰</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="MeuDindin">
+    <!-- Substitua os src abaixo pela URL da sua logo após criar -->
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <link rel="icon" type="image/png" href="icons/icon-192.png">
+
+    <!-- Open Graph (miniatura no WhatsApp/redes) -->
+    <meta property="og:title" content="MeuDindin 💰">
+    <meta property="og:description" content="App de controle financeiro pessoal simples e bonito">
+    <meta property="og:image" content="icons/og-thumb.png">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://meu-dindin.pages.dev/">
+    <meta name="twitter:card" content="summary_large_image">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -14,6 +33,7 @@
         .btn-primary:hover { background: #1d4ed8; }
         .gradient-bg { background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); }
         input[type="number"]::-webkit-inner-spin-button { display: none; }
+        .logo-img { height: 36px; width: auto; object-fit: contain; }
     </style>
 </head>
 <body class="pb-24">
@@ -21,6 +41,8 @@
     <header class="gradient-bg text-white p-6 pb-20">
         <div class="max-w-4xl mx-auto flex justify-between items-center">
             <h1 class="text-2xl font-bold flex items-center gap-2">
+                <!-- Logo: quando você enviar o arquivo, coloque-o na pasta /icons/ como logo.png e descomente a linha abaixo -->
+                <!-- <img src="icons/logo.png" alt="MeuDindin" class="logo-img"> -->
                 <span class="bg-white text-blue-600 p-2 rounded-lg text-xl">💰</span>
                 MeuDindin
             </h1>
@@ -30,7 +52,7 @@
                     <option value="$" class="text-black">$ Dollar</option>
                     <option value="€" class="text-black">€ Euro</option>
                 </select>
-                <button onclick="shareWhatsApp()" class="bg-white/20 hover:bg-white/30 p-2 rounded-lg transition">
+                <button onclick="shareWhatsApp()" class="bg-white/20 hover:bg-white/30 p-2 rounded-lg transition" title="Compartilhar no WhatsApp">
                     <i class="fab fa-whatsapp"></i>
                 </button>
             </div>
@@ -63,42 +85,42 @@
                 </div>
                 <div>
                     <h4 class="font-bold text-blue-800 text-sm">Dica da IA MeuDindin</h4>
-                    <p id="ai-text" class="text-blue-700 text-sm mt-1">Analisando suas finanças... que tal economizar nas despesas variáveis este mês?</p>
+                    <p id="ai-text" class="text-blue-700 text-sm mt-1">Analisando suas finanças...</p>
                 </div>
             </div>
         </div>
 
         <!-- Tabs -->
         <div class="flex gap-2 mb-4 overflow-x-auto pb-2">
-            <button onclick="switchTab('all')" class="tab-btn active bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap">Tudo</button>
-            <button onclick="switchTab('FIXAS')" class="tab-btn bg-white text-slate-600 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap">Fixas</button>
-            <button onclick="switchTab('CARTAO')" class="tab-btn bg-white text-slate-600 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap">Cartões</button>
-            <button onclick="switchTab('LAZER')" class="tab-btn bg-white text-slate-600 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap">Lazer</button>
-            <button onclick="switchTab('RECEITA')" class="tab-btn bg-white text-slate-600 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap">Receitas</button>
+            <button onclick="switchTab('all', this)" class="tab-btn bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap">Tudo</button>
+            <button onclick="switchTab('FIXAS', this)" class="tab-btn bg-white text-slate-600 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap">Fixas</button>
+            <button onclick="switchTab('CARTAO', this)" class="tab-btn bg-white text-slate-600 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap">Cartões</button>
+            <button onclick="switchTab('LAZER', this)" class="tab-btn bg-white text-slate-600 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap">Lazer</button>
+            <button onclick="switchTab('RECEITA', this)" class="tab-btn bg-white text-slate-600 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap">Receitas</button>
         </div>
 
         <!-- Transaction List -->
         <div id="transaction-list" class="space-y-3 mb-6">
-            <!-- Items injected by JS -->
         </div>
 
-        <!-- Add Button (Floating) -->
+        <!-- Floating Add Button -->
         <button onclick="toggleModal()" class="fixed bottom-24 right-6 w-14 h-14 gradient-bg text-white rounded-full shadow-lg flex items-center justify-center text-2xl z-40">
             <i class="fas fa-plus"></i>
         </button>
     </main>
 
     <!-- Footer Promo -->
-    <footer class="fixed bottom-0 left-0 right-0 bg-white border-t p-4 text-center z-50">
-        <div class="flex flex-col items-center gap-1">
-            <p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Powered by Hallz Branding</p>
+    <footer class="fixed bottom-0 left-0 right-0 bg-white border-t p-3 text-center z-50">
+        <div class="flex items-center justify-center gap-2">
+            <span class="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Powered by Hallz Branding</span>
+            <span class="text-slate-300">·</span>
             <a href="https://maralmhz.github.io/checkauto/" target="_blank" class="text-blue-600 text-xs font-semibold hover:underline flex items-center gap-1">
-                Use o CheckAuto 🚗 <i class="fas fa-external-link-alt text-[8px]"></i>
+                CheckAuto 🚗 <i class="fas fa-external-link-alt text-[8px]"></i>
             </a>
         </div>
     </footer>
 
-    <!-- Modal -->
+    <!-- Add Transaction Modal -->
     <div id="modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-[60]">
         <div class="bg-white rounded-2xl w-full max-w-md p-6">
             <div class="flex justify-between items-center mb-6">
@@ -130,7 +152,7 @@
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Observações</label>
-                        <input type="text" id="obs" class="w-full p-3 rounded-xl border border-slate-200 outline-blue-500" placeholder="Opcional...">
+                        <input type="text" id="obs" class="w-full p-3 rounded-xl border border-slate-200 outline-blue-500" placeholder="Aluguel, Água, Luz, Internet...">
                     </div>
                     <button type="submit" class="w-full btn-primary py-4 rounded-xl font-bold text-lg">Salvar</button>
                 </div>
@@ -139,9 +161,14 @@
     </div>
 
     <script>
+        // ---- PWA Install ----
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(() => {});
+        }
+
         let transactions = JSON.parse(localStorage.getItem('meudindin_data')) || [
-            { id: 1, desc: 'Salário', amount: 5000, category: 'RECEITA', obs: 'Receita inicial', date: new Date().toISOString() },
-            { id: 2, desc: 'Aluguel', amount: 1200, category: 'FIXAS', obs: 'Água, Luz incluídos', date: new Date().toISOString() },
+            { id: 1, desc: 'Salário', amount: 5000, category: 'RECEITA', obs: 'Receita mensal', date: new Date().toISOString() },
+            { id: 2, desc: 'Aluguel', amount: 1200, category: 'FIXAS', obs: 'Despesa fixa mensal', date: new Date().toISOString() },
             { id: 3, desc: 'Cartão Visa', amount: 450, category: 'CARTAO', obs: 'Parcela 1/3', date: new Date().toISOString() }
         ];
 
@@ -162,77 +189,72 @@
 
         function saveTransaction(e) {
             e.preventDefault();
-            const desc = document.getElementById('desc').value;
-            const amount = parseFloat(document.getElementById('amount').value);
-            const category = document.getElementById('category').value;
-            const obs = document.getElementById('obs').value;
-
             const newT = {
                 id: Date.now(),
-                desc,
-                amount,
-                category,
-                obs,
+                desc: document.getElementById('desc').value,
+                amount: parseFloat(document.getElementById('amount').value),
+                category: document.getElementById('category').value,
+                obs: document.getElementById('obs').value,
                 date: new Date().toISOString()
             };
-
             transactions.push(newT);
             saveToLocal();
             toggleModal();
         }
 
         function deleteTransaction(id) {
+            if (!confirm('Excluir esta transação?')) return;
             transactions = transactions.filter(t => t.id !== id);
             saveToLocal();
         }
 
-        function switchTab(tab) {
+        function switchTab(tab, btn) {
             currentTab = tab;
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('bg-blue-100', 'text-blue-700');
-                btn.classList.add('bg-white', 'text-slate-600');
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.classList.remove('bg-blue-100', 'text-blue-700');
+                b.classList.add('bg-white', 'text-slate-600');
             });
-            event.target.classList.remove('bg-white', 'text-slate-600');
-            event.target.classList.add('bg-blue-100', 'text-blue-700');
+            btn.classList.remove('bg-white', 'text-slate-600');
+            btn.classList.add('bg-blue-100', 'text-blue-700');
             render();
         }
 
         function updateSummary() {
             const currency = document.getElementById('currency').value;
-            const income = transactions.filter(t => t.category === 'RECEITA').reduce((sum, t) => sum + t.amount, 0);
-            const expense = transactions.filter(t => t.category !== 'RECEITA').reduce((sum, t) => sum + t.amount, 0);
-            const balance = income - expense;
-
-            document.getElementById('total-income').innerText = `${currency} ${income.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-            document.getElementById('total-expenses').innerText = `${currency} ${expense.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-            document.getElementById('total-balance').innerText = `${currency} ${balance.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            const income = transactions.filter(t => t.category === 'RECEITA').reduce((s, t) => s + t.amount, 0);
+            const expense = transactions.filter(t => t.category !== 'RECEITA').reduce((s, t) => s + t.amount, 0);
+            const fmt = v => `${currency} ${v.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            document.getElementById('total-income').innerText = fmt(income);
+            document.getElementById('total-expenses').innerText = fmt(expense);
+            document.getElementById('total-balance').innerText = fmt(income - expense);
         }
 
         function render() {
             const list = document.getElementById('transaction-list');
             list.innerHTML = '';
             const currency = document.getElementById('currency').value;
-
-            const filtered = currentTab === 'all' 
-                ? transactions 
-                : transactions.filter(t => t.category === currentTab);
-
+            const filtered = currentTab === 'all' ? transactions : transactions.filter(t => t.category === currentTab);
+            if (!filtered.length) {
+                list.innerHTML = '<p class="text-center text-slate-400 py-8">Nenhuma transação encontrada.</p>';
+                updateSummary();
+                return;
+            }
             filtered.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(t => {
                 const isIncome = t.category === 'RECEITA';
                 const div = document.createElement('div');
-                div.className = 'card p-4 flex justify-between items-center animate-fade-in';
+                div.className = 'card p-4 flex justify-between items-center';
                 div.innerHTML = `
                     <div class="flex items-center gap-3">
-                        <div class="${isIncome ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'} w-10 h-10 rounded-full flex items-center justify-center">
+                        <div class="${isIncome ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'} w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
                             <i class="fas ${isIncome ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
                         </div>
                         <div>
                             <h4 class="font-bold text-slate-800">${t.desc}</h4>
-                            <p class="text-xs text-slate-400">${t.category} • ${t.obs || 'Sem obs.'}</p>
+                            <p class="text-xs text-slate-400">${t.category} ${t.obs ? '· ' + t.obs : ''}</p>
                         </div>
                     </div>
-                    <div class="text-right">
-                        <p class="font-bold ${isIncome ? 'text-green-600' : 'text-slate-800'}">${isIncome ? '+' : '-'} ${currency} ${t.amount.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</p>
+                    <div class="text-right flex-shrink-0 ml-2">
+                        <p class="font-bold ${isIncome ? 'text-green-600' : 'text-red-600'}">${isIncome ? '+' : '-'} ${currency} ${t.amount.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</p>
                         <button onclick="deleteTransaction(${t.id})" class="text-[10px] text-red-400 hover:text-red-600 uppercase font-bold tracking-tighter">Excluir</button>
                     </div>
                 `;
@@ -244,39 +266,36 @@
         async function updateAI() {
             const aiBox = document.getElementById('ai-box');
             const aiText = document.getElementById('ai-text');
-            
-            // Simulação de lógica de IA baseada nos dados enquanto não tem chave de API
-            const expense = transactions.filter(t => t.category !== 'RECEITA').reduce((sum, t) => sum + t.amount, 0);
-            const income = transactions.filter(t => t.category === 'RECEITA').reduce((sum, t) => sum + t.amount, 0);
-            
+            const expense = transactions.filter(t => t.category !== 'RECEITA').reduce((s, t) => s + t.amount, 0);
+            const income = transactions.filter(t => t.category === 'RECEITA').reduce((s, t) => s + t.amount, 0);
             aiBox.classList.remove('hidden');
-            
+            if (!income) { aiText.innerText = 'Adicione sua receita mensal para receber dicas personalizadas da IA!'; return; }
             if (expense > income) {
-                aiText.innerText = "Alerta: Seus gastos superaram sua receita! Considere cortar despesas de lazer ou cartões para equilibrar o mês.";
-            } else if (expense > (income * 0.7)) {
-                aiText.innerText = "Você está usando mais de 70% da sua renda. Que tal tentar poupar pelo menos 10% para uma reserva de emergência?";
+                aiText.innerText = '⚠️ Alerta: Seus gastos superaram sua receita! Considere cortar despesas de lazer ou cartões.';
+            } else if (expense > income * 0.7) {
+                aiText.innerText = '💡 Você está usando mais de 70% da sua renda. Tente poupar pelo menos 10% para reserva de emergência.';
+            } else if (expense < income * 0.5) {
+                aiText.innerText = '🎉 Parabéns! Você está gastando menos de 50% da renda. Considere investir o saldo positivo!';
             } else {
-                aiText.innerText = "Parabéns! Suas finanças estão saudáveis. Continue assim e considere investir o saldo positivo.";
+                aiText.innerText = '✅ Suas finanças estão equilibradas. Continue monitorando seus gastos regularmente.';
             }
         }
 
         function shareWhatsApp() {
             const currency = document.getElementById('currency').value;
-            let text = `*💰 MeuDindin - Resumo Financeiro*\n\n`;
-            const income = transactions.filter(t => t.category === 'RECEITA').reduce((sum, t) => sum + t.amount, 0);
-            const expense = transactions.filter(t => t.category !== 'RECEITA').reduce((sum, t) => sum + t.amount, 0);
-            
-            text += `✅ Receitas: ${currency} ${income}\n`;
-            text += `❌ Despesas: ${currency} ${expense}\n`;
-            text += `-------------------\n`;
-            text += `💵 Saldo: ${currency} ${income - expense}\n\n`;
-            text += `*Hallz Branding*`;
-
-            const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
-            window.open(url, '_blank');
+            const income = transactions.filter(t => t.category === 'RECEITA').reduce((s, t) => s + t.amount, 0);
+            const expense = transactions.filter(t => t.category !== 'RECEITA').reduce((s, t) => s + t.amount, 0);
+            const fmt = v => `${currency} ${v.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            let text = `*💰 MeuDindin - Resumo do Mês*\n\n`;
+            text += `✅ Receitas: ${fmt(income)}\n`;
+            text += `❌ Despesas: ${fmt(expense)}\n`;
+            text += `─────────────────\n`;
+            text += `💵 Saldo: ${fmt(income - expense)}\n\n`;
+            text += `_Gerado pelo MeuDindin · meu-dindin.pages.dev_\n`;
+            text += `_Hallz Branding_`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
         }
 
-        // Initial Render
         render();
         updateAI();
     </script>
