@@ -258,7 +258,7 @@
 </div>
 
 <script>
-const AI_KEY = 'AIzaSyAbzCY3ijWXswEOvxFHHupzOlEv0bqei1g';
+const AI_KEY = 'AQ.Ab8RN6JFBPy1gBRgl-6chkb3fN8wGLrdlb_NpjCONTKdRcnA0A';
 const AI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 const AI_MODEL = 'gemini-2.0-flash';
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});
@@ -345,7 +345,7 @@ Mensagem do usuário: ${msg}`;
         const data=await res.json();
         removeTyping(tid);
         let raw=(data?.candidates?.[0]?.content?.parts?.[0]?.text||'').replace(/```json/g,'').replace(/```/g,'').trim();
-        let parsed;try{parsed=JSON.parse(raw);}catch(e){parsed={action:'CHAT',reply:raw||'Não entendi. Tente novamente!'};}
+        let parsed;try{parsed=JSON.parse(raw);}catch(e){parsed={action:'CHAT',reply:raw||'Erro: '};}
         if(parsed.action==='ADD')showConfirm(parsed);
         else if(parsed.action==='UPDATE')handleUpdate(parsed);
         else appendMessage(parsed.reply,'ai');
