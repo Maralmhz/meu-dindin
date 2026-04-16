@@ -1,4 +1,4 @@
-const AI_KEY = 'AQ.Ab8RN6JFBPy1gBRgl-6chkb3fN8wGLrdlb_NpjCONTKdRcnA0A';
+const AI_KEY = 'AQ.Ab8RN6L9qC58QBZ_qN9wk_1h3yQZP8_5JZJtlwD8YSyj2r3hbg';
 const AI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
 async function sendMessage(){
