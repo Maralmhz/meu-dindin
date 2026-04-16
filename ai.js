@@ -16,12 +16,15 @@ async function sendMessage(){
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.2,maxOutputTokens:300}})
     });
-    const data=await res.json();
+    const txt=await res.text();
     removeTyping(tid);
+    let data;
+    try{data=JSON.parse(txt);}catch(e){appendMessage('Status '+res.status+': '+txt.substring(0,300),'ai');return;}
     let raw=(data?.candidates?.[0]?.content?.parts?.[0]?.text||'').replace(/```json/g,'').replace(/```/g,'').trim();
-    let parsed;try{parsed=JSON.parse(raw);}catch(e){parsed={action:'CHAT',reply:raw||'Erro: '+JSON.stringify(data).substring(0,150)};}
+    let parsed;
+    try{parsed=JSON.parse(raw);}catch(e){parsed={action:'CHAT',reply:raw||'Erro API: '+JSON.stringify(data).substring(0,300)};}
     if(parsed.action==='ADD')showConfirm(parsed);
     else if(parsed.action==='UPDATE')handleUpdate(parsed);
-    else appendMessage(parsed.reply||'Erro API: '+JSON.stringify(data).substring(0,200),'ai');
+    else appendMessage(parsed.reply,'ai');
   }catch(e){removeTyping(tid);appendMessage('Erro de conexao: '+e.message,'ai');}
 }
