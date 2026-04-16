@@ -219,7 +219,7 @@
                 </div>
                 <div>
                     <h3 class="font-black text-white text-sm">IA meu din din</h3>
-                    <p class="text-white/40 text-xs">Powered by Llama 3.3 • fale ou escreva</p>
+                    <p class="text-white/40 text-xs">Powered by Gemini 2.0 Flash • fale ou escreva</p>
                 </div>
             </div>
             <button onclick="toggleChat()" class="text-white/60 hover:text-white"><i class="fas fa-times text-lg"></i></button>
@@ -258,9 +258,9 @@
 </div>
 
 <script>
-const AI_KEY = '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';
-const AI_URL = 'https://openrouter.ai/api/v1/chat/completions';
-const AI_MODEL = 'meta-llama/llama-3.3-70b-instruct:free';
+const AI_KEY = 'AIzaSyAb8RN6IF7IQ9zMNup1xn4xwFuKUzupLI04WBx35-H37tx2b7XQ';
+const AI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+const AI_MODEL = 'gemini-2.0-flash';
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});
 
 let transactions = JSON.parse(localStorage.getItem('meudindin_data')) || [
@@ -337,14 +337,14 @@ Retorne APENAS JSON válido, sem markdown, sem texto extra.
 ${getFinancialContext()}
 Mensagem do usuário: ${msg}`;
     try{
-        const res=await fetch(AI_URL,{
+        const res=await fetch(AI_URL+`?key=${AI_KEY}`,{
             method:'POST',
             headers:{'Content-Type':'application/json','Authorization':`Bearer ${AI_KEY}`,'HTTP-Referer':'https://meu-dindin.pages.dev','X-Title':'meu din din'},
             body:JSON.stringify({model:AI_MODEL,messages:[{role:'user',content:prompt}],temperature:0.2,max_tokens:300})
         });
         const data=await res.json();
         removeTyping(tid);
-        let raw=(data?.choices?.[0]?.message?.content||'').replace(/```json/g,'').replace(/```/g,'').trim();
+        let raw=(data?.candidates?.[0]?.content?.parts?.[0]?.text||'').replace(/```json/g,'').replace(/```/g,'').trim();
         let parsed;try{parsed=JSON.parse(raw);}catch(e){parsed={action:'CHAT',reply:raw||'Não entendi. Tente novamente!'};}
         if(parsed.action==='ADD')showConfirm(parsed);
         else if(parsed.action==='UPDATE')handleUpdate(parsed);
