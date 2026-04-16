@@ -339,8 +339,8 @@ Mensagem do usuário: ${msg}`;
     try{
         const res=await fetch(AI_URL+`?key=${AI_KEY}`,{
             method:'POST',
-            headers:{'Content-Type':'application/json','Authorization':`Bearer ${AI_KEY}`,'HTTP-Referer':'https://meu-dindin.pages.dev','X-Title':'meu din din'},
-            body:JSON.stringify({model:AI_MODEL,messages:[{role:'user',content:prompt}],temperature:0.2,max_tokens:300})
+                        headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.2,maxOutputTokens:300}})
         });
         const data=await res.json();
         removeTyping(tid);
