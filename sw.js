@@ -1,4 +1,4 @@
-const CACHE = 'meudindin-v7';
+const CACHE = 'meudindin-v8';
 self.addEventListener('install', e => { self.skipWaiting(); });
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k)))).then(() => self.clients.claim()));
@@ -10,12 +10,14 @@ self.addEventListener('fetch', e => {
       fetch(e.request, {cache: 'no-store'}).then(res => {
         return res.text().then(html => {
           if (!html.includes('ai.js')) {
-            html = html.replace('</body>', '<script src="/meu-dindin/ai.js"></script></body>');
+            html = html.replace('</body>', '<script src="/meu-dindin/ai.js?v=8"></script></body>');
           }
           return new Response(html, {headers: {'Content-Type': 'text/html; charset=utf-8'}});
         });
       })
     );
+  } else if (url.includes('ai.js')) {
+    e.respondWith(fetch(e.request, {cache: 'no-store'}));
   } else {
     e.respondWith(fetch(e.request));
   }
