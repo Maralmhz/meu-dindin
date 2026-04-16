@@ -345,7 +345,7 @@ Mensagem do usuário: ${msg}`;
         const data=await res.json();
         removeTyping(tid);
         let raw=(data?.candidates?.[0]?.content?.parts?.[0]?.text||'').replace(/```json/g,'').replace(/```/g,'').trim();
-        let parsed;try{parsed=JSON.parse(raw);}catch(e){parsed={action:'CHAT',reply:raw||'Não entendi. Tente novamente!'};}
+        let parsed;try{parsed=JSON.parse(raw);}catch(e){parsed={action:'CHAT',reply:raw||JSON.stringify(data).substring(0,200)};}
         if(parsed.action==='ADD')showConfirm(parsed);
         else if(parsed.action==='UPDATE')handleUpdate(parsed);
         else appendMessage(parsed.reply,'ai');
