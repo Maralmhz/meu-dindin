@@ -1,4 +1,4 @@
-const AI_KEY = 'AQ.Ab8RN6L9qC58QBZ_qN9wk_1h3yQZP8_5JZJtlwD8YSyj2r3hbg';
+const AI_KEY = 'AQ.Ab8RN6KXsRgr2qmjxYdQTa0oLcbG2ZbY2HTjmot8A7qycMCwqQ';
 const AI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
 async function sendMessage(){
@@ -11,7 +11,7 @@ async function sendMessage(){
   const tid=showTyping();
   const prompt=`Voce e a IA financeira do app "meu din din". Detecte se e uma transacao ou conversa. CATEGORIAS: RECEITA, FIXAS, CARTAO, ALIMENTACAO, TRANSPORTE, SAUDE, LAZER, OUTROS Se for transacao nova: {"action":"ADD","desc":"...","amount":0,"category":"...","obs":"..."} Se for atualizacao: {"action":"UPDATE","targetDesc":"...","newAmount":0} Se for conversa: {"action":"CHAT","reply":"..."} Retorne APENAS JSON valido, sem markdown, sem texto extra. ${getFinancialContext()} Mensagem do usuario: ${msg}`;
   try{
-          const res=await fetch(AI_URL,{
+                const res=await fetch(AI_URL+`?key=${AI_KEY}`,{
       method:'POST',
             headers:{'Content-Type':'application/json','x-goog-api-key':AI_KEY},
       body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.2,maxOutputTokens:300}})
