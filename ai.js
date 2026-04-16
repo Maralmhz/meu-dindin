@@ -11,9 +11,9 @@ async function sendMessage(){
   const tid=showTyping();
   const prompt=`Voce e a IA financeira do app "meu din din". Detecte se e uma transacao ou conversa. CATEGORIAS: RECEITA, FIXAS, CARTAO, ALIMENTACAO, TRANSPORTE, SAUDE, LAZER, OUTROS Se for transacao nova: {"action":"ADD","desc":"...","amount":0,"category":"...","obs":"..."} Se for atualizacao: {"action":"UPDATE","targetDesc":"...","newAmount":0} Se for conversa: {"action":"CHAT","reply":"..."} Retorne APENAS JSON valido, sem markdown, sem texto extra. ${getFinancialContext()} Mensagem do usuario: ${msg}`;
   try{
-    const res=await fetch(AI_URL+`?key=${AI_KEY}`,{
+          const res=await fetch(AI_URL,{
       method:'POST',
-      headers:{'Content-Type':'application/json'},
+            headers:{'Content-Type':'application/json','x-goog-api-key':AI_KEY},
       body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.2,maxOutputTokens:300}})
     });
     const txt=await res.text();
