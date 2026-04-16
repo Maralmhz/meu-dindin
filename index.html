@@ -40,20 +40,18 @@
         .tab-btn:not(.active) { background: white; color: #64748b; }
         .cat-badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; text-transform: uppercase; }
         .cat-RECEITA{background:#dcfce7;color:#166534} .cat-FIXAS{background:#dbeafe;color:#1e40af} .cat-CARTAO{background:#ede9fe;color:#5b21b6} .cat-ALIMENTACAO{background:#fef9c3;color:#854d0e} .cat-LAZER{background:#fce7f3;color:#9d174d} .cat-OUTROS{background:#f1f5f9;color:#475569} .cat-TRANSPORTE{background:#ffedd5;color:#9a3412} .cat-SAUDE{background:#d1fae5;color:#065f46}
-        #chat-messages { max-height: 340px; overflow-y: auto; scroll-behavior: smooth; }
-        .msg-user { background: #111827; color: white; border-radius: 18px 18px 4px 18px; }
-        .msg-ai { background: #f1f5f9; color: #1e293b; border-radius: 18px 18px 18px 4px; }
-        .msg-action { background: #dcfce7; color: #166534; border-radius: 12px; border: 1px solid #bbf7d0; }
-        .confirm-card { background: #eff6ff; border: 2px solid #93c5fd; border-radius: 12px; }
-        .typing-dot { animation: blink 1.2s infinite; }
-        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes blink { 0%,80%,100%{opacity:0.2} 40%{opacity:1} }
         #voice-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:200; display:none; flex-direction:column; align-items:center; justify-content:center; gap:24px; }
         #voice-overlay.active { display:flex; }
         .voice-ripple { width:120px; height:120px; border-radius:50%; background:rgba(34,197,94,0.2); display:flex; align-items:center; justify-content:center; animation: ripple 1.5s infinite; }
         @keyframes ripple { 0%{box-shadow:0 0 0 0 rgba(34,197,94,0.4)} 100%{box-shadow:0 0 0 40px rgba(34,197,94,0)} }
         input[type="number"]::-webkit-inner-spin-button { display: none; }
+        /* Dicas */
+        .tip-card { background: linear-gradient(135deg, #1a2535 0%, #0f1923 100%); border-radius: 16px; padding: 16px 18px; margin-bottom: 10px; border-left: 4px solid #22c55e; }
+        .tip-card .tip-icon { font-size: 22px; margin-right: 10px; }
+        /* Confirm Voice */
+        #confirm-voice-modal { position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:300; display:none; align-items:flex-end; justify-content:center; }
+        #confirm-voice-modal.active { display:flex; }
+        .confirm-sheet { background:white; border-radius:24px 24px 0 0; padding:24px 20px 36px; width:100%; max-width:480px; }
     </style>
 </head>
 <body>
@@ -83,8 +81,8 @@
             <button onclick="shareWhatsApp()" class="bg-white/10 hover:bg-white/20 w-10 h-10 rounded-xl flex items-center justify-center transition" title="WhatsApp">
                 <i class="fab fa-whatsapp text-white"></i>
             </button>
-            <button onclick="toggleChat()" class="bg-white/10 hover:bg-white/20 w-10 h-10 rounded-xl flex items-center justify-center transition" title="IA">
-                <i class="fas fa-robot text-white"></i>
+            <button onclick="toggleDicas()" class="bg-white/10 hover:bg-white/20 w-10 h-10 rounded-xl flex items-center justify-center transition" title="Dicas">
+                <i class="fas fa-lightbulb text-white"></i>
             </button>
         </div>
     </div>
@@ -118,15 +116,32 @@
 </div>
 
 <main class="max-w-lg mx-auto px-4 mt-6">
-    <div id="ai-box" class="card p-4 mb-5 hidden" style="border-left: 4px solid #22c55e">
+
+    <!-- Dicas pré-programadas -->
+    <div id="dicas-box" class="hidden mb-5">
+        <h3 class="text-slate-700 font-bold text-sm mb-3">💡 Dicas Financeiras</h3>
+        <div id="dica-atual" class="tip-card flex items-start">
+            <span class="tip-icon"></span>
+            <div>
+                <p class="text-white font-semibold text-sm" id="dica-titulo"></p>
+                <p class="text-white/60 text-xs mt-1" id="dica-texto"></p>
+            </div>
+        </div>
+        <div class="flex gap-2 mt-2">
+            <button onclick="dicaAnterior()" class="flex-1 bg-white text-slate-600 text-xs font-bold py-2 rounded-xl border border-slate-200">← Anterior</button>
+            <button onclick="dicaProxima()" class="flex-1 bg-white text-slate-600 text-xs font-bold py-2 rounded-xl border border-slate-200">Próxima →</button>
+        </div>
+    </div>
+
+    <!-- Alerta de saldo -->
+    <div id="alerta-box" class="card p-4 mb-5 hidden" style="border-left: 4px solid #22c55e">
         <div class="flex items-start gap-3">
             <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#111827">
-                <i class="fas fa-robot text-green-400 text-sm"></i>
+                <i class="fas fa-chart-pie text-green-400 text-sm"></i>
             </div>
             <div class="flex-1">
-                <h4 class="font-bold text-slate-800 text-sm">IA meu din din</h4>
-                <p id="ai-text" class="text-slate-500 text-sm mt-0.5">Analisando suas finanças...</p>
-                <button onclick="toggleChat()" class="text-xs text-green-600 font-bold mt-1 hover:underline">💬 Falar com a IA →</button>
+                <h4 class="font-bold text-slate-800 text-sm">Análise do mês</h4>
+                <p id="alerta-text" class="text-slate-500 text-sm mt-0.5"></p>
             </div>
         </div>
     </div>
@@ -154,21 +169,37 @@
     <button id="mic-center" class="mic-center-btn" onclick="toggleVoiceOverlay()" title="Registrar por voz">
         <i class="fas fa-microphone text-white text-2xl"></i>
     </button>
-    <button class="nav-btn" onclick="toggleChat()">
-        <i class="fas fa-robot"></i>
-        <span>IA</span>
+    <button class="nav-btn" onclick="toggleDicas()">
+        <i class="fas fa-lightbulb"></i>
+        <span>Dicas</span>
     </button>
 </nav>
 
+<!-- Voice Overlay -->
 <div id="voice-overlay">
     <p class="text-white/60 text-sm font-medium">Ouvindo...</p>
     <div class="voice-ripple">
         <i class="fas fa-microphone text-green-400 text-4xl"></i>
     </div>
     <p id="voice-transcript" class="text-white text-lg font-bold text-center px-8">Fale seu gasto agora</p>
+    <p class="text-white/40 text-xs text-center px-8">Ex: "Gastei 50 reais no mercado" ou "Recebi 3000 de salário"</p>
     <button onclick="stopVoice()" class="bg-white/10 text-white px-8 py-3 rounded-full font-semibold mt-4">✕ Cancelar</button>
 </div>
 
+<!-- Confirm Voice Modal -->
+<div id="confirm-voice-modal">
+    <div class="confirm-sheet">
+        <div style="width:40px;height:4px;background:#e5e7eb;border-radius:2px;margin:0 auto 20px;"></div>
+        <h3 class="font-black text-slate-800 text-lg mb-4">🎙️ Confirmar lançamento?</h3>
+        <div id="confirm-voice-content" class="bg-slate-50 rounded-2xl p-4 mb-5 space-y-3"></div>
+        <div class="flex gap-3">
+            <button onclick="cancelarVoz()" class="flex-1 py-3 rounded-2xl font-bold text-slate-600 bg-slate-100">Cancelar</button>
+            <button onclick="confirmarVoz()" class="flex-1 py-3 rounded-2xl font-bold text-white" style="background:#111827">✅ Confirmar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Add Modal -->
 <div id="modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center p-4 z-[60]">
     <div class="bg-white rounded-3xl w-full max-w-md p-6">
         <div class="flex justify-between items-center mb-5">
@@ -210,59 +241,39 @@
     </div>
 </div>
 
-<div id="chat-modal" class="fixed inset-0 bg-black/60 hidden items-end justify-center z-[70]">
-    <div class="bg-white rounded-t-3xl w-full max-w-lg" style="max-height:92vh;display:flex;flex-direction:column">
-        <div class="p-4 rounded-t-3xl flex justify-between items-center flex-shrink-0" style="background:#111827">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:#1a2535">
-                    <i class="fas fa-robot text-green-400"></i>
-                </div>
-                <div>
-                    <h3 class="font-black text-white text-sm">IA meu din din</h3>
-                    <p class="text-white/40 text-xs">Powered by Gemini 2.0 Flash • fale ou escreva</p>
-                </div>
-            </div>
-            <button onclick="toggleChat()" class="text-white/60 hover:text-white"><i class="fas fa-times text-lg"></i></button>
-        </div>
-        <div id="chat-messages" class="flex-1 p-4 space-y-3 overflow-y-auto bg-slate-50">
-            <div class="flex gap-2">
-                <div class="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 mt-1" style="background:#111827">
-                    <i class="fas fa-robot text-green-400 text-xs"></i>
-                </div>
-                <div class="msg-ai px-4 py-3 text-sm" style="max-width:85%">
-                    Olá! 👋 Sou a IA do <strong>meu din din</strong>.<br><br>
-                    Fale ou escreva seus gastos e eu lanço automaticamente!<br>
-                    <span class="text-green-700 font-medium">• "Gastei 80 de gasolina"</span><br>
-                    <span class="text-green-700 font-medium">• "Paguei 1200 de aluguel"</span><br>
-                    <span class="text-green-700 font-medium">• "Recebi 3000 de salário"</span>
-                </div>
-            </div>
-        </div>
-        <div class="p-4 border-t bg-white flex-shrink-0">
-            <div class="flex gap-2 mb-3 flex-wrap">
-                <button onclick="quickAsk('Como estão meus gastos?')" class="text-xs bg-slate-100 text-slate-700 px-3 py-1.5 rounded-full font-semibold">📊 Resumo</button>
-                <button onclick="quickAsk('Onde posso economizar?')" class="text-xs bg-slate-100 text-slate-700 px-3 py-1.5 rounded-full font-semibold">💡 Economizar</button>
-                <button onclick="quickAsk('Como montar reserva de emergência?')" class="text-xs bg-slate-100 text-slate-700 px-3 py-1.5 rounded-full font-semibold">🏦 Reserva</button>
-            </div>
-            <div class="flex gap-2">
-                <button id="mic-chat-btn" onclick="toggleVoiceChat()" class="bg-slate-100 hover:bg-slate-200 w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 transition">
-                    <i class="fas fa-microphone text-slate-600"></i>
-                </button>
-                <input id="chat-input" type="text" placeholder="Ex: gastei 50 no mercado..." class="flex-1 p-3 rounded-2xl border border-slate-200 outline-none focus:border-green-400 text-sm" onkeydown="if(event.key==='Enter') sendMessage()">
-                <button onclick="sendMessage()" class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 text-white" style="background:#111827">
-                    <i class="fas fa-paper-plane"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
 <script>
-const AI_KEY = 'AQ.Ab8RN6JFBPy1gBRgl-6chkb3fN8wGLrdlb_NpjCONTKdRcnA0A';
-const AI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
-const AI_MODEL = 'gemini-2.0-flash';
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});
 
+// ========== DICAS PRÉ-PROGRAMADAS ==========
+const DICAS = [
+    { icon:'💰', titulo:'Regra 50-30-20', texto:'Divida sua renda: 50% para necessidades, 30% para desejos e 20% para poupança ou dívidas. Uma fórmula simples e eficaz.' },
+    { icon:'🏦', titulo:'Reserva de emergência', texto:'Guarde pelo menos 3 a 6 meses dos seus gastos mensais em uma conta de fácil acesso. Comece com pequenos valores.' },
+    { icon:'📊', titulo:'Controle seus gastos fixos', texto:'Despesas fixas acima de 60% da renda é um sinal de alerta. Renegocie contratos e planos quando possível.' },
+    { icon:'💳', titulo:'Cuidado com o cartão de crédito', texto:'Pague sempre o valor total da fatura. Os juros do rotativo chegam a 400% ao ano — um dos maiores do mundo.' },
+    { icon:'🎯', titulo:'Defina metas financeiras', texto:'Ter um objetivo claro (viagem, carro, casa) aumenta a motivação para economizar. Coloque um prazo e valor.' },
+    { icon:'🛒', titulo:'Lista antes de comprar', texto:'Antes de ir ao mercado, faça uma lista e siga ela. Compras por impulso são uma das principais fontes de desperdício.' },
+    { icon:'📈', titulo:'Invista o quanto antes', texto:'O tempo é seu maior aliado nos investimentos. Mesmo R$ 100 por mês aplicados por 20 anos fazem diferença enorme.' },
+    { icon:'🔔', titulo:'Revise assinaturas', texto:'Streaming, academia, apps — some tudo. Muitas pessoas pagam por serviços que mal usam. Cancele o desnecessário.' },
+    { icon:'🍽️', titulo:'Alimentação consome muito', texto:'Comer fora é prático mas caro. Preparar refeições em casa pode reduzir seus gastos com alimentação em até 60%.' },
+    { icon:'🚗', titulo:'Transporte inteligente', texto:'Calcule o custo real do seu carro (seguro, IPVA, combustível, manutenção). Às vezes o transporte público sai bem mais barato.' },
+];
+
+let dicaIndex = 0;
+function renderDica() {
+    const d = DICAS[dicaIndex];
+    document.getElementById('dica-atual').querySelector('.tip-icon').textContent = d.icon;
+    document.getElementById('dica-titulo').textContent = d.titulo;
+    document.getElementById('dica-texto').textContent = d.texto;
+}
+function dicaProxima() { dicaIndex = (dicaIndex + 1) % DICAS.length; renderDica(); }
+function dicaAnterior() { dicaIndex = (dicaIndex - 1 + DICAS.length) % DICAS.length; renderDica(); }
+function toggleDicas() {
+    const box = document.getElementById('dicas-box');
+    box.classList.toggle('hidden');
+    if (!box.classList.contains('hidden')) renderDica();
+}
+
+// ========== DADOS ==========
 let transactions = JSON.parse(localStorage.getItem('meudindin_data')) || [
     {id:1,desc:'Salário',amount:5000,category:'RECEITA',obs:'Receita mensal',date:new Date().toISOString()},
     {id:2,desc:'Aluguel',amount:1200,category:'FIXAS',obs:'Despesa fixa',date:new Date().toISOString()},
@@ -270,7 +281,8 @@ let transactions = JSON.parse(localStorage.getItem('meudindin_data')) || [
     {id:4,desc:'Gasolina',amount:80,category:'TRANSPORTE',obs:'Posto Shell',date:new Date().toISOString()},
     {id:5,desc:'Lanchonete',amount:25,category:'ALIMENTACAO',obs:'Almoço',date:new Date().toISOString()}
 ];
-let currentTab='all', recognition=null, isRecording=false, voiceMode='overlay';
+let currentTab='all', recognition=null, isRecording=false;
+let voiceParsed = null;
 
 const CAT_CONFIG={
     RECEITA:{icon:'fa-arrow-up',bg:'bg-green-100',text:'text-green-600',label:'Receita'},
@@ -283,167 +295,196 @@ const CAT_CONFIG={
     OUTROS:{icon:'fa-box',bg:'bg-slate-100',text:'text-slate-600',label:'Outros'}
 };
 
-function toggleVoiceOverlay(){voiceMode='overlay';if(isRecording){stopVoice();return;}startVoice();}
-function toggleVoiceChat(){voiceMode='chat';if(isRecording){stopVoice();return;}startVoice();}
-function startVoice(){
-    const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-    if(!SR){alert('Use o Chrome para reconhecimento de voz.');return;}
-    recognition=new SR();recognition.lang='pt-BR';recognition.interimResults=true;recognition.maxAlternatives=1;
-    recognition.onstart=()=>{isRecording=true;if(voiceMode==='overlay'){document.getElementById('voice-overlay').classList.add('active');document.getElementById('mic-center').classList.add('recording');}};
-    recognition.onresult=(e)=>{
-        const transcript=Array.from(e.results).map(r=>r[0].transcript).join('');
-        if(voiceMode==='overlay')document.getElementById('voice-transcript').textContent=transcript;
-        else document.getElementById('chat-input').value=transcript;
-        if(e.results[e.results.length-1].isFinal){
-            document.getElementById('chat-input').value=transcript;
+// ========== PARSE DE VOZ ==========
+const CAT_KEYWORDS = {
+    RECEITA: ['salário','salario','recebi','entrada','renda','freelance','pagamento','recebimento','ganho','ganhos','recebo'],
+    FIXAS: ['aluguel','condomínio','condominio','financiamento','prestação','prestacao','conta de luz','internet','água','agua','gás','gas','energia','telefone','boleto'],
+    CARTAO: ['cartão','cartao','visa','mastercard','crédito','credito','débito','debito','parcela','fatura'],
+    ALIMENTACAO: ['mercado','supermercado','restaurante','lanche','comida','pizza','hambúrguer','hamburguer','almoço','almoco','jantar','café','cafe','padaria','delivery','ifood','feira'],
+    TRANSPORTE: ['gasolina','uber','ônibus','onibus','metrô','metro','táxi','taxi','combustível','combustivel','posto','passagem','99','cabify'],
+    SAUDE: ['farmácia','farmacia','médico','medico','hospital','remédio','remedio','consulta','exame','academia','dentista','plano de saúde'],
+    LAZER: ['cinema','bar','show','jogo','netflix','spotify','viagem','passeio','festa','parque','praia','balada','entretenimento','disney','amazon prime']
+};
+
+function detectarCategoria(text) {
+    const lower = text.toLowerCase();
+    for (const [cat, words] of Object.entries(CAT_KEYWORDS)) {
+        for (const w of words) {
+            if (lower.includes(w)) return cat;
+        }
+    }
+    return 'OUTROS';
+}
+
+function extrairValor(text) {
+    const padroes = [
+        /(\d+(?:[.,]\d{1,2})?)\s*(?:reais?|real|dólares?|euros?|R\$|\$|€)/i,
+        /(?:R\$|\$|€)\s*(\d+(?:[.,]\d{1,2})?)/i,
+        /(\d+(?:[.,]\d{1,2})?)/
+    ];
+    for (const p of padroes) {
+        const m = text.match(p);
+        if (m) return parseFloat(m[1].replace(',','.'));
+    }
+    return null;
+}
+
+// ========== VOZ ==========
+function toggleVoiceOverlay() {
+    if (isRecording) { stopVoice(); return; }
+    startVoice();
+}
+
+function startVoice() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { alert('Use o Chrome para reconhecimento de voz.'); return; }
+    recognition = new SR();
+    recognition.lang = 'pt-BR';
+    recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => {
+        isRecording = true;
+        document.getElementById('voice-overlay').classList.add('active');
+        document.getElementById('mic-center').classList.add('recording');
+    };
+
+    recognition.onresult = (e) => {
+        const transcript = Array.from(e.results).map(r => r[0].transcript).join('');
+        document.getElementById('voice-transcript').textContent = '"' + transcript + '"';
+        if (e.results[e.results.length-1].isFinal) {
             stopVoice();
-            sendMessage();
-            if(!document.getElementById('chat-modal').classList.contains('flex'))toggleChat();
+            processarVoz(transcript);
         }
     };
-    recognition.onend=()=>stopVoice();
-    recognition.onerror=()=>stopVoice();
+
+    recognition.onend = () => stopVoice();
+    recognition.onerror = () => stopVoice();
     recognition.start();
 }
-function stopVoice(){
-    isRecording=false;
-    if(recognition){try{recognition.stop();}catch(e){}}
+
+function stopVoice() {
+    isRecording = false;
+    if (recognition) { try { recognition.stop(); } catch(e){} }
     document.getElementById('voice-overlay').classList.remove('active');
     document.getElementById('mic-center').classList.remove('recording');
-    document.getElementById('voice-transcript').textContent='Fale seu gasto agora';
+    document.getElementById('voice-transcript').textContent = 'Fale seu gasto agora';
 }
-function getFinancialContext(){
-    const cur=document.getElementById('currency').value;
-    const income=transactions.filter(t=>t.category==='RECEITA').reduce((s,t)=>s+t.amount,0);
-    const expense=transactions.filter(t=>t.category!=='RECEITA').reduce((s,t)=>s+t.amount,0);
-    const byCategory={};
-    transactions.filter(t=>t.category!=='RECEITA').forEach(t=>{byCategory[t.category]=(byCategory[t.category]||0)+t.amount;});
-    return `Moeda:${cur} Receita:${income} Despesa:${expense} Saldo:${income-expense} Categorias:${JSON.stringify(byCategory)} Transações:${JSON.stringify(transactions.map(t=>({id:t.id,desc:t.desc,amount:t.amount,cat:t.category,obs:t.obs})))}`;
-}
-async function sendMessage(){
-    const input=document.getElementById('chat-input');
-    const msg=input.value.trim();
-    if(!msg)return;
-    input.value='';
-    if(!document.getElementById('chat-modal').classList.contains('flex'))toggleChat();
-    appendMessage(msg,'user');
-    const tid=showTyping();
-    const prompt=`Você é a IA financeira do app "meu din din". Detecte se é uma transação ou conversa.
-CATEGORIAS: RECEITA, FIXAS, CARTAO, ALIMENTACAO, TRANSPORTE, SAUDE, LAZER, OUTROS
-Se for transação nova: {"action":"ADD","desc":"...","amount":0,"category":"...","obs":"..."}
-Se for atualização: {"action":"UPDATE","targetDesc":"...","newAmount":0}
-Se for conversa: {"action":"CHAT","reply":"..."}
-Retorne APENAS JSON válido, sem markdown, sem texto extra.
-${getFinancialContext()}
-Mensagem do usuário: ${msg}`;
-    try{
-        const res=await fetch(AI_URL+`?key=${AI_KEY}`,{
-            method:'POST',
-                        headers:{'Content-Type':'application/json'},
-                body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.2,maxOutputTokens:300}})
-        });
-        const data=await res.json();
-        removeTyping(tid);
-        let raw=(data?.candidates?.[0]?.content?.parts?.[0]?.text||'').replace(/```json/g,'').replace(/```/g,'').trim();
-        let parsed;try{parsed=JSON.parse(raw);}catch(e){parsed={action:'CHAT',reply:raw||JSON.stringify(data)};}
-        if(parsed.action==='ADD')showConfirm(parsed);
-        else if(parsed.action==='UPDATE')handleUpdate(parsed);
-        else appendMessage(parsed.reply,'ai');
-    }catch(e){removeTyping(tid);appendMessage('Erro de conexão. Tente novamente!','ai');}
-}
-function showConfirm(parsed){
-    const cur=document.getElementById('currency').value;
-    const cid='c'+Date.now();
-    const container=document.getElementById('chat-messages');
-    const d=document.createElement('div');d.id=cid;d.className='flex gap-2';
-    const safeP=JSON.stringify(parsed).replace(/"/g,'&quot;');
-    d.innerHTML=`<div class="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 mt-1" style="background:#111827"><i class="fas fa-robot text-green-400 text-xs"></i></div>
-    <div class="confirm-card p-3 text-sm flex-1">
-        <p class="font-bold text-blue-800 mb-2">✅ Confirma o lançamento?</p>
-        <div class="bg-white rounded-xl p-2 mb-3 space-y-1">
-            <p><span class="text-slate-400">Descrição:</span> <strong>${parsed.desc}</strong></p>
-            <p><span class="text-slate-400">Valor:</span> <strong class="${parsed.category==='RECEITA'?'text-green-600':'text-red-600'}">${cur} ${parseFloat(parsed.amount).toLocaleString('pt-BR',{minimumFractionDigits:2})}</strong></p>
-            <p><span class="text-slate-400">Categoria:</span> <span class="cat-badge cat-${parsed.category}">${parsed.category}</span></p>
-            ${parsed.obs?`<p><span class="text-slate-400">Obs:</span> ${parsed.obs}</p>`:''}
+
+function processarVoz(text) {
+    const valor = extrairValor(text);
+    if (!valor) {
+        alert('Não consegui identificar um valor.\nTente: "Gastei 50 reais no mercado"');
+        return;
+    }
+    const categoria = detectarCategoria(text);
+    const desc = text.charAt(0).toUpperCase() + text.slice(1).substring(0, 50);
+    voiceParsed = { desc, amount: valor, category: categoria, obs: '' };
+
+    const cur = document.getElementById('currency').value;
+    const cfg = CAT_CONFIG[categoria];
+    document.getElementById('confirm-voice-content').innerHTML = `
+        <div class="flex justify-between items-center py-1">
+            <span class="text-slate-400 text-sm">Descrição</span>
+            <span class="font-semibold text-slate-800 text-sm text-right max-w-[60%]">${desc}</span>
         </div>
-        <div class="flex gap-2">
-            <button onclick="confirmAdd('${cid}','${safeP}')" class="flex-1 text-white text-xs font-bold py-2 rounded-xl" style="background:#111827">✅ Confirmar</button>
-            <button onclick="document.getElementById('${cid}').remove()" class="flex-1 bg-slate-100 text-slate-600 text-xs font-bold py-2 rounded-xl">❌ Cancelar</button>
+        <div class="flex justify-between items-center py-1">
+            <span class="text-slate-400 text-sm">Valor</span>
+            <span class="font-black text-lg ${categoria==='RECEITA'?'text-green-500':'text-red-500'}">${categoria==='RECEITA'?'+':'-'} ${cur} ${valor.toLocaleString('pt-BR',{minimumFractionDigits:2})}</span>
         </div>
-    </div>`;
-    container.appendChild(d);container.scrollTop=container.scrollHeight;
+        <div class="flex justify-between items-center py-1">
+            <span class="text-slate-400 text-sm">Categoria</span>
+            <span class="cat-badge cat-${categoria}">${cfg.label}</span>
+        </div>
+    `;
+    document.getElementById('confirm-voice-modal').classList.add('active');
 }
-function confirmAdd(cid,safeP){
-    document.getElementById(cid)?.remove();
-    const parsed=JSON.parse(safeP.replace(/&quot;/g,'"'));
-    transactions.push({id:Date.now(),desc:parsed.desc,amount:parseFloat(parsed.amount),category:parsed.category,obs:parsed.obs||'',date:new Date().toISOString()});
+
+function confirmarVoz() {
+    if (!voiceParsed) return;
+    transactions.push({ id: Date.now(), ...voiceParsed, date: new Date().toISOString() });
     saveToLocal();
-    appendMessage(`✅ **${parsed.desc}** adicionado com sucesso!`,'action');
+    cancelarVoz();
 }
-function handleUpdate(parsed){
-    const match=transactions.find(t=>t.desc.toLowerCase().includes(parsed.targetDesc.toLowerCase()));
-    if(!match){appendMessage(`Não encontrei "${parsed.targetDesc}". Tente novamente.`,'ai');return;}
-    const cur=document.getElementById('currency').value;
-    const old=match.amount;
-    match.amount=parseFloat(parsed.newAmount);
-    saveToLocal();
-    appendMessage(`✅ **${match.desc}** atualizado: ${cur} ${old.toLocaleString('pt-BR',{minimumFractionDigits:2})} → ${cur} ${match.amount.toLocaleString('pt-BR',{minimumFractionDigits:2})}`,'action');
+
+function cancelarVoz() {
+    document.getElementById('confirm-voice-modal').classList.remove('active');
+    voiceParsed = null;
 }
-function quickAsk(q){document.getElementById('chat-input').value=q;sendMessage();}
-function appendMessage(text,type){
-    const c=document.getElementById('chat-messages');
-    const d=document.createElement('div');
-    const isUser=type==='user',isAction=type==='action';
-    d.className=`flex gap-2 ${isUser?'justify-end':''}`;
-    const ft=text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
-    if(isUser)d.innerHTML=`<div class="msg-user px-4 py-3 text-sm" style="max-width:85%">${ft}</div>`;
-    else if(isAction)d.innerHTML=`<div class="w-7 h-7 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-1"><i class="fas fa-check text-white text-xs"></i></div><div class="msg-action px-4 py-3 text-sm" style="max-width:85%">${ft}</div>`;
-    else d.innerHTML=`<div class="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 mt-1" style="background:#111827"><i class="fas fa-robot text-green-400 text-xs"></i></div><div class="msg-ai px-4 py-3 text-sm" style="max-width:85%;white-space:pre-line">${ft}</div>`;
-    c.appendChild(d);c.scrollTop=c.scrollHeight;
+
+// ========== RENDER ==========
+function saveToLocal() { localStorage.setItem('meudindin_data', JSON.stringify(transactions)); render(); updateAlerta(); }
+
+function toggleModal() {
+    const m = document.getElementById('modal');
+    m.classList.toggle('hidden'); m.classList.toggle('flex');
+    document.getElementById('transaction-form').reset();
 }
-function showTyping(){
-    const id='t'+Date.now(),c=document.getElementById('chat-messages'),d=document.createElement('div');
-    d.id=id;d.className='flex gap-2';
-    d.innerHTML=`<div class="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0" style="background:#111827"><i class="fas fa-robot text-green-400 text-xs"></i></div><div class="msg-ai px-4 py-3 flex gap-1 items-center"><span class="typing-dot w-2 h-2 bg-slate-400 rounded-full inline-block"></span><span class="typing-dot w-2 h-2 bg-slate-400 rounded-full inline-block"></span><span class="typing-dot w-2 h-2 bg-slate-400 rounded-full inline-block"></span></div>`;
-    c.appendChild(d);c.scrollTop=c.scrollHeight;return id;
-}
-function removeTyping(id){document.getElementById(id)?.remove();}
-function toggleChat(){const m=document.getElementById('chat-modal');m.classList.toggle('hidden');m.classList.toggle('flex');}
-function saveToLocal(){localStorage.setItem('meudindin_data',JSON.stringify(transactions));render();updateAI();}
-function toggleModal(){const m=document.getElementById('modal');m.classList.toggle('hidden');m.classList.toggle('flex');document.getElementById('transaction-form').reset();}
-function saveTransaction(e){
+
+function saveTransaction(e) {
     e.preventDefault();
-    transactions.push({id:Date.now(),desc:document.getElementById('desc').value,amount:parseFloat(document.getElementById('amount').value),category:document.getElementById('category').value,obs:document.getElementById('obs').value,date:new Date().toISOString()});
-    saveToLocal();toggleModal();
+    transactions.push({
+        id: Date.now(),
+        desc: document.getElementById('desc').value,
+        amount: parseFloat(document.getElementById('amount').value),
+        category: document.getElementById('category').value,
+        obs: document.getElementById('obs').value,
+        date: new Date().toISOString()
+    });
+    saveToLocal(); toggleModal();
 }
-function deleteTransaction(id){if(!confirm('Excluir?'))return;transactions=transactions.filter(t=>t.id!==id);saveToLocal();}
-function switchTab(tab,btn){
-    currentTab=tab;
-    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+
+function deleteTransaction(id) {
+    if (!confirm('Excluir esta transação?')) return;
+    transactions = transactions.filter(t => t.id !== id);
+    saveToLocal();
+}
+
+function switchTab(tab, btn) {
+    currentTab = tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     render();
 }
-function updateSummary(){
-    const cur=document.getElementById('currency').value;
-    const income=transactions.filter(t=>t.category==='RECEITA').reduce((s,t)=>s+t.amount,0);
-    const expense=transactions.filter(t=>t.category!=='RECEITA').reduce((s,t)=>s+t.amount,0);
-    const fmt=v=>`${cur} ${v.toLocaleString('pt-BR',{minimumFractionDigits:2})}`;
-    document.getElementById('total-income').innerText=fmt(income);
-    document.getElementById('total-expenses').innerText=fmt(expense);
-    document.getElementById('total-balance').innerText=fmt(income-expense);
+
+function updateSummary() {
+    const cur = document.getElementById('currency').value;
+    const income = transactions.filter(t => t.category === 'RECEITA').reduce((s,t) => s+t.amount, 0);
+    const expense = transactions.filter(t => t.category !== 'RECEITA').reduce((s,t) => s+t.amount, 0);
+    const fmt = v => `${cur} ${v.toLocaleString('pt-BR',{minimumFractionDigits:2})}`;
+    document.getElementById('total-income').innerText = fmt(income);
+    document.getElementById('total-expenses').innerText = fmt(expense);
+    document.getElementById('total-balance').innerText = fmt(income - expense);
 }
-function render(){
-    const list=document.getElementById('transaction-list');
-    list.innerHTML='';
-    const cur=document.getElementById('currency').value;
-    const filtered=currentTab==='all'?transactions:transactions.filter(t=>t.category===currentTab);
-    if(!filtered.length){list.innerHTML='<p class="text-center text-slate-400 py-10">Nenhuma transação encontrada.</p>';updateSummary();return;}
-    filtered.sort((a,b)=>new Date(b.date)-new Date(a.date)).forEach(t=>{
-        const isIncome=t.category==='RECEITA';
-        const cfg=CAT_CONFIG[t.category]||CAT_CONFIG.OUTROS;
-        const div=document.createElement('div');
-        div.className='card p-4 flex justify-between items-center';
-        div.innerHTML=`
+
+function updateAlerta() {
+    const box = document.getElementById('alerta-box');
+    const txt = document.getElementById('alerta-text');
+    const expense = transactions.filter(t => t.category !== 'RECEITA').reduce((s,t) => s+t.amount, 0);
+    const income = transactions.filter(t => t.category === 'RECEITA').reduce((s,t) => s+t.amount, 0);
+    box.classList.remove('hidden');
+    if (!income) { txt.innerText = 'Adicione sua receita para ver a análise do mês.'; return; }
+    if (expense > income) txt.innerText = '⚠️ Gastos superaram a receita! Revise seus lançamentos.';
+    else if (expense > income * 0.7) txt.innerText = '💡 Mais de 70% da renda comprometida. Confira as dicas!';
+    else if (expense < income * 0.5) txt.innerText = '🎉 Ótimo controle! Você está gastando menos da metade da renda.';
+    else txt.innerText = '✅ Finanças equilibradas. Continue assim!';
+}
+
+function render() {
+    const list = document.getElementById('transaction-list');
+    list.innerHTML = '';
+    const cur = document.getElementById('currency').value;
+    const filtered = currentTab === 'all' ? transactions : transactions.filter(t => t.category === currentTab);
+    if (!filtered.length) {
+        list.innerHTML = '<p class="text-center text-slate-400 py-10">Nenhuma transação encontrada.</p>';
+        updateSummary(); return;
+    }
+    filtered.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(t => {
+        const isIncome = t.category === 'RECEITA';
+        const cfg = CAT_CONFIG[t.category] || CAT_CONFIG.OUTROS;
+        const div = document.createElement('div');
+        div.className = 'card p-4 flex justify-between items-center';
+        div.innerHTML = `
             <div class="flex items-center gap-3">
                 <div class="${cfg.bg} ${cfg.text} w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0">
                     <i class="fas ${cfg.icon} text-base"></i>
@@ -452,7 +493,7 @@ function render(){
                     <h4 class="font-bold text-slate-800 text-sm">${t.desc}</h4>
                     <div class="flex items-center gap-2 mt-0.5">
                         <span class="cat-badge cat-${t.category}">${cfg.label}</span>
-                        ${t.obs?`<span class="text-xs text-slate-400">${t.obs}</span>`:''}
+                        ${t.obs ? `<span class="text-xs text-slate-400">${t.obs}</span>` : ''}
                     </div>
                 </div>
             </div>
@@ -464,26 +505,18 @@ function render(){
     });
     updateSummary();
 }
-function updateAI(){
-    const aiBox=document.getElementById('ai-box'),aiText=document.getElementById('ai-text');
-    const expense=transactions.filter(t=>t.category!=='RECEITA').reduce((s,t)=>s+t.amount,0);
-    const income=transactions.filter(t=>t.category==='RECEITA').reduce((s,t)=>s+t.amount,0);
-    aiBox.classList.remove('hidden');
-    if(!income){aiText.innerText='Adicione sua receita para receber dicas da IA!';return;}
-    if(expense>income)aiText.innerText='⚠️ Gastos superaram a receita! Toque em IA para ajuda.';
-    else if(expense>income*0.7)aiText.innerText='💡 Mais de 70% da renda gasta. A IA pode sugerir cortes.';
-    else if(expense<income*0.5)aiText.innerText='🎉 Ótimo controle! Pergunte à IA onde investir o saldo.';
-    else aiText.innerText='✅ Finanças equilibradas. Quer dicas personalizadas?';
+
+function shareWhatsApp() {
+    const cur = document.getElementById('currency').value;
+    const income = transactions.filter(t => t.category === 'RECEITA').reduce((s,t) => s+t.amount, 0);
+    const expense = transactions.filter(t => t.category !== 'RECEITA').reduce((s,t) => s+t.amount, 0);
+    const fmt = v => `${cur} ${v.toLocaleString('pt-BR',{minimumFractionDigits:2})}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(`*💰 meu din din - Resumo do Mês*\n\n✅ Receitas: ${fmt(income)}\n❌ Despesas: ${fmt(expense)}\n─────────────────\n💵 Saldo: ${fmt(income-expense)}\n\n_meu-dindin.pages.dev_`)}`,'_blank');
 }
-function shareWhatsApp(){
-    const cur=document.getElementById('currency').value;
-    const income=transactions.filter(t=>t.category==='RECEITA').reduce((s,t)=>s+t.amount,0);
-    const expense=transactions.filter(t=>t.category!=='RECEITA').reduce((s,t)=>s+t.amount,0);
-    const fmt=v=>`${cur} ${v.toLocaleString('pt-BR',{minimumFractionDigits:2})}`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(`*💰 meu din din - Resumo do Mês*\n\n✅ Receitas: ${fmt(income)}\n❌ Despesas: ${fmt(expense)}\n─────────────────\n💵 Saldo: ${fmt(income-expense)}\n\n_meu-dindin.pages.dev · Hallz Branding_`)}`,'_blank');
-}
-document.getElementById('currency').addEventListener('change',updateSummary);
-render();updateAI();
+
+document.getElementById('currency').addEventListener('change', updateSummary);
+render();
+updateAlerta();
 </script>
-<script src="ai.js"></script> </body>
+</body>
 </html>
