@@ -1,4 +1,4 @@
-const AI_KEY = 'AIzaSyAbzCY3ijWXswEOvxFHHupzOlEv0bqei1g';
+const AI_KEY = 'AQ.Ab8RN6JFBPy1gBRgl-6chkb3fN8wGLrdlb_NpjCONTKdRcnA0A';
 const AI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
 async function sendMessage(){
@@ -22,6 +22,6 @@ async function sendMessage(){
     let parsed;try{parsed=JSON.parse(raw);}catch(e){parsed={action:'CHAT',reply:raw||'Erro: '+JSON.stringify(data).substring(0,150)};}
     if(parsed.action==='ADD')showConfirm(parsed);
     else if(parsed.action==='UPDATE')handleUpdate(parsed);
-    else appendMessage(parsed.reply||'Nao entendi, tente novamente!','ai');
+    else appendMessage(parsed.reply||'Erro API: '+JSON.stringify(data).substring(0,200),'ai');
   }catch(e){removeTyping(tid);appendMessage('Erro de conexao: '+e.message,'ai');}
 }
