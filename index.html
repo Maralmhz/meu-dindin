@@ -45,13 +45,15 @@
         .voice-ripple { width:120px; height:120px; border-radius:50%; background:rgba(34,197,94,0.2); display:flex; align-items:center; justify-content:center; animation: ripple 1.5s infinite; }
         @keyframes ripple { 0%{box-shadow:0 0 0 0 rgba(34,197,94,0.4)} 100%{box-shadow:0 0 0 40px rgba(34,197,94,0)} }
         input[type="number"]::-webkit-inner-spin-button { display: none; }
-        /* Dicas */
         .tip-card { background: linear-gradient(135deg, #1a2535 0%, #0f1923 100%); border-radius: 16px; padding: 16px 18px; margin-bottom: 10px; border-left: 4px solid #22c55e; }
         .tip-card .tip-icon { font-size: 22px; margin-right: 10px; }
-        /* Confirm Voice */
         #confirm-voice-modal { position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:300; display:none; align-items:flex-end; justify-content:center; }
         #confirm-voice-modal.active { display:flex; }
         .confirm-sheet { background:white; border-radius:24px 24px 0 0; padding:24px 20px 36px; width:100%; max-width:480px; }
+        /* Edit Modal */
+        #edit-modal { position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:300; display:none; align-items:flex-end; justify-content:center; }
+        #edit-modal.active { display:flex; }
+        .edit-sheet { background:white; border-radius:24px 24px 0 0; padding:24px 20px 40px; width:100%; max-width:480px; max-height:90vh; overflow-y:auto; }
     </style>
 </head>
 <body>
@@ -117,7 +119,6 @@
 
 <main class="max-w-lg mx-auto px-4 mt-6">
 
-    <!-- Dicas pré-programadas -->
     <div id="dicas-box" class="hidden mb-5">
         <h3 class="text-slate-700 font-bold text-sm mb-3">💡 Dicas Financeiras</h3>
         <div id="dica-atual" class="tip-card flex items-start">
@@ -133,7 +134,6 @@
         </div>
     </div>
 
-    <!-- Alerta de saldo -->
     <div id="alerta-box" class="card p-4 mb-5 hidden" style="border-left: 4px solid #22c55e">
         <div class="flex items-start gap-3">
             <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#111827">
@@ -199,6 +199,48 @@
     </div>
 </div>
 
+<!-- Edit Modal -->
+<div id="edit-modal">
+    <div class="edit-sheet">
+        <div style="width:40px;height:4px;background:#e5e7eb;border-radius:2px;margin:0 auto 20px;"></div>
+        <div class="flex justify-between items-center mb-5">
+            <h3 class="font-black text-slate-800 text-lg">✏️ Editar Transação</h3>
+            <button onclick="fecharEdicao()" class="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center"><i class="fas fa-times text-slate-500 text-sm"></i></button>
+        </div>
+        <div class="space-y-4">
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Descrição</label>
+                <input type="text" id="edit-desc" class="w-full p-3 rounded-2xl border border-slate-200 outline-none focus:border-green-400" placeholder="Descrição...">
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Valor</label>
+                    <input type="number" step="0.01" id="edit-amount" class="w-full p-3 rounded-2xl border border-slate-200 outline-none focus:border-green-400" placeholder="0,00">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Categoria</label>
+                    <select id="edit-category" class="w-full p-3 rounded-2xl border border-slate-200 outline-none focus:border-green-400">
+                        <option value="RECEITA">💰 Receita</option>
+                        <option value="FIXAS">🏠 Despesa Fixa</option>
+                        <option value="CARTAO">💳 Cartão</option>
+                        <option value="ALIMENTACAO">🍽 Alimentação</option>
+                        <option value="TRANSPORTE">🚗 Transporte</option>
+                        <option value="SAUDE">🏥 Saúde</option>
+                        <option value="LAZER">🎮 Lazer</option>
+                        <option value="OUTROS">📦 Outros</option>
+                    </select>
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Observações</label>
+                <input type="text" id="edit-obs" class="w-full p-3 rounded-2xl border border-slate-200 outline-none focus:border-green-400" placeholder="Detalhe opcional...">
+            </div>
+            <button onclick="salvarEdicao()" class="w-full py-4 rounded-2xl font-black text-lg text-white" style="background:#111827">Salvar Alterações</button>
+            <button onclick="fecharEdicao()" class="w-full py-3 rounded-2xl font-bold text-slate-600 bg-slate-100">Cancelar</button>
+        </div>
+    </div>
+</div>
+
 <!-- Add Modal -->
 <div id="modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center p-4 z-[60]">
     <div class="bg-white rounded-3xl w-full max-w-md p-6">
@@ -244,7 +286,6 @@
 <script>
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});
 
-// ========== DICAS PRÉ-PROGRAMADAS ==========
 const DICAS = [
     { icon:'💰', titulo:'Regra 50-30-20', texto:'Divida sua renda: 50% para necessidades, 30% para desejos e 20% para poupança ou dívidas. Uma fórmula simples e eficaz.' },
     { icon:'🏦', titulo:'Reserva de emergência', texto:'Guarde pelo menos 3 a 6 meses dos seus gastos mensais em uma conta de fácil acesso. Comece com pequenos valores.' },
@@ -273,7 +314,6 @@ function toggleDicas() {
     if (!box.classList.contains('hidden')) renderDica();
 }
 
-// ========== DADOS ==========
 let transactions = JSON.parse(localStorage.getItem('meudindin_data')) || [
     {id:1,desc:'Salário',amount:5000,category:'RECEITA',obs:'Receita mensal',date:new Date().toISOString()},
     {id:2,desc:'Aluguel',amount:1200,category:'FIXAS',obs:'Despesa fixa',date:new Date().toISOString()},
@@ -283,6 +323,7 @@ let transactions = JSON.parse(localStorage.getItem('meudindin_data')) || [
 ];
 let currentTab='all', recognition=null, isRecording=false;
 let voiceParsed = null;
+let editingId = null;
 
 const CAT_CONFIG={
     RECEITA:{icon:'fa-arrow-up',bg:'bg-green-100',text:'text-green-600',label:'Receita'},
@@ -295,7 +336,6 @@ const CAT_CONFIG={
     OUTROS:{icon:'fa-box',bg:'bg-slate-100',text:'text-slate-600',label:'Outros'}
 };
 
-// ========== PARSE DE VOZ ==========
 const CAT_KEYWORDS = {
     RECEITA: ['salário','salario','recebi','entrada','renda','freelance','pagamento','recebimento','ganho','ganhos','recebo'],
     FIXAS: ['aluguel','condomínio','condominio','financiamento','prestação','prestacao','conta de luz','internet','água','agua','gás','gas','energia','telefone','boleto'],
@@ -309,9 +349,7 @@ const CAT_KEYWORDS = {
 function detectarCategoria(text) {
     const lower = text.toLowerCase();
     for (const [cat, words] of Object.entries(CAT_KEYWORDS)) {
-        for (const w of words) {
-            if (lower.includes(w)) return cat;
-        }
+        for (const w of words) { if (lower.includes(w)) return cat; }
     }
     return 'OUTROS';
 }
@@ -329,6 +367,37 @@ function extrairValor(text) {
     return null;
 }
 
+// ========== EDIÇÃO ==========
+function abrirEdicao(id) {
+    const t = transactions.find(x => x.id === id);
+    if (!t) return;
+    editingId = id;
+    document.getElementById('edit-desc').value = t.desc;
+    document.getElementById('edit-amount').value = t.amount;
+    document.getElementById('edit-category').value = t.category;
+    document.getElementById('edit-obs').value = t.obs || '';
+    document.getElementById('edit-modal').classList.add('active');
+}
+
+function fecharEdicao() {
+    document.getElementById('edit-modal').classList.remove('active');
+    editingId = null;
+}
+
+function salvarEdicao() {
+    const desc = document.getElementById('edit-desc').value.trim();
+    const amount = parseFloat(document.getElementById('edit-amount').value);
+    const category = document.getElementById('edit-category').value;
+    const obs = document.getElementById('edit-obs').value.trim();
+    if (!desc) { alert('Informe uma descrição.'); return; }
+    if (!amount || amount <= 0) { alert('Informe um valor válido.'); return; }
+    const idx = transactions.findIndex(x => x.id === editingId);
+    if (idx === -1) return;
+    transactions[idx] = { ...transactions[idx], desc, amount, category, obs };
+    saveToLocal();
+    fecharEdicao();
+}
+
 // ========== VOZ ==========
 function toggleVoiceOverlay() {
     if (isRecording) { stopVoice(); return; }
@@ -342,22 +411,16 @@ function startVoice() {
     recognition.lang = 'pt-BR';
     recognition.interimResults = true;
     recognition.maxAlternatives = 1;
-
     recognition.onstart = () => {
         isRecording = true;
         document.getElementById('voice-overlay').classList.add('active');
         document.getElementById('mic-center').classList.add('recording');
     };
-
     recognition.onresult = (e) => {
         const transcript = Array.from(e.results).map(r => r[0].transcript).join('');
         document.getElementById('voice-transcript').textContent = '"' + transcript + '"';
-        if (e.results[e.results.length-1].isFinal) {
-            stopVoice();
-            processarVoz(transcript);
-        }
+        if (e.results[e.results.length-1].isFinal) { stopVoice(); processarVoz(transcript); }
     };
-
     recognition.onend = () => stopVoice();
     recognition.onerror = () => stopVoice();
     recognition.start();
@@ -373,14 +436,10 @@ function stopVoice() {
 
 function processarVoz(text) {
     const valor = extrairValor(text);
-    if (!valor) {
-        alert('Não consegui identificar um valor.\nTente: "Gastei 50 reais no mercado"');
-        return;
-    }
+    if (!valor) { alert('Não consegui identificar um valor.\nTente: "Gastei 50 reais no mercado"'); return; }
     const categoria = detectarCategoria(text);
     const desc = text.charAt(0).toUpperCase() + text.slice(1).substring(0, 50);
     voiceParsed = { desc, amount: valor, category: categoria, obs: '' };
-
     const cur = document.getElementById('currency').value;
     const cfg = CAT_CONFIG[categoria];
     document.getElementById('confirm-voice-content').innerHTML = `
@@ -412,7 +471,7 @@ function cancelarVoz() {
     voiceParsed = null;
 }
 
-// ========== RENDER ==========
+// ========== CRUD ==========
 function saveToLocal() { localStorage.setItem('meudindin_data', JSON.stringify(transactions)); render(); updateAlerta(); }
 
 function toggleModal() {
@@ -499,7 +558,10 @@ function render() {
             </div>
             <div class="text-right flex-shrink-0 ml-2">
                 <p class="font-black text-base ${isIncome?'text-green-500':'text-red-500'}">${isIncome?'+':'-'} ${cur} ${t.amount.toLocaleString('pt-BR',{minimumFractionDigits:2})}</p>
-                <button onclick="deleteTransaction(${t.id})" class="text-[10px] text-slate-300 hover:text-red-400 uppercase font-bold">excluir</button>
+                <div class="flex gap-2 justify-end mt-1">
+                    <button onclick="abrirEdicao(${t.id})" class="text-[10px] text-blue-400 hover:text-blue-600 uppercase font-bold"><i class="fas fa-pen"></i> editar</button>
+                    <button onclick="deleteTransaction(${t.id})" class="text-[10px] text-slate-300 hover:text-red-400 uppercase font-bold"><i class="fas fa-trash"></i> excluir</button>
+                </div>
             </div>`;
         list.appendChild(div);
     });
