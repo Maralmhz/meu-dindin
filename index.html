@@ -49,8 +49,7 @@
         .tip-card .tip-icon { font-size: 22px; margin-right: 10px; }
         #confirm-voice-modal { position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:300; display:none; align-items:flex-end; justify-content:center; }
         #confirm-voice-modal.active { display:flex; }
-        .confirm-sheet { background:white; border-radius:24px 24px 0 0; padding:24px 20px 36px; width:100%; max-width:480px; }
-        /* Edit Modal */
+        .confirm-sheet { background:white; border-radius:24px 24px 0 0; padding:24px 20px 40px; width:100%; max-width:480px; }
         #edit-modal { position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:300; display:none; align-items:flex-end; justify-content:center; }
         #edit-modal.active { display:flex; }
         .edit-sheet { background:white; border-radius:24px 24px 0 0; padding:24px 20px 40px; width:100%; max-width:480px; max-height:90vh; overflow-y:auto; }
@@ -191,7 +190,29 @@
     <div class="confirm-sheet">
         <div style="width:40px;height:4px;background:#e5e7eb;border-radius:2px;margin:0 auto 20px;"></div>
         <h3 class="font-black text-slate-800 text-lg mb-4">🎙️ Confirmar lançamento?</h3>
-        <div id="confirm-voice-content" class="bg-slate-50 rounded-2xl p-4 mb-5 space-y-3"></div>
+        <div class="bg-slate-50 rounded-2xl p-4 mb-4 space-y-3">
+            <div class="flex justify-between items-center py-1">
+                <span class="text-slate-400 text-sm">Descrição</span>
+                <span id="vc-desc" class="font-semibold text-slate-800 text-sm text-right max-w-[60%]"></span>
+            </div>
+            <div class="flex justify-between items-center py-1">
+                <span class="text-slate-400 text-sm">Valor</span>
+                <span id="vc-valor" class="font-black text-lg"></span>
+            </div>
+            <div class="flex justify-between items-start py-1">
+                <span class="text-slate-400 text-sm pt-2">Categoria</span>
+                <select id="vc-category" onchange="atualizarCorVoz()" class="p-2 rounded-xl border border-slate-200 outline-none focus:border-green-400 text-sm font-bold text-slate-700 max-w-[60%]">
+                    <option value="RECEITA">💰 Receita</option>
+                    <option value="FIXAS">🏠 Despesa Fixa</option>
+                    <option value="CARTAO">💳 Cartão</option>
+                    <option value="ALIMENTACAO">🍽 Alimentação</option>
+                    <option value="TRANSPORTE">🚗 Transporte</option>
+                    <option value="SAUDE">🏥 Saúde</option>
+                    <option value="LAZER">🎮 Lazer</option>
+                    <option value="OUTROS">📦 Outros</option>
+                </select>
+            </div>
+        </div>
         <div class="flex gap-3">
             <button onclick="cancelarVoz()" class="flex-1 py-3 rounded-2xl font-bold text-slate-600 bg-slate-100">Cancelar</button>
             <button onclick="confirmarVoz()" class="flex-1 py-3 rounded-2xl font-bold text-white" style="background:#111827">✅ Confirmar</button>
@@ -336,20 +357,23 @@ const CAT_CONFIG={
     OUTROS:{icon:'fa-box',bg:'bg-slate-100',text:'text-slate-600',label:'Outros'}
 };
 
-const CAT_KEYWORDS = {
-    RECEITA: ['salário','salario','recebi','entrada','renda','freelance','pagamento','recebimento','ganho','ganhos','recebo'],
-    FIXAS: ['aluguel','condomínio','condominio','financiamento','prestação','prestacao','conta de luz','internet','água','agua','gás','gas','energia','telefone','boleto'],
-    CARTAO: ['cartão','cartao','visa','mastercard','crédito','credito','débito','debito','parcela','fatura'],
-    ALIMENTACAO: ['mercado','supermercado','restaurante','lanche','comida','pizza','hambúrguer','hamburguer','almoço','almoco','jantar','café','cafe','padaria','delivery','ifood','feira'],
-    TRANSPORTE: ['gasolina','uber','ônibus','onibus','metrô','metro','táxi','taxi','combustível','combustivel','posto','passagem','99','cabify'],
-    SAUDE: ['farmácia','farmacia','médico','medico','hospital','remédio','remedio','consulta','exame','academia','dentista','plano de saúde'],
-    LAZER: ['cinema','bar','show','jogo','netflix','spotify','viagem','passeio','festa','parque','praia','balada','entretenimento','disney','amazon prime']
-};
+// Ordem importa: categorias mais específicas primeiro para evitar conflito
+const CAT_KEYWORDS = [
+    { cat:'RECEITA',   words:['salário','salario','recebi','entrada','renda','freelance','recebimento','ganho','ganhos','recebo'] },
+    { cat:'TRANSPORTE',words:['gasolina','combustível','combustivel','uber','ônibus','onibus','metrô','metro','táxi','taxi','posto de gasolina','passagem','99','cabify','mototaxi'] },
+    { cat:'CARTAO',    words:['cartão','cartao','visa','mastercard','crédito','credito','débito','debito','parcela','fatura'] },
+    { cat:'ALIMENTACAO',words:['mercado','supermercado','restaurante','lanche','comida','pizza','hambúrguer','hamburguer','almoço','almoco','jantar','café','cafe','padaria','delivery','ifood','feira','açougue','acougue'] },
+    { cat:'SAUDE',     words:['farmácia','farmacia','médico','medico','hospital','remédio','remedio','consulta','exame','dentista','plano de saúde','academia'] },
+    { cat:'LAZER',     words:['cinema','show','netflix','spotify','viagem','passeio','festa','parque','praia','balada','entretenimento','disney','amazon prime','jogo','ingresso'] },
+    { cat:'FIXAS',     words:['aluguel','condomínio','condominio','financiamento','prestação','prestacao','conta de luz','internet','água','agua','gás','gas','energia','telefone','boleto'] },
+];
 
 function detectarCategoria(text) {
     const lower = text.toLowerCase();
-    for (const [cat, words] of Object.entries(CAT_KEYWORDS)) {
-        for (const w of words) { if (lower.includes(w)) return cat; }
+    for (const { cat, words } of CAT_KEYWORDS) {
+        for (const w of words) {
+            if (lower.includes(w)) return cat;
+        }
     }
     return 'OUTROS';
 }
@@ -365,37 +389,6 @@ function extrairValor(text) {
         if (m) return parseFloat(m[1].replace(',','.'));
     }
     return null;
-}
-
-// ========== EDIÇÃO ==========
-function abrirEdicao(id) {
-    const t = transactions.find(x => x.id === id);
-    if (!t) return;
-    editingId = id;
-    document.getElementById('edit-desc').value = t.desc;
-    document.getElementById('edit-amount').value = t.amount;
-    document.getElementById('edit-category').value = t.category;
-    document.getElementById('edit-obs').value = t.obs || '';
-    document.getElementById('edit-modal').classList.add('active');
-}
-
-function fecharEdicao() {
-    document.getElementById('edit-modal').classList.remove('active');
-    editingId = null;
-}
-
-function salvarEdicao() {
-    const desc = document.getElementById('edit-desc').value.trim();
-    const amount = parseFloat(document.getElementById('edit-amount').value);
-    const category = document.getElementById('edit-category').value;
-    const obs = document.getElementById('edit-obs').value.trim();
-    if (!desc) { alert('Informe uma descrição.'); return; }
-    if (!amount || amount <= 0) { alert('Informe um valor válido.'); return; }
-    const idx = transactions.findIndex(x => x.id === editingId);
-    if (idx === -1) return;
-    transactions[idx] = { ...transactions[idx], desc, amount, category, obs };
-    saveToLocal();
-    fecharEdicao();
 }
 
 // ========== VOZ ==========
@@ -440,28 +433,32 @@ function processarVoz(text) {
     const categoria = detectarCategoria(text);
     const desc = text.charAt(0).toUpperCase() + text.slice(1).substring(0, 50);
     voiceParsed = { desc, amount: valor, category: categoria, obs: '' };
+
     const cur = document.getElementById('currency').value;
-    const cfg = CAT_CONFIG[categoria];
-    document.getElementById('confirm-voice-content').innerHTML = `
-        <div class="flex justify-between items-center py-1">
-            <span class="text-slate-400 text-sm">Descrição</span>
-            <span class="font-semibold text-slate-800 text-sm text-right max-w-[60%]">${desc}</span>
-        </div>
-        <div class="flex justify-between items-center py-1">
-            <span class="text-slate-400 text-sm">Valor</span>
-            <span class="font-black text-lg ${categoria==='RECEITA'?'text-green-500':'text-red-500'}">${categoria==='RECEITA'?'+':'-'} ${cur} ${valor.toLocaleString('pt-BR',{minimumFractionDigits:2})}</span>
-        </div>
-        <div class="flex justify-between items-center py-1">
-            <span class="text-slate-400 text-sm">Categoria</span>
-            <span class="cat-badge cat-${categoria}">${cfg.label}</span>
-        </div>
-    `;
+    const isIncome = categoria === 'RECEITA';
+
+    document.getElementById('vc-desc').textContent = desc;
+    document.getElementById('vc-valor').textContent = `${isIncome ? '+' : '-'} ${cur} ${valor.toLocaleString('pt-BR',{minimumFractionDigits:2})}`;
+    document.getElementById('vc-valor').className = `font-black text-lg ${isIncome ? 'text-green-500' : 'text-red-500'}`;
+    document.getElementById('vc-category').value = categoria;
+
     document.getElementById('confirm-voice-modal').classList.add('active');
+}
+
+function atualizarCorVoz() {
+    if (!voiceParsed) return;
+    const cat = document.getElementById('vc-category').value;
+    const cur = document.getElementById('currency').value;
+    const isIncome = cat === 'RECEITA';
+    const valor = voiceParsed.amount;
+    document.getElementById('vc-valor').textContent = `${isIncome ? '+' : '-'} ${cur} ${valor.toLocaleString('pt-BR',{minimumFractionDigits:2})}`;
+    document.getElementById('vc-valor').className = `font-black text-lg ${isIncome ? 'text-green-500' : 'text-red-500'}`;
 }
 
 function confirmarVoz() {
     if (!voiceParsed) return;
-    transactions.push({ id: Date.now(), ...voiceParsed, date: new Date().toISOString() });
+    const categoria = document.getElementById('vc-category').value;
+    transactions.push({ id: Date.now(), ...voiceParsed, category: categoria, date: new Date().toISOString() });
     saveToLocal();
     cancelarVoz();
 }
@@ -469,6 +466,37 @@ function confirmarVoz() {
 function cancelarVoz() {
     document.getElementById('confirm-voice-modal').classList.remove('active');
     voiceParsed = null;
+}
+
+// ========== EDIÇÃO ==========
+function abrirEdicao(id) {
+    const t = transactions.find(x => x.id === id);
+    if (!t) return;
+    editingId = id;
+    document.getElementById('edit-desc').value = t.desc;
+    document.getElementById('edit-amount').value = t.amount;
+    document.getElementById('edit-category').value = t.category;
+    document.getElementById('edit-obs').value = t.obs || '';
+    document.getElementById('edit-modal').classList.add('active');
+}
+
+function fecharEdicao() {
+    document.getElementById('edit-modal').classList.remove('active');
+    editingId = null;
+}
+
+function salvarEdicao() {
+    const desc = document.getElementById('edit-desc').value.trim();
+    const amount = parseFloat(document.getElementById('edit-amount').value);
+    const category = document.getElementById('edit-category').value;
+    const obs = document.getElementById('edit-obs').value.trim();
+    if (!desc) { alert('Informe uma descrição.'); return; }
+    if (!amount || amount <= 0) { alert('Informe um valor válido.'); return; }
+    const idx = transactions.findIndex(x => x.id === editingId);
+    if (idx === -1) return;
+    transactions[idx] = { ...transactions[idx], desc, amount, category, obs };
+    saveToLocal();
+    fecharEdicao();
 }
 
 // ========== CRUD ==========
