@@ -54,6 +54,7 @@
         #edit-modal.active { display:flex; }
         .edit-sheet { background:white; border-radius:24px 24px 0 0; padding:24px 20px 40px; width:100%; max-width:480px; max-height:90vh; overflow-y:auto; }
     </style>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
@@ -89,6 +90,17 @@
         </div>
     </div>
 </header>
+
+<div class="max-w-lg mx-auto px-4 pt-3">
+  <div class="flex items-center justify-between gap-3 rounded-2xl bg-white border border-slate-200 px-3 py-2 shadow-sm">
+    <div class="min-w-0">
+      <p class="text-xs font-bold text-slate-700">Sincronização na nuvem</p>
+      <p id="cloud-sync-status" class="text-[11px] text-slate-400">Entre com sua conta Google para ativar</p>
+    </div>
+    <div id="google-signin" class="flex-shrink-0"></div>
+    <button id="google-signout" onclick="signOutGoogle()" class="hidden text-xs font-bold text-slate-500 px-2 py-2">Sair</button>
+  </div>
+</div>
 
 <div class="max-w-lg mx-auto px-4">
     <div class="header-card">
@@ -346,6 +358,106 @@ let transactions = JSON.parse(localStorage.getItem('meudindin_data')) || [
 let currentTab='all', recognition=null, isRecording=false;
 let voiceParsed = null;
 let editingId = null;
+let googleIdToken = sessionStorage.getItem('meudindin_google_id_token') || null;
+let cloudSyncReady = false;
+let cloudSaveTimer = null;
+const CLOUD_SYNC_API = 'https://meu-dindin-lake.vercel.app/api/sync';
+
+function setCloudStatus(message, error = false) {
+    const el = document.getElementById('cloud-sync-status');
+    if (el) {
+        el.textContent = message;
+        el.className = 'text-[11px] ' + (error ? 'text-red-500' : 'text-slate-400');
+    }
+}
+
+async function handleGoogleCredential(response) {
+    googleIdToken = response.credential;
+    sessionStorage.setItem('meudindin_google_id_token', googleIdToken);
+    await syncFromCloud();
+}
+
+async function syncFromCloud() {
+    if (!googleIdToken) return;
+    setCloudStatus('Conectando à sua conta...');
+    try {
+        const response = await fetch(CLOUD_SYNC_API, {
+            headers: { Authorization: 'Bearer ' + googleIdToken }
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Falha no login.');
+        if (result.exists) {
+            localStorage.setItem('meudindin_local_backup_before_cloud', JSON.stringify(transactions));
+            transactions = result.transactions;
+            localStorage.setItem('meudindin_data', JSON.stringify(transactions));
+            render();
+            updateAlerta();
+            setCloudStatus('Dados da nuvem carregados e sincronizados.');
+        } else {
+            await saveCloudData(true);
+            setCloudStatus('Sincronização ativada. Seus dados foram enviados à nuvem.');
+        }
+        cloudSyncReady = true;
+        document.getElementById('google-signin').classList.add('hidden');
+        document.getElementById('google-signout').classList.remove('hidden');
+    } catch (error) {
+        cloudSyncReady = false;
+        googleIdToken = null;
+        sessionStorage.removeItem('meudindin_google_id_token');
+        setCloudStatus(error.message || 'Não foi possível sincronizar.', true);
+    }
+}
+
+async function saveCloudData(initial = false) {
+    if (!googleIdToken) return;
+    const response = await fetch(CLOUD_SYNC_API, {
+        method: 'POST',
+        headers: {
+            Authorization: 'Bearer ' + googleIdToken,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ action: 'save', transactions })
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Falha ao salvar na nuvem.');
+    if (!initial) setCloudStatus('Salvo na nuvem agora.');
+}
+
+function scheduleCloudSave() {
+    if (!cloudSyncReady) return;
+    clearTimeout(cloudSaveTimer);
+    cloudSaveTimer = setTimeout(async () => {
+        try { await saveCloudData(); }
+        catch (error) { setCloudStatus(error.message || 'Erro ao salvar na nuvem.', true); }
+    }, 900);
+}
+
+function signOutGoogle() {
+    googleIdToken = null;
+    cloudSyncReady = false;
+    sessionStorage.removeItem('meudindin_google_id_token');
+    if (window.google && google.accounts && google.accounts.id) google.accounts.id.disableAutoSelect();
+    document.getElementById('google-signin').classList.remove('hidden');
+    document.getElementById('google-signout').classList.add('hidden');
+    setCloudStatus('Desconectado. Os dados locais continuam neste aparelho.');
+}
+
+function initGoogleSignIn() {
+    if (!window.google || !google.accounts || !google.accounts.id) {
+        setTimeout(initGoogleSignIn, 500);
+        return;
+    }
+    google.accounts.id.initialize({
+        client_id: '272708465865-f6shmohodvh6c27mgp34hh3apvrl4tae.apps.googleusercontent.com',
+        callback: handleGoogleCredential,
+        auto_select: false
+    });
+    google.accounts.id.renderButton(document.getElementById('google-signin'), {
+        theme: 'outline', size: 'medium', shape: 'pill', text: 'signin_with', width: 190
+    });
+    if (googleIdToken) syncFromCloud();
+}
+
 
 const CAT_CONFIG={
     RECEITA:{icon:'fa-arrow-up',bg:'bg-green-100',text:'text-green-600',label:'Receita'},
@@ -501,7 +613,7 @@ function salvarEdicao() {
 }
 
 // ========== CRUD ==========
-function saveToLocal() { localStorage.setItem('meudindin_data', JSON.stringify(transactions)); render(); updateAlerta(); }
+function saveToLocal() { localStorage.setItem('meudindin_data', JSON.stringify(transactions)); render(); updateAlerta(); scheduleCloudSave(); }
 function exportData() {
     const payload = JSON.stringify(transactions, null, 2);
     const blob = new Blob([payload], { type: 'application/json' });
@@ -617,6 +729,7 @@ function shareWhatsApp() {
 document.getElementById('currency').addEventListener('change', updateSummary);
 render();
 updateAlerta();
+window.addEventListener('load', initGoogleSignIn);
 </script>
 </body>
 </html>
