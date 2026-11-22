@@ -373,7 +373,7 @@ let transactions = JSON.parse(localStorage.getItem('meudindin_data')) || [
 let currentTab='all', recognition=null, isRecording=false;
 let voiceParsed = null;
 let editingId = null;
-let googleIdToken = sessionStorage.getItem('meudindin_google_id_token') || null;
+let googleIdToken = localStorage.getItem('meudindin_google_id_token') || null;
 let cloudSyncReady = false;
 let cloudSaveTimer = null;
 const CLOUD_SYNC_API = 'https://meu-dindin-lake.vercel.app/api/sync';
@@ -391,7 +391,7 @@ function setCloudStatus(message, error = false) {
 
 async function handleGoogleCredential(response) {
     googleIdToken = response.credential;
-    sessionStorage.setItem('meudindin_google_id_token', googleIdToken);
+    localStorage.setItem('meudindin_google_id_token', googleIdToken);
     await syncFromCloud();
 }
 
@@ -422,7 +422,7 @@ async function syncFromCloud() {
     } catch (error) {
         cloudSyncReady = false;
         googleIdToken = null;
-        sessionStorage.removeItem('meudindin_google_id_token');
+        localStorage.removeItem('meudindin_google_id_token');
         setCloudStatus(error.message || 'Não foi possível sincronizar.', true);
     }
 }
@@ -476,7 +476,7 @@ function scheduleCloudSave() {
 function signOutGoogle() {
     googleIdToken = null;
     cloudSyncReady = false;
-    sessionStorage.removeItem('meudindin_google_id_token');
+    localStorage.removeItem('meudindin_google_id_token');
     if (window.google && google.accounts && google.accounts.id) google.accounts.id.disableAutoSelect();
     document.getElementById('google-signin').classList.remove('hidden');
     document.getElementById('google-signout').classList.add('hidden');
@@ -491,12 +491,17 @@ function initGoogleSignIn() {
     google.accounts.id.initialize({
         client_id: '272708465865-f6shmohodvh6c27mgp34hh3apvrl4tae.apps.googleusercontent.com',
         callback: handleGoogleCredential,
-        auto_select: false
+        auto_select: true
     });
     google.accounts.id.renderButton(document.getElementById('google-signin'), {
         theme: 'outline', size: 'medium', shape: 'pill', text: 'signin_with', width: 190
     });
-    if (googleIdToken) syncFromCloud();
+    if (googleIdToken) {
+        syncFromCloud();
+    } else {
+        // Tenta recuperar a sessão Google aprovada anteriormente sem exigir novo clique.
+        google.accounts.id.prompt();
+    }
 }
 
 
