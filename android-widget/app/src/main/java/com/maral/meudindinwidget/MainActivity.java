@@ -2,6 +2,8 @@ package com.maral.meudindinwidget;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
@@ -26,6 +28,13 @@ public class MainActivity extends Activity {
     private TextView status;
     private static final String SITE = "https://meu-dindin.pages.dev";
     private static final int PICK_BACKUP = 42;
+    private final Handler syncHandler = new Handler(Looper.getMainLooper());
+    private final Runnable syncTask = new Runnable() {
+        @Override public void run() {
+            if (web != null) web.evaluateJavascript("(function(){return localStorage.getItem('meudindin_data') || '[]';})()", value -> saveSnapshot(value));
+            syncHandler.postDelayed(this, 10000);
+        }
+    };
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
         LinearLayout root = new LinearLayout(this); root.setOrientation(LinearLayout.VERTICAL); root.setPadding(24,24,24,24); root.setBackgroundColor(Color.rgb(15,23,42));
@@ -36,6 +45,7 @@ public class MainActivity extends Activity {
             @Override public void onPageFinished(WebView view, String url) {
                 if (!SITE.equals(url) && !url.startsWith(SITE + "/")) return;
                 view.evaluateJavascript("(function(){return localStorage.getItem('meudindin_data') || '[]';})()", value -> saveSnapshot(value));
+                syncHandler.removeCallbacks(syncTask); syncHandler.postDelayed(syncTask, 10000);
             }
             @Override public boolean shouldOverrideUrlLoading(WebView view, String url) { return !url.startsWith(SITE); }
         });
@@ -68,5 +78,6 @@ public class MainActivity extends Activity {
             BalanceWidgetProvider.updateAll(this); status.setText("Sincronizado. Entradas: " + BalanceWidgetProvider.money(income) + " | Saídas: " + BalanceWidgetProvider.money(expense) + "\nOs dados ficam salvos somente neste aparelho.");
         } catch(Exception e) { status.setText("Não consegui ler os lançamentos: " + e.getMessage()); }
     }
+    @Override protected void onDestroy() { syncHandler.removeCallbacks(syncTask); super.onDestroy(); }
     @Override public void onBackPressed() { if (web != null && web.canGoBack()) web.goBack(); else super.onBackPressed(); }
 }
