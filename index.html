@@ -54,7 +54,7 @@
         #edit-modal.active { display:flex; }
         .edit-sheet { background:white; border-radius:24px 24px 0 0; padding:24px 20px 40px; width:100%; max-width:480px; max-height:90vh; overflow-y:auto; }
         #side-panel.open { transform: translateX(0); }
-        #side-panel-backdrop.open { display:block; }
+        #side-panel-backdrop.open { display:block !important; }
 
     </style>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -84,7 +84,7 @@
 </header>
 
 <div id="side-panel-backdrop" class="fixed inset-0 bg-black/50 z-[150] hidden" onclick="toggleSidePanel(false)"></div>
-<aside id="side-panel" class="fixed top-0 right-0 h-full w-[ min(86vw,340px)] bg-white z-[160] shadow-2xl translate-x-full transition-transform duration-300 p-5 overflow-y-auto">
+<aside id="side-panel" class="fixed top-0 right-0 h-full w-[min(86vw,340px)] bg-white z-[160] shadow-2xl translate-x-full transition-transform duration-300 p-5 overflow-y-auto">
   <div class="flex items-center justify-between mb-7">
     <div><p class="text-xs font-bold uppercase tracking-widest text-slate-400">Meu Dindin</p><h2 class="text-xl font-black text-slate-800">Menu</h2></div>
     <button onclick="toggleSidePanel(false)" class="w-9 h-9 rounded-full bg-slate-100 text-slate-600"><i class="fas fa-times"></i></button>
