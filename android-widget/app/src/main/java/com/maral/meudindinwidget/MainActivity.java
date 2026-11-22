@@ -10,6 +10,11 @@ import android.view.Gravity;
 import android.graphics.Color;
 import android.view.ViewGroup;
 import android.content.SharedPreferences;
+import android.content.Intent;
+import android.net.Uri;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.text.SimpleDateFormat;
@@ -20,11 +25,13 @@ public class MainActivity extends Activity {
     private WebView web;
     private TextView status;
     private static final String SITE = "https://meu-dindin.pages.dev";
+    private static final int PICK_BACKUP = 42;
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
         LinearLayout root = new LinearLayout(this); root.setOrientation(LinearLayout.VERTICAL); root.setPadding(24,24,24,24); root.setBackgroundColor(Color.rgb(15,23,42));
         TextView title = new TextView(this); title.setText("Meu Dindin Widget"); title.setTextSize(22); title.setTextColor(Color.WHITE); title.setGravity(Gravity.CENTER_VERTICAL); root.addView(title, new LinearLayout.LayoutParams(-1, 56));
         status = new TextView(this); status.setText("Conectando ao Meu Dindin..."); status.setTextColor(Color.LTGRAY); root.addView(status, new LinearLayout.LayoutParams(-1, 48));
+        TextView importButton = new TextView(this); importButton.setText("IMPORTAR BACKUP DO NAVEGADOR"); importButton.setTextColor(Color.WHITE); importButton.setTextSize(13); importButton.setGravity(Gravity.CENTER); importButton.setPadding(12,14,12,14); importButton.setBackgroundColor(Color.rgb(37,99,235)); importButton.setOnClickListener(v -> { Intent pick = new Intent(Intent.ACTION_OPEN_DOCUMENT); pick.setType("application/json"); pick.addCategory(Intent.CATEGORY_OPENABLE); startActivityForResult(pick, PICK_BACKUP); }); root.addView(importButton, new LinearLayout.LayoutParams(-1, 52));
         web = new WebView(this); web.getSettings().setJavaScriptEnabled(true); web.getSettings().setDomStorageEnabled(true); web.setWebViewClient(new WebViewClient() {
             @Override public void onPageFinished(WebView view, String url) {
                 if (!SITE.equals(url) && !url.startsWith(SITE + "/")) return;
@@ -34,6 +41,19 @@ public class MainActivity extends Activity {
         });
         root.addView(web, new LinearLayout.LayoutParams(0,0,1)); setContentView(root);
         web.loadUrl(SITE);
+    }
+    @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode != PICK_BACKUP || resultCode != RESULT_OK || data == null) return;
+        Uri uri = data.getData();
+        try (InputStream in = getContentResolver().openInputStream(uri);
+             BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"))) {
+            StringBuilder json = new StringBuilder(); String line;
+            while ((line = reader.readLine()) != null) json.append(line);
+            new JSONArray(json.toString());
+            web.evaluateJavascript("localStorage.setItem('meudindin_data'," + JSONObject.quote(json.toString()) + "); location.reload();", null);
+            status.setText("Backup importado. Atualizando o widget...");
+        } catch (Exception e) { status.setText("Falha ao importar backup: " + e.getMessage()); }
     }
     private void saveSnapshot(String encoded) {
         try {
