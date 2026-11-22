@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+ android:id="@+id/widget_root" android:layout_width="match_parent" android:layout_height="match_parent"
+ android:orientation="vertical" android:padding="16dp" android:background="#172554">
+ <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="MEU DINDIN" android:textColor="#BFDBFE" android:textStyle="bold" android:textSize="12sp"/>
+ <TextView android:id="@+id/balance" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Abra para sincronizar" android:textColor="#FFFFFF" android:textStyle="bold" android:textSize="24sp" android:paddingTop="7dp"/>
+ <TextView android:id="@+id/income" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Entradas" android:textColor="#86EFAC" android:textSize="13sp" android:paddingTop="8dp"/>
+ <TextView android:id="@+id/expenses" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Saídas" android:textColor="#FCA5A5" android:textSize="13sp"/>
+ <TextView android:id="@+id/updated" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Toque para atualizar" android:textColor="#CBD5E1" android:textSize="10sp" android:paddingTop="6dp"/>
+</LinearLayout>
