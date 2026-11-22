@@ -12,7 +12,7 @@ export default async function handler(req, res) {
   if (req.method !== "GET") return send(res, 405, { error: "Método não permitido." });
   try {
     const auth = req.headers.authorization || "";
-    const match = auth.match(/^Bearer\\s+(.+)$/i);
+    const match = auth.match(/^Bearer\s+(.+)$/i);
     if (!match) return send(res, 401, { error: "Widget não vinculado. Abra o app Meu Dindin e conecte a conta." });
     const tokenHash = createHash("sha256").update(match[1]).digest("hex");
     const tokenFile = await get("meu-dindin/widget-tokens/" + tokenHash + ".json", { access: "private", useCache: false });
