@@ -106,7 +106,7 @@
     <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-3">Conta e sincronização</p>
     <div class="flex items-center gap-2 text-sm text-slate-600 mb-3"><span id="cloud-sync-dot" class="w-2 h-2 rounded-full bg-slate-300"></span><span id="cloud-sync-status">Conectar nuvem</span></div>
     <div id="google-signin"></div>
-    <button id="google-signout" onclick="signOutGoogle()" class="hidden mt-3 text-sm font-semibold text-slate-500 underline">Sair da conta Google</button>
+    <button id="widget-connect" onclick="connectAndroidWidget()" class="hidden w-full mt-3 p-3 rounded-xl bg-slate-900 text-white font-semibold text-sm"><i class="fas fa-th-large mr-2"></i> Conectar widget Android</button>\n    <button id="google-signout" onclick="signOutGoogle()" class="hidden mt-3 text-sm font-semibold text-slate-500 underline">Sair da conta Google</button>
   </div>
 </aside>
 
@@ -417,12 +417,34 @@ async function syncFromCloud() {
         }
         cloudSyncReady = true;
         document.getElementById('google-signin').classList.add('hidden');
-        document.getElementById('google-signout').classList.remove('hidden');
+        document.getElementById('google-signout').classList.remove('hidden');\n        document.getElementById('widget-connect').classList.remove('hidden');
     } catch (error) {
         cloudSyncReady = false;
         googleIdToken = null;
         sessionStorage.removeItem('meudindin_google_id_token');
         setCloudStatus(error.message || 'Não foi possível sincronizar.', true);
+    }
+}
+
+async function connectAndroidWidget() {
+    if (!googleIdToken) { alert('Conecte sua conta Google primeiro.'); return; }
+    const button = document.getElementById('widget-connect');
+    button.disabled = true;
+    button.textContent = 'Preparando conexão...';
+    try {
+        const response = await fetch(CLOUD_SYNC_API, {
+            method: 'POST',
+            headers: { Authorization: 'Bearer ' + googleIdToken, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'create-widget-token' })
+        });
+        const result = await response.json();
+        if (!response.ok || !result.token) throw new Error(result.error || 'Não foi possível conectar o widget.');
+        window.location.href = 'meudindinwidget://connect?token=' + encodeURIComponent(result.token);
+        button.textContent = 'Abra o app Meu Dindin Widget para concluir';
+    } catch (error) {
+        alert(error.message || 'Falha ao conectar o widget.');
+        button.disabled = false;
+        button.innerHTML = '<i class="fas fa-th-large mr-2"></i> Conectar widget Android';
     }
 }
 
