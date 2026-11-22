@@ -91,13 +91,11 @@
     </div>
 </header>
 
-<div class="max-w-lg mx-auto px-4 pt-2 pb-1 flex justify-end">
-  <div class="inline-flex items-center gap-2 rounded-full bg-white/90 border border-slate-200/80 px-3 py-1.5 shadow-sm">
-    <span id="cloud-sync-dot" class="w-2 h-2 rounded-full bg-slate-300"></span>
-    <span id="cloud-sync-status" class="text-[11px] font-semibold text-slate-500">Conectar nuvem</span>
-    <div id="google-signin" class="flex-shrink-0"></div>
-    <button id="google-signout" onclick="signOutGoogle()" class="hidden text-[11px] font-semibold text-slate-400 hover:text-slate-700 pl-1 border-l border-slate-200">Sair</button>
-  </div>
+<div class="hidden" aria-hidden="true">
+  <span id="cloud-sync-dot"></span>
+  <span id="cloud-sync-status">Conectar nuvem</span>
+  <div id="google-signin"></div>
+  <button id="google-signout" onclick="signOutGoogle()">Sair</button>
 </div>
 
 <div class="max-w-lg mx-auto px-4">
