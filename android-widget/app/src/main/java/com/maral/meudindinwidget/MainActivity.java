@@ -42,7 +42,7 @@ public class MainActivity extends Activity {
             if (json.length() >= 2 && json.startsWith("\"") && json.endsWith("\"")) json = new JSONArray("[" + json + "]").getString(0);
             JSONArray arr = new JSONArray(json); double income=0, expense=0;
             for (int i=0;i<arr.length();i++) { JSONObject t=arr.getJSONObject(i); double amount=t.optDouble("amount",0); if ("RECEITA".equals(t.optString("category"))) income+=amount; else expense+=amount; }
-            String stamp = new SimpleDateFormat("dd/MM HH:mm", Locale("pt","BR")).format(new Date());
+            String stamp = new SimpleDateFormat("dd/MM HH:mm", new Locale("pt","BR")).format(new Date());
             SharedPreferences p=getSharedPreferences("finance",MODE_PRIVATE);
             p.edit().putLong("income",Double.doubleToRawLongBits(income)).putLong("expense",Double.doubleToRawLongBits(expense)).putString("updated","Atualizado " + stamp).apply();
             BalanceWidgetProvider.updateAll(this); status.setText("Sincronizado. Entradas: " + BalanceWidgetProvider.money(income) + " | Saídas: " + BalanceWidgetProvider.money(expense) + "\nOs dados ficam salvos somente neste aparelho.");
