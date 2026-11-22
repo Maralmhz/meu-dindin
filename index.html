@@ -79,6 +79,7 @@
                 <option value="$" class="text-black">USD</option>
                 <option value="€" class="text-black">EUR</option>
             </select>
+            <button onclick="exportData()" class="bg-white/10 hover:bg-white/20 w-10 h-10 rounded-xl flex items-center justify-center transition" title="Exportar dados"><i class="fas fa-download text-white"></i></button>
             <button onclick="shareWhatsApp()" class="bg-white/10 hover:bg-white/20 w-10 h-10 rounded-xl flex items-center justify-center transition" title="WhatsApp">
                 <i class="fab fa-whatsapp text-white"></i>
             </button>
@@ -501,6 +502,15 @@ function salvarEdicao() {
 
 // ========== CRUD ==========
 function saveToLocal() { localStorage.setItem('meudindin_data', JSON.stringify(transactions)); render(); updateAlerta(); }
+function exportData() {
+    const payload = JSON.stringify(transactions, null, 2);
+    const blob = new Blob([payload], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'meu-dindin-backup.json'; a.click();
+    URL.revokeObjectURL(url);
+}
+
 
 function toggleModal() {
     const m = document.getElementById('modal');
