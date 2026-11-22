@@ -417,7 +417,8 @@ async function syncFromCloud() {
         }
         cloudSyncReady = true;
         document.getElementById('google-signin').classList.add('hidden');
-        document.getElementById('google-signout').classList.remove('hidden');\n        document.getElementById('widget-connect').classList.remove('hidden');
+        document.getElementById('google-signout').classList.remove('hidden');
+        document.getElementById('widget-connect').classList.remove('hidden');
     } catch (error) {
         cloudSyncReady = false;
         googleIdToken = null;
