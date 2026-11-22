@@ -91,14 +91,12 @@
     </div>
 </header>
 
-<div class="max-w-lg mx-auto px-4 pt-3">
-  <div class="flex items-center justify-between gap-3 rounded-2xl bg-white border border-slate-200 px-3 py-2 shadow-sm">
-    <div class="min-w-0">
-      <p class="text-xs font-bold text-slate-700">Sincronização na nuvem</p>
-      <p id="cloud-sync-status" class="text-[11px] text-slate-400">Entre com sua conta Google para ativar</p>
-    </div>
+<div class="max-w-lg mx-auto px-4 pt-2 pb-1 flex justify-end">
+  <div class="inline-flex items-center gap-2 rounded-full bg-white/90 border border-slate-200/80 px-3 py-1.5 shadow-sm">
+    <span id="cloud-sync-dot" class="w-2 h-2 rounded-full bg-slate-300"></span>
+    <span id="cloud-sync-status" class="text-[11px] font-semibold text-slate-500">Conectar nuvem</span>
     <div id="google-signin" class="flex-shrink-0"></div>
-    <button id="google-signout" onclick="signOutGoogle()" class="hidden text-xs font-bold text-slate-500 px-2 py-2">Sair</button>
+    <button id="google-signout" onclick="signOutGoogle()" class="hidden text-[11px] font-semibold text-slate-400 hover:text-slate-700 pl-1 border-l border-slate-200">Sair</button>
   </div>
 </div>
 
@@ -365,10 +363,13 @@ const CLOUD_SYNC_API = 'https://meu-dindin-lake.vercel.app/api/sync';
 
 function setCloudStatus(message, error = false) {
     const el = document.getElementById('cloud-sync-status');
+    const dot = document.getElementById('cloud-sync-dot');
     if (el) {
-        el.textContent = message;
-        el.className = 'text-[11px] ' + (error ? 'text-red-500' : 'text-slate-400');
+        const connected = !error && /sincronizad|salvo na nuvem|ativada/i.test(message);
+        el.textContent = error ? message : (connected ? 'Nuvem sincronizada' : (/desconectado/i.test(message) ? 'Nuvem desconectada' : 'Conectar nuvem'));
+        el.className = 'text-[11px] font-semibold ' + (error ? 'text-red-500' : (connected ? 'text-emerald-600' : 'text-slate-500'));
     }
+    if (dot) dot.className = 'w-2 h-2 rounded-full ' + (error ? 'bg-red-500' : (/sincronizad|salvo na nuvem|ativada/i.test(message) ? 'bg-emerald-500' : 'bg-slate-300'));
 }
 
 async function handleGoogleCredential(response) {
