@@ -1,7 +1,7 @@
 import { get, put } from "@vercel/blob";
 import { randomBytes, createHash } from "node:crypto";
 
-const CLIENT_ID = "272708465865-f6shmohodvh6c27mgp34hh3apvrl4tae.apps.googleusercontent.com";
+const CLIENT_ID = "164141962348-ncp32kh8hlp5vns14k0ir8uu5bp18j2i.apps.googleusercontent.com";
 const ALLOWED_EMAIL = "maralmhz@gmail.com";
 const ALLOWED_ORIGINS = new Set([
   "https://meu-dindin.pages.dev",
