@@ -440,6 +440,9 @@ async function syncFromCloud() {
             setCloudStatus('Sincronização ativada. Seus dados foram enviados à nuvem.');
         }
         cloudSyncReady = true;
+        const accessGate = document.getElementById('access-gate');
+        if (accessGate) accessGate.style.display = 'none';
+        localStorage.setItem('meudindin_access_mode', 'cloud');
         document.getElementById('google-signin').classList.add('hidden');
         document.getElementById('google-signout').classList.remove('hidden');
         document.getElementById('widget-connect').classList.remove('hidden');
