@@ -60,8 +60,17 @@ export default async function handler(req, res) {
       return send(res, 400, { error: "Dados inválidos." }, origin);
     }
     if (body.transactions.length > 10000) return send(res, 413, { error: "Limite de lançamentos excedido." }, origin);
-    const financeData = body.financeData && typeof body.financeData === "object" ? body.financeData : null;
-    const payload = JSON.stringify({ transactions: body.transactions, financeData, updatedAt: new Date().toISOString() });
+    let previous = null;
+    try {
+      const existing = await get(pathname, { access: "private", useCache: false });
+      if (existing && existing.statusCode === 200) previous = JSON.parse(await new Response(existing.stream).text());
+    } catch (_) {}
+    const hasFinanceData = body.financeData && typeof body.financeData === "object";
+    const financeData = hasFinanceData ? body.financeData : (previous && previous.financeData) || null;
+    const legacyTransactions = hasFinanceData
+      ? (previous && Array.isArray(previous.transactions) ? previous.transactions : (Array.isArray(body.financeData.legacyTransactions) ? body.financeData.legacyTransactions : []))
+      : body.transactions;
+    const payload = JSON.stringify({ transactions: legacyTransactions, financeData, updatedAt: new Date().toISOString() });
     await put(pathname, payload, {
       access: "private",
       addRandomSuffix: false,
