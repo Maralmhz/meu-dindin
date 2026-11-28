@@ -52,7 +52,7 @@ export default async function handler(req, res) {
       if (!file || file.statusCode !== 200) return send(res, 200, { exists: false, transactions: [] }, origin);
       const raw = await new Response(file.stream).text();
       const saved = JSON.parse(raw);
-      return send(res, 200, { exists: true, transactions: Array.isArray(saved.transactions) ? saved.transactions : [], updatedAt: saved.updatedAt || null }, origin);
+      return send(res, 200, { exists: true, transactions: Array.isArray(saved.transactions) ? saved.transactions : [], financeData: saved.financeData && typeof saved.financeData === "object" ? saved.financeData : null, updatedAt: saved.updatedAt || null }, origin);
     }
 
     const body = req.body && typeof req.body === "object" ? req.body : {};
@@ -60,7 +60,8 @@ export default async function handler(req, res) {
       return send(res, 400, { error: "Dados inválidos." }, origin);
     }
     if (body.transactions.length > 10000) return send(res, 413, { error: "Limite de lançamentos excedido." }, origin);
-    const payload = JSON.stringify({ transactions: body.transactions, updatedAt: new Date().toISOString() });
+    const financeData = body.financeData && typeof body.financeData === "object" ? body.financeData : null;
+    const payload = JSON.stringify({ transactions: body.transactions, financeData, updatedAt: new Date().toISOString() });
     await put(pathname, payload, {
       access: "private",
       addRandomSuffix: false,
