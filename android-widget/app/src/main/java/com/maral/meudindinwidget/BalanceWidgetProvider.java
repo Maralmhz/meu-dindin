@@ -26,7 +26,7 @@ public class BalanceWidgetProvider extends AppWidgetProvider {
         open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent pi = PendingIntent.getActivity(context, 0, open, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         for (int id : ids) {
-            RemoteViews v = new RemoteViews(context.getPackageName(), R.layout.widget_balance);
+            RemoteViews v = new RemoteViews(context.getPackageName(), R.layout.balance_widget);
             v.setTextViewText(R.id.widget_balance, money(income - expense));
             v.setTextViewText(R.id.widget_income, "Entradas  " + money(income));
             v.setTextViewText(R.id.widget_expense, "Saídas  " + money(expense));
