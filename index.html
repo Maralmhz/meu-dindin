@@ -127,7 +127,7 @@
     <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-3">Conta e sincronização</p>
     <div class="flex items-center gap-2 text-sm text-slate-600 mb-3"><span id="cloud-sync-dot" class="w-2 h-2 rounded-full bg-slate-300"></span><span id="cloud-sync-status">Conectar nuvem</span></div>
     <div id="google-signin"></div>
-    <button id="widget-connect" onclick="connectAndroidWidget()" class="hidden w-full mt-3 p-3 rounded-xl bg-slate-900 text-white font-semibold text-sm"><i class="fas fa-th-large mr-2"></i> Conectar widget Android</button>\n    <button id="google-signout" onclick="signOutGoogle()" class="hidden mt-3 text-sm font-semibold text-slate-500 underline">Sair da conta Google</button>
+    \n    <button id="google-signout" onclick="signOutGoogle()" class="hidden mt-3 text-sm font-semibold text-slate-500 underline">Sair da conta Google</button>
   </div>
 </aside>
 
@@ -444,9 +444,7 @@ async function syncFromCloud() {
         if (accessGate) accessGate.style.display = 'none';
         localStorage.setItem('meudindin_access_mode', 'cloud');
         document.getElementById('google-signin').classList.add('hidden');
-        document.getElementById('google-signout').classList.remove('hidden');
-        document.getElementById('widget-connect').classList.remove('hidden');
-    } catch (error) {
+        document.getElementById('google-signout').classList.remove('hidden');} catch (error) {
         cloudSyncReady = false;
         googleIdToken = null;
         localStorage.removeItem('meudindin_google_id_token');
@@ -470,31 +468,7 @@ async function refreshCloudWhenAppReturns() {
     } finally {
         foregroundSyncInFlight = false;
     }
-}
-
-async function connectAndroidWidget() {
-    if (!googleIdToken) { alert('Conecte sua conta Google primeiro.'); return; }
-    const button = document.getElementById('widget-connect');
-    button.disabled = true;
-    button.textContent = 'Preparando conexão...';
-    try {
-        const response = await fetch(CLOUD_SYNC_API, {
-            method: 'POST',
-            headers: { Authorization: 'Bearer ' + googleIdToken, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'create-widget-token' })
-        });
-        const result = await response.json();
-        if (!response.ok || !result.token) throw new Error(result.error || 'Não foi possível conectar o widget.');
-        window.location.href = 'meudindinwidget://connect?token=' + encodeURIComponent(result.token);
-        button.textContent = 'Abra o app Meu Dindin Widget para concluir';
-    } catch (error) {
-        alert(error.message || 'Falha ao conectar o widget.');
-        button.disabled = false;
-        button.innerHTML = '<i class="fas fa-th-large mr-2"></i> Conectar widget Android';
-    }
-}
-
-async function saveCloudData(initial = false) {
+}async function saveCloudData(initial = false) {
     if (!googleIdToken) return;
     const response = await fetch(CLOUD_SYNC_API, {
         method: 'POST',
@@ -546,9 +520,7 @@ function enterOfflineMode() {
     localStorage.setItem('meudindin_access_mode', 'offline');
     const gate = document.getElementById('access-gate');
     if (gate) gate.style.display = 'none';
-    document.getElementById('google-signout').classList.add('hidden');
-    document.getElementById('widget-connect').classList.add('hidden');
-    setCloudStatus('Modo local. Dados salvos somente neste aparelho.');
+    document.getElementById('google-signout').classList.add('hidden');setCloudStatus('Modo local. Dados salvos somente neste aparelho.');
 }
 function initGoogleSignIn() {
     const mode = localStorage.getItem('meudindin_access_mode');
