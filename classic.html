@@ -1,245 +1,835 @@
 <!DOCTYPE html>
-<html lang="pt-BR"><head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#111827">
-<link rel="manifest" href="/manifest.json"><link rel="icon" href="icons/carteira.png"><title>Meu Din Din · Completo</title>
-<script src="https://cdn.tailwindcss.com"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>meu din din</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#111827">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="meu din din">
+    <link rel="apple-touch-icon" href="icons/carteira.png">
+    <link rel="icon" type="image/png" href="icons/carteira.png">
+    <meta property="og:title" content="meu din din">
+    <meta property="og:description" content="App de controle financeiro pessoal simples e bonito">
+    <meta property="og:image" content="icons/logo.png">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://meu-dindin.pages.dev/">
+    <meta name="twitter:card" content="summary_large_image">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        * { box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: #f0f2f5; margin:0; padding-bottom: 90px; }
+        .app-header { background: #111827; }
+        .header-card { background: linear-gradient(135deg, #1a2535 0%, #0f1923 100%); border-radius: 20px; margin: 0 16px; padding: 20px; margin-top: -40px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+        .card { background: white; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #f1f5f9; z-index: 50; height: 80px; display: flex; align-items: center; justify-content: space-around; padding: 0 8px; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); }
+        .nav-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; background: none; border: none; cursor: pointer; color: #94a3b8; font-size: 10px; font-weight: 600; padding: 8px 16px; border-radius: 12px; transition: all 0.2s; }
+        .nav-btn:hover { color: #22c55e; }
+        .nav-btn i { font-size: 20px; }
+        .mic-center-btn { width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, #22c55e, #16a34a); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(34,197,94,0.5); transition: all 0.2s; margin-top: -20px; }
+        .mic-center-btn:active { transform: scale(0.95); }
+        .mic-center-btn.recording { background: linear-gradient(135deg, #ef4444, #dc2626) !important; box-shadow: 0 4px 20px rgba(239,68,68,0.6) !important; animation: pulse-mic 1s infinite; }
+        @keyframes pulse-mic { 0%,100%{box-shadow:0 4px 20px rgba(239,68,68,0.4)} 50%{box-shadow:0 4px 40px rgba(239,68,68,0.8)} }
+        .chart-wave { width:100%; height:60px; opacity:0.8; }
+        .tab-btn { white-space: nowrap; padding: 8px 16px; border-radius: 999px; font-size: 13px; font-weight: 600; border: none; cursor: pointer; transition: all 0.2s; }
+        .tab-btn.active { background: #111827; color: white; }
+        .tab-btn:not(.active) { background: white; color: #64748b; }
+        .cat-badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; text-transform: uppercase; }
+        .cat-RECEITA{background:#dcfce7;color:#166534} .cat-FIXAS{background:#dbeafe;color:#1e40af} .cat-CARTAO{background:#ede9fe;color:#5b21b6} .cat-ALIMENTACAO{background:#fef9c3;color:#854d0e} .cat-LAZER{background:#fce7f3;color:#9d174d} .cat-OUTROS{background:#f1f5f9;color:#475569} .cat-TRANSPORTE{background:#ffedd5;color:#9a3412} .cat-SAUDE{background:#d1fae5;color:#065f46}
+        #voice-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:200; display:none; flex-direction:column; align-items:center; justify-content:center; gap:24px; }
+        #voice-overlay.active { display:flex; }
+        .voice-ripple { width:120px; height:120px; border-radius:50%; background:rgba(34,197,94,0.2); display:flex; align-items:center; justify-content:center; animation: ripple 1.5s infinite; }
+        @keyframes ripple { 0%{box-shadow:0 0 0 0 rgba(34,197,94,0.4)} 100%{box-shadow:0 0 0 40px rgba(34,197,94,0)} }
+        input[type="number"]::-webkit-inner-spin-button { display: none; }
+        .tip-card { background: linear-gradient(135deg, #1a2535 0%, #0f1923 100%); border-radius: 16px; padding: 16px 18px; margin-bottom: 10px; border-left: 4px solid #22c55e; }
+        .tip-card .tip-icon { font-size: 22px; margin-right: 10px; }
+        #confirm-voice-modal { position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:300; display:none; align-items:flex-end; justify-content:center; }
+        #confirm-voice-modal.active { display:flex; }
+        .confirm-sheet { background:white; border-radius:24px 24px 0 0; padding:24px 20px 40px; width:100%; max-width:480px; }
+        #edit-modal { position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:300; display:none; align-items:flex-end; justify-content:center; }
+        #edit-modal.active { display:flex; }
+        .edit-sheet { background:white; border-radius:24px 24px 0 0; padding:24px 20px 40px; width:100%; max-width:480px; max-height:90vh; overflow-y:auto; }
+        #side-panel.open { transform: translateX(0); }
+        #side-panel-backdrop.open { display:block !important; }
+
+    </style>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
-<style>
-*{box-sizing:border-box}body{font-family:Inter,system-ui,sans-serif;background:#f1f5f9;margin:0;padding-bottom:90px}
-.panel{background:white;border-radius:18px;box-shadow:0 2px 10px #0f172a0b}.field{width:100%;padding:12px;border:1px solid #e2e8f0;border-radius:12px;background:white;color:#0f172a;outline:none}.field:focus{border-color:#10b981}
-.btn{padding:12px 15px;border-radius:12px;font-weight:700}.primary{background:#111827;color:white}.muted{background:#f1f5f9;color:#334155}
-.nav{position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid #e2e8f0;display:flex;justify-content:space-around;padding:9px 4px calc(9px + env(safe-area-inset-bottom));z-index:30}
-.nav button{font-size:11px;color:#64748b;display:flex;flex-direction:column;align-items:center;gap:4px}.nav i{font-size:18px}.nav button.active{color:#059669}
-.modal{position:fixed;inset:0;background:#0009;z-index:80;display:none;align-items:flex-end;justify-content:center;padding:10px}.modal.open{display:flex}.sheet{background:white;border-radius:24px 24px 16px 16px;width:100%;max-width:520px;max-height:92vh;overflow:auto;padding:22px}
-.pill{font-size:10px;font-weight:800;padding:3px 8px;border-radius:99px;background:#f1f5f9;color:#475569}
-</style></head><body>
-<div id="login" class="fixed inset-0 z-[100] bg-slate-950 flex items-center justify-center p-5" style="display:none">
- <div class="bg-white rounded-3xl p-6 w-full max-w-sm text-slate-900">
-  <div class="bg-slate-900 rounded-2xl p-3 flex justify-center mb-5"><img src="icons/logo.png" class="w-52 max-h-20 object-contain" alt="Meu Din Din"></div>
-  <h1 class="text-2xl font-black text-center">Acesse seus dados</h1><p class="text-sm text-slate-500 text-center mt-2 mb-5">Conecte sua conta Google para sincronizar. Ou entre sem conta para manter os dados apenas neste aparelho.</p>
-  <div id="google-button" class="flex justify-center mb-4"></div>
-  <button onclick="offline()" class="w-full p-4 border rounded-xl text-left"><b>Entrar sem conta</b><small class="block text-slate-500 mt-1">Dados locais, sem sincronização em nuvem.</small></button>
-  <p id="login-error" class="text-xs text-red-600 mt-3"></p>
- </div>
+</head>
+<body>
+
+<div id="access-gate" class="fixed inset-0 z-[500] bg-slate-950/95 flex items-center justify-center p-5" style="display:none">
+  <div class="w-full max-w-sm bg-white rounded-3xl p-6 shadow-2xl">
+    <div class="w-full flex items-center justify-center mb-5"><div class="w-full rounded-2xl bg-slate-900 px-5 py-3 flex items-center justify-center"><img src="icons/logo.png" alt="Logo oficial Meu Din Din" style="width:220px;max-width:100%;max-height:96px;object-fit:contain;mix-blend-mode:lighten;"></div></div>
+    <p class="text-center text-xs font-bold uppercase tracking-[3px] text-slate-400 mb-2">MEU DIN DIN</p>
+    <h1 class="text-2xl font-black text-slate-900 text-center mb-2">Bem-vindo de volta!</h1>
+    <p class="text-sm text-slate-500 text-center leading-relaxed mb-5">Para sua segurança, escolha como deseja acessar seus dados financeiros.</p>
+    <div class="rounded-2xl bg-green-50 border border-green-100 p-4 mb-4">
+      <div class="flex items-center gap-2 mb-1"><i class="fas fa-cloud text-green-600"></i><span class="font-bold text-slate-800 text-sm">Conectar com Google</span></div>
+      <p class="text-xs text-slate-600 mb-3">Recupere seus dados salvos na nuvem e mantenha tudo sincronizado entre dispositivos.</p>
+      <div id="google-signin-gate" class="flex justify-center"></div>
+      <p id="google-gate-error" class="hidden text-xs text-red-600 text-center mt-2"></p>
+    </div>
+    <button onclick="enterOfflineMode()" class="w-full rounded-2xl border border-slate-200 bg-white p-4 text-left hover:bg-slate-50">
+      <span class="flex items-center gap-2 font-bold text-slate-800 text-sm"><i class="fas fa-mobile-alt text-slate-500"></i> Entrar sem conta</span>
+      <span class="block text-xs text-slate-500 mt-1">Use os dados salvos somente neste aparelho. Não haverá sincronização na nuvem.</span>
+    </button>
+    <p class="text-[11px] text-slate-400 text-center mt-4">Você poderá conectar sua conta Google depois pelo menu.</p>
+  </div>
 </div>
-<header class="bg-slate-950 text-white px-4 pt-8 pb-16">
- <div class="max-w-2xl mx-auto flex justify-between items-center">
-  <div class="flex items-center gap-3"><img src="icons/logo.png" class="h-12 object-contain" alt="Meu Din Din"><div><div class="text-[10px] tracking-widest text-slate-400">MEU DIN DIN</div><div class="font-black">Versão completa</div></div></div>
-  <a href="/" class="text-xs bg-white/10 px-3 py-2 rounded-xl"><i class="fas fa-layer-group mr-1"></i> Versões</a>
- </div>
+
+
+<header class="app-header pt-12 pb-12 px-4">
+    <div class="max-w-lg mx-auto flex justify-between items-center">
+        <div class="flex items-center">
+            <img src="icons/logo.png" alt="meu din din"
+                 style="height:64px; object-fit:contain; mix-blend-mode:lighten;"
+                 onerror="this.style.display='none';document.getElementById('logo-fallback').style.display='flex'">
+            <div id="logo-fallback" style="display:none; align-items:center; gap:10px;">
+                <img src="icons/carteira.png" alt=""
+                     style="height:52px; mix-blend-mode:lighten;"
+                     onerror="this.style.display='none'">
+                <div>
+                    <p style="color:rgba(255,255,255,0.45);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;line-height:1">meu</p>
+                    <p style="color:white;font-size:22px;font-weight:800;line-height:1.2">din din</p>
+                </div>
+            </div>
+        </div>
+        <button onclick="toggleSidePanel(true)" aria-label="Abrir menu" class="w-10 h-10 rounded-xl bg-white/10 text-white flex items-center justify-center hover:bg-white/20">
+            <i class="fas fa-bars text-lg"></i>
+        </button>
+    </div>
 </header>
-<main class="max-w-2xl mx-auto px-4 -mt-10">
- <section id="view-dashboard">
-  <div class="rounded-3xl p-5 bg-gradient-to-br from-slate-800 to-slate-950 text-white shadow-xl">
-   <div class="text-xs text-white/60">Patrimônio disponível em contas e cofrinhos</div><div id="net-balance" class="text-3xl font-black mt-1">R$ 0,00</div>
-   <div class="grid grid-cols-2 gap-3 mt-5"><div class="bg-white/10 p-3 rounded-xl"><div class="text-xs text-white/60">Receitas no mês</div><b id="month-income">R$ 0,00</b></div><div class="bg-white/10 p-3 rounded-xl"><div class="text-xs text-white/60">Despesas no mês</div><b id="month-expense">R$ 0,00</b></div></div>
+
+<div id="side-panel-backdrop" class="fixed inset-0 bg-black/50 z-[150] hidden" onclick="toggleSidePanel(false)"></div>
+<aside id="side-panel" class="fixed top-0 right-0 h-full w-[min(86vw,340px)] bg-white z-[160] shadow-2xl translate-x-full transition-transform duration-300 p-5 overflow-y-auto">
+  <div class="flex items-center justify-between mb-7">
+    <div><p class="text-xs font-bold uppercase tracking-widest text-slate-400">Meu Dindin</p><h2 class="text-xl font-black text-slate-800">Menu</h2></div>
+    <button onclick="toggleSidePanel(false)" class="w-9 h-9 rounded-full bg-slate-100 text-slate-600"><i class="fas fa-times"></i></button>
   </div>
-  <div class="grid grid-cols-2 gap-3 mt-4">
-   <button onclick="openTx()" class="panel p-4 text-left"><i class="fas fa-plus-circle text-emerald-600 text-xl"></i><b class="block mt-2">Novo lançamento</b><small class="text-slate-500">Receita ou despesa</small></button>
-   <button onclick="openAccount()" class="panel p-4 text-left"><i class="fas fa-building-columns text-blue-600 text-xl"></i><b class="block mt-2">Nova conta</b><small class="text-slate-500">Banco ou cofrinho</small></button>
+  <div class="mb-5">
+    <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-2">Preferências</p>
+    <label for="currency" class="block text-sm font-semibold text-slate-700 mb-2">Moeda</label>
+    <select id="currency" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-sm text-slate-800 outline-none">
+      <option value="R$">Real (R$)</option><option value="$">Dólar (USD)</option><option value="€">Euro (EUR)</option>
+    </select>
   </div>
-  <section class="mt-5"><div class="flex justify-between items-center mb-3"><h2 class="font-black text-slate-800">Minhas contas e cofrinhos</h2><button onclick="openAccount()" class="text-sm text-emerald-700 font-bold">+ Adicionar</button></div><div id="account-list" class="space-y-2"></div></section>
-  <section class="mt-5"><div class="flex justify-between items-center mb-3"><h2 class="font-black text-slate-800">Cartões de crédito</h2><button onclick="openCard()" class="text-sm text-emerald-700 font-bold">+ Adicionar</button></div><div id="card-list" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div></section>
-  <section class="mt-5 panel p-4"><div class="flex justify-between"><h2 class="font-black">Resumo por categoria</h2><span class="pill">MÊS ATUAL</span></div><div id="category-summary" class="mt-3 space-y-3"></div></section>
-  <section class="mt-5 panel p-4"><h2 class="font-black mb-2">Análise inteligente</h2><div id="insights" class="text-sm text-slate-600 space-y-2"></div></section>
-  <section class="mt-5 panel p-4"><div class="flex justify-between items-center"><h2 class="font-black">Orçamento do mês</h2><button onclick="setBudget()" class="text-sm text-emerald-700 font-bold">Configurar</button></div><div id="budget-summary" class="mt-3"></div></section>
-  <section class="mt-5 panel p-4"><div class="flex justify-between items-center"><h2 class="font-black">Metas financeiras</h2><button onclick="openGoal()" class="text-sm text-emerald-700 font-bold">+ Meta</button></div><div id="goal-summary" class="mt-3 space-y-3"></div></section>
- </section>
- <section id="view-transactions" class="hidden"><div class="flex justify-between items-center mb-3"><h2 class="text-xl font-black">Lançamentos</h2><button onclick="openTx()" class="btn primary">+ Novo</button></div><div class="flex gap-2 mb-3"><input id="search-tx" class="field" placeholder="Buscar lançamento..." oninput="renderTransactions()"><select id="filter-month" class="field w-36" onchange="renderTransactions()"></select></div><div id="tx-list" class="space-y-2"></div></section>
- <section id="view-cards" class="hidden"><div class="flex justify-between items-center mb-3"><h2 class="text-xl font-black">Cartões</h2><button onclick="openCard()" class="btn primary">+ Cartão</button></div><div id="cards-detail" class="space-y-3"></div></section>
- <section id="view-goals" class="hidden"><div class="flex justify-between items-center mb-3"><h2 class="text-xl font-black">Metas e orçamento</h2><button onclick="openGoal()" class="btn primary">+ Meta</button></div><div id="goals-detail" class="space-y-3"></div><div class="panel p-4 mt-4"><h3 class="font-black mb-2">Orçamento por categoria</h3><div id="budgets-detail"></div><button onclick="setBudget()" class="btn muted w-full mt-3">Editar orçamento</button></div></section>
- <section id="view-tips" class="hidden"><h2 class="text-xl font-black mb-3">Biblioteca de dicas financeiras</h2><div class="flex gap-2 mb-3"><select id="tip-filter" class="field" onchange="renderTips()"><option value="Todas">Todas as categorias</option><option>Organização</option><option>Cartões e dívidas</option><option>Economia</option><option>Investimentos</option><option>Consumo</option><option>Metas</option></select><button class="btn primary" onclick="randomTip()">Aleatória</button></div><div id="tips-list" class="space-y-3"></div></section>
- <section id="view-settings" class="hidden"><h2 class="text-xl font-black mb-3">Configurações e dados</h2><div class="panel p-4 space-y-3"><div><b>Sincronização</b><p id="sync-status" class="text-sm text-slate-500 mt-1">Verificando...</p><div id="google-button-settings" class="mt-2"></div><button onclick="logout()" class="text-sm text-red-600 underline mt-2">Desconectar Google</button></div><hr><button onclick="exportBackup()" class="btn muted w-full">Exportar backup completo (JSON)</button><button onclick="exportCSV()" class="btn muted w-full">Exportar lançamentos (CSV)</button><button onclick="printReport()" class="btn muted w-full">Gerar relatório para PDF</button><div class="pt-2"><b>Despesas recorrentes</b><div id="recurring-list" class="text-sm text-slate-500 mt-2">Nenhuma despesa recorrente cadastrada.</div></div><label class="block text-sm font-semibold">Importar backup JSON<input id="import-file" type="file" accept=".json,application/json" class="block w-full mt-2 text-sm" onchange="importBackup(event)"></label><a href="/classic.html" class="block text-center text-sm text-emerald-700 font-bold pt-2">Abrir versão clássica</a></div></section>
+  <div class="space-y-2">
+    <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-2">Ações</p>
+    <a href="/" class="w-full flex items-center gap-3 p-3 rounded-xl bg-green-50 text-green-700 font-semibold text-sm"><i class="fas fa-layer-group w-5 text-center"></i> Trocar versão do aplicativo</a>
+    <button onclick="exportData();toggleSidePanel(false)" class="w-full flex items-center gap-3 p-3 rounded-xl bg-slate-50 text-slate-700 font-semibold text-sm"><i class="fas fa-download w-5 text-center"></i> Exportar backup</button>
+    <button onclick="shareWhatsApp();toggleSidePanel(false)" class="w-full flex items-center gap-3 p-3 rounded-xl bg-slate-50 text-slate-700 font-semibold text-sm"><i class="fab fa-whatsapp w-5 text-center text-green-600"></i> Compartilhar no WhatsApp</button>
+    <button onclick="toggleDicas();toggleSidePanel(false)" class="w-full flex items-center gap-3 p-3 rounded-xl bg-slate-50 text-slate-700 font-semibold text-sm"><i class="fas fa-lightbulb w-5 text-center text-amber-500"></i> Dicas financeiras</button>
+  </div>
+  <div class="mt-7 pt-5 border-t border-slate-100">
+    <p class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-3">Conta e sincronização</p>
+    <div class="flex items-center gap-2 text-sm text-slate-600 mb-3"><span id="cloud-sync-dot" class="w-2 h-2 rounded-full bg-slate-300"></span><span id="cloud-sync-status">Conectar nuvem</span></div>
+    <div id="google-signin"></div>
+    \n    <button id="google-signout" onclick="signOutGoogle()" class="hidden mt-3 text-sm font-semibold text-slate-500 underline">Sair da conta Google</button>
+  </div>
+</aside>
+
+<div class="max-w-lg mx-auto px-4">
+    <div class="header-card">
+        <p class="text-white/50 text-xs font-semibold uppercase tracking-wider mb-1">Saldo atual</p>
+        <h2 id="total-balance" class="text-white text-3xl font-black mb-4">R$ 0,00</h2>
+        <svg class="chart-wave" viewBox="0 0 300 60" preserveAspectRatio="none">
+            <defs>
+                <linearGradient id="gGreen" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#22c55e" stop-opacity="0.5"/><stop offset="100%" stop-color="#22c55e" stop-opacity="0"/></linearGradient>
+                <linearGradient id="gRed" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ef4444" stop-opacity="0.5"/><stop offset="100%" stop-color="#ef4444" stop-opacity="0"/></linearGradient>
+            </defs>
+            <path d="M0,40 C30,35 60,20 90,25 C120,30 150,10 180,15 C210,20 240,30 300,20 L300,60 L0,60Z" fill="url(#gGreen)"/>
+            <path d="M0,40 C30,35 60,20 90,25 C120,30 150,10 180,15 C210,20 240,30 300,20" fill="none" stroke="#22c55e" stroke-width="2"/>
+            <path d="M0,50 C40,45 80,55 120,45 C160,35 200,50 240,40 C260,35 280,45 300,42 L300,60 L0,60Z" fill="url(#gRed)"/>
+            <path d="M0,50 C40,45 80,55 120,45 C160,35 200,50 240,40 C260,35 280,45 300,42" fill="none" stroke="#ef4444" stroke-width="2"/>
+        </svg>
+        <div class="flex gap-3 mt-4">
+            <div class="flex-1 bg-white/10 rounded-xl p-3">
+                <p class="text-white/50 text-xs">Receitas</p>
+                <p id="total-income" class="text-green-400 font-bold text-sm">R$ 0,00</p>
+            </div>
+            <div class="flex-1 bg-white/10 rounded-xl p-3">
+                <p class="text-white/50 text-xs">Despesas</p>
+                <p id="total-expenses" class="text-red-400 font-bold text-sm">R$ 0,00</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<main class="max-w-lg mx-auto px-4 mt-6">
+
+    <div id="dicas-box" class="hidden mb-5">
+        <h3 class="text-slate-700 font-bold text-sm mb-3">💡 Dicas Financeiras</h3>
+        <div id="dica-atual" class="tip-card flex items-start">
+            <span class="tip-icon"></span>
+            <div>
+                <p class="text-white font-semibold text-sm" id="dica-titulo"></p>
+                <p class="text-white/60 text-xs mt-1" id="dica-texto"></p>
+            </div>
+        </div>
+        <div class="flex gap-2 mt-2">
+            <button onclick="dicaAnterior()" class="flex-1 bg-white text-slate-600 text-xs font-bold py-2 rounded-xl border border-slate-200">← Anterior</button>
+            <button onclick="dicaProxima()" class="flex-1 bg-white text-slate-600 text-xs font-bold py-2 rounded-xl border border-slate-200">Próxima →</button>
+        </div>
+    </div>
+
+    <div id="alerta-box" class="card p-4 mb-5 hidden" style="border-left: 4px solid #22c55e">
+        <div class="flex items-start gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#111827">
+                <i class="fas fa-chart-pie text-green-400 text-sm"></i>
+            </div>
+            <div class="flex-1">
+                <h4 class="font-bold text-slate-800 text-sm">Análise do mês</h4>
+                <p id="alerta-text" class="text-slate-500 text-sm mt-0.5"></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex gap-2 mb-4 overflow-x-auto pb-1" style="scrollbar-width:none">
+        <button onclick="switchTab('all',this)" class="tab-btn active">Tudo</button>
+        <button onclick="switchTab('RECEITA',this)" class="tab-btn">Receitas</button>
+        <button onclick="switchTab('FIXAS',this)" class="tab-btn">Fixas</button>
+        <button onclick="switchTab('CARTAO',this)" class="tab-btn">Cartões</button>
+        <button onclick="switchTab('ALIMENTACAO',this)" class="tab-btn">Alimentação</button>
+        <button onclick="switchTab('TRANSPORTE',this)" class="tab-btn">Transporte</button>
+        <button onclick="switchTab('SAUDE',this)" class="tab-btn">Saúde</button>
+        <button onclick="switchTab('LAZER',this)" class="tab-btn">Lazer</button>
+        <button onclick="switchTab('OUTROS',this)" class="tab-btn">Outros</button>
+    </div>
+
+    <div id="transaction-list" class="space-y-3 mb-4"></div>
 </main>
-<nav class="nav">
- <button class="active" data-view="dashboard" onclick="showView('dashboard',this)"><i class="fas fa-house"></i>Início</button>
- <button data-view="transactions" onclick="showView('transactions',this)"><i class="fas fa-list"></i>Lançamentos</button>
- <button data-view="cards" onclick="showView('cards',this)"><i class="fas fa-credit-card"></i>Cartões</button>
- <button data-view="goals" onclick="showView('goals',this)"><i class="fas fa-bullseye"></i>Planejar</button>
- <button data-view="tips" onclick="showView('tips',this)"><i class="fas fa-lightbulb"></i>Dicas</button>
- <button data-view="settings" onclick="showView('settings',this)"><i class="fas fa-gear"></i>Mais</button>
+
+<nav class="bottom-nav">
+    <button class="nav-btn" onclick="toggleModal()">
+        <i class="fas fa-plus-circle"></i>
+        <span>Adicionar</span>
+    </button>
+    <button id="mic-center" class="mic-center-btn" onclick="toggleVoiceOverlay()" title="Registrar por voz">
+        <i class="fas fa-microphone text-white text-2xl"></i>
+    </button>
+    <button class="nav-btn" onclick="toggleDicas()">
+        <i class="fas fa-lightbulb"></i>
+        <span>Dicas</span>
+    </button>
 </nav>
-<div id="tx-modal" class="modal"><div class="sheet">
- <div class="flex justify-between items-center mb-4"><h3 class="text-xl font-black">Novo lançamento</h3><button onclick="closeModal('tx-modal')">✕</button></div>
- <form id="tx-form" onsubmit="saveTx(event)" class="space-y-3">
-  <div class="grid grid-cols-2 gap-2"><label class="text-xs font-bold">Tipo<select id="tx-kind" class="field mt-1" onchange="toggleTxFields()"><option value="expense">Despesa</option><option value="income">Receita</option><option value="transfer">Transferência entre contas</option><option value="payment">Pagamento de fatura</option></select></label><label class="text-xs font-bold">Valor<input id="tx-amount" type="number" step=".01" min=".01" required class="field mt-1" placeholder="0,00"></label></div>
-  <label class="text-xs font-bold block">Descrição<input id="tx-desc" required class="field mt-1" placeholder="Ex.: Abastecimento no posto"></label>
-  <div id="category-field"><label class="text-xs font-bold block">Categoria<select id="tx-category" class="field mt-1"><option>Alimentação</option><option>Mercado</option><option>Moradia</option><option>Transporte</option><option>Combustível</option><option>Saúde</option><option>Educação</option><option>Lazer</option><option>Assinaturas</option><option>Compras</option><option>Pets</option><option>Impostos</option><option>Salário</option><option>Renda extra</option><option>Outros</option></select></label></div>
-  <div id="payment-field"><label class="text-xs font-bold block">Como pagou?<select id="tx-method" class="field mt-1" onchange="toggleTxFields()"><option value="pix">Pix</option><option value="debit">Débito</option><option value="cash">Dinheiro</option><option value="card">Cartão de crédito</option></select></label></div>
-  <div id="account-field"><label class="text-xs font-bold block">Saiu de qual conta/cofrinho?<select id="tx-account" class="field mt-1"></select></label></div>
-  <div id="card-field" class="hidden"><label class="text-xs font-bold block">Qual cartão?<select id="tx-card" class="field mt-1"></select></label></div>
-  <div id="transfer-field" class="hidden grid grid-cols-2 gap-2"><label class="text-xs font-bold">Saiu de<select id="tx-from" class="field mt-1"></select></label><label class="text-xs font-bold">Entrou em<select id="tx-to" class="field mt-1"></select></label></div>
-  <div id="payment-card-field" class="hidden"><label class="text-xs font-bold block">Qual fatura foi paga?<select id="tx-pay-card" class="field mt-1"></select></label></div>
-  <label class="text-xs font-bold block">Data<input id="tx-date" type="date" class="field mt-1" required></label>
-  <label class="text-xs font-bold block">Observação<input id="tx-note" class="field mt-1" placeholder="Opcional"></label><label class="flex items-center gap-2 text-sm text-slate-700"><input id="tx-recurring" type="checkbox" class="accent-emerald-600"> Repetir automaticamente todo mês</label>
-  <button class="btn primary w-full" type="submit">Salvar lançamento</button>
- </form>
- </div></div>
-<div id="account-modal" class="modal"><div class="sheet"><div class="flex justify-between mb-4"><h3 class="text-xl font-black">Conta ou cofrinho</h3><button onclick="closeModal('account-modal')">✕</button></div><form onsubmit="saveAccount(event)" class="space-y-3"><input type="hidden" id="acc-id"><label class="text-xs font-bold block">Nome<input id="acc-name" required class="field mt-1" placeholder="Ex.: Nubank, Itaú, Cofrinho"></label><label class="text-xs font-bold block">Tipo<select id="acc-type" class="field mt-1"><option value="checking">Conta corrente</option><option value="savings">Cofrinho / reserva</option><option value="cash">Dinheiro em mãos</option><option value="investment">Investimento</option></select></label><label class="text-xs font-bold block">Saldo inicial atual<input id="acc-balance" type="number" step=".01" class="field mt-1" value="0"></label><p class="text-xs text-slate-500">Informe o saldo que já existe hoje. Os lançamentos futuros atualizam esse saldo automaticamente.</p><button class="btn primary w-full">Salvar conta</button></form></div></div>
-<div id="card-modal" class="modal"><div class="sheet"><div class="flex justify-between mb-4"><h3 class="text-xl font-black">Cartão de crédito</h3><button onclick="closeModal('card-modal')">✕</button></div><form onsubmit="saveCard(event)" class="space-y-3"><input type="hidden" id="card-id"><label class="text-xs font-bold block">Nome do cartão<input id="card-name" required class="field mt-1" placeholder="Ex.: Nubank Visa"></label><label class="text-xs font-bold block">Banco / emissor<input id="card-bank" class="field mt-1" placeholder="Ex.: Nubank"></label><label class="text-xs font-bold block">Limite total<input id="card-limit" type="number" min="0" step=".01" class="field mt-1" value="0"></label><div class="grid grid-cols-2 gap-2"><label class="text-xs font-bold">Dia de fechamento<input id="card-close" type="number" min="1" max="31" class="field mt-1" value="20"></label><label class="text-xs font-bold">Dia de vencimento<input id="card-due" type="number" min="1" max="31" class="field mt-1" value="10"></label></div><button class="btn primary w-full">Salvar cartão</button></form></div></div>
-<div id="goal-modal" class="modal"><div class="sheet"><div class="flex justify-between mb-4"><h3 class="text-xl font-black">Meta financeira</h3><button onclick="closeModal('goal-modal')">✕</button></div><form onsubmit="saveGoal(event)" class="space-y-3"><input type="hidden" id="goal-id"><label class="text-xs font-bold block">Nome da meta<input id="goal-name" required class="field mt-1" placeholder="Ex.: Reserva de emergência"></label><div class="grid grid-cols-2 gap-2"><label class="text-xs font-bold">Valor desejado<input id="goal-target" type="number" min="1" step=".01" required class="field mt-1"></label><label class="text-xs font-bold">Já guardado<input id="goal-current" type="number" min="0" step=".01" class="field mt-1" value="0"></label></div><label class="text-xs font-bold block">Prazo<input id="goal-date" type="date" class="field mt-1"></label><button class="btn primary w-full">Salvar meta</button></form></div></div>
-<div id="budget-modal" class="modal"><div class="sheet"><div class="flex justify-between mb-4"><h3 class="text-xl font-black">Orçamento mensal</h3><button onclick="closeModal('budget-modal')">✕</button></div><form onsubmit="saveBudget(event)" class="space-y-3"><label class="text-xs font-bold block">Categoria<select id="budget-category" class="field mt-1"></select></label><label class="text-xs font-bold block">Limite mensal<input id="budget-amount" type="number" min="1" step=".01" required class="field mt-1"></label><button class="btn primary w-full">Salvar limite</button></form></div></div>
+
+<!-- Voice Overlay -->
+<div id="voice-overlay">
+    <p class="text-white/60 text-sm font-medium">Ouvindo...</p>
+    <div class="voice-ripple">
+        <i class="fas fa-microphone text-green-400 text-4xl"></i>
+    </div>
+    <p id="voice-transcript" class="text-white text-lg font-bold text-center px-8">Fale seu gasto agora</p>
+    <p class="text-white/40 text-xs text-center px-8">Ex: "Gastei 50 reais no mercado" ou "Recebi 3000 de salário"</p>
+    <button onclick="stopVoice()" class="bg-white/10 text-white px-8 py-3 rounded-full font-semibold mt-4">✕ Cancelar</button>
+</div>
+
+<!-- Confirm Voice Modal -->
+<div id="confirm-voice-modal">
+    <div class="confirm-sheet">
+        <div style="width:40px;height:4px;background:#e5e7eb;border-radius:2px;margin:0 auto 20px;"></div>
+        <h3 class="font-black text-slate-800 text-lg mb-4">🎙️ Confirmar lançamento?</h3>
+        <div class="bg-slate-50 rounded-2xl p-4 mb-4 space-y-3">
+            <div class="flex justify-between items-center py-1">
+                <span class="text-slate-400 text-sm">Descrição</span>
+                <span id="vc-desc" class="font-semibold text-slate-800 text-sm text-right max-w-[60%]"></span>
+            </div>
+            <div class="flex justify-between items-center py-1">
+                <span class="text-slate-400 text-sm">Valor</span>
+                <span id="vc-valor" class="font-black text-lg"></span>
+            </div>
+            <div class="flex justify-between items-start py-1">
+                <span class="text-slate-400 text-sm pt-2">Categoria</span>
+                <select id="vc-category" onchange="atualizarCorVoz()" class="p-2 rounded-xl border border-slate-200 outline-none focus:border-green-400 text-sm font-bold text-slate-700 max-w-[60%]">
+                    <option value="RECEITA">💰 Receita</option>
+                    <option value="FIXAS">🏠 Despesa Fixa</option>
+                    <option value="CARTAO">💳 Cartão</option>
+                    <option value="ALIMENTACAO">🍽 Alimentação</option>
+                    <option value="TRANSPORTE">🚗 Transporte</option>
+                    <option value="SAUDE">🏥 Saúde</option>
+                    <option value="LAZER">🎮 Lazer</option>
+                    <option value="OUTROS">📦 Outros</option>
+                </select>
+            </div>
+        </div>
+        <div class="flex gap-3">
+            <button onclick="cancelarVoz()" class="flex-1 py-3 rounded-2xl font-bold text-slate-600 bg-slate-100">Cancelar</button>
+            <button onclick="confirmarVoz()" class="flex-1 py-3 rounded-2xl font-bold text-white" style="background:#111827">✅ Confirmar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div id="edit-modal">
+    <div class="edit-sheet">
+        <div style="width:40px;height:4px;background:#e5e7eb;border-radius:2px;margin:0 auto 20px;"></div>
+        <div class="flex justify-between items-center mb-5">
+            <h3 class="font-black text-slate-800 text-lg">✏️ Editar Transação</h3>
+            <button onclick="fecharEdicao()" class="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center"><i class="fas fa-times text-slate-500 text-sm"></i></button>
+        </div>
+        <div class="space-y-4">
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Descrição</label>
+                <input type="text" id="edit-desc" class="w-full p-3 rounded-2xl border border-slate-200 outline-none focus:border-green-400" placeholder="Descrição...">
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Valor</label>
+                    <input type="number" step="0.01" id="edit-amount" class="w-full p-3 rounded-2xl border border-slate-200 outline-none focus:border-green-400" placeholder="0,00">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Categoria</label>
+                    <select id="edit-category" class="w-full p-3 rounded-2xl border border-slate-200 outline-none focus:border-green-400">
+                        <option value="RECEITA">💰 Receita</option>
+                        <option value="FIXAS">🏠 Despesa Fixa</option>
+                        <option value="CARTAO">💳 Cartão</option>
+                        <option value="ALIMENTACAO">🍽 Alimentação</option>
+                        <option value="TRANSPORTE">🚗 Transporte</option>
+                        <option value="SAUDE">🏥 Saúde</option>
+                        <option value="LAZER">🎮 Lazer</option>
+                        <option value="OUTROS">📦 Outros</option>
+                    </select>
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Observações</label>
+                <input type="text" id="edit-obs" class="w-full p-3 rounded-2xl border border-slate-200 outline-none focus:border-green-400" placeholder="Detalhe opcional...">
+            </div>
+            <button onclick="salvarEdicao()" class="w-full py-4 rounded-2xl font-black text-lg text-white" style="background:#111827">Salvar Alterações</button>
+            <button onclick="fecharEdicao()" class="w-full py-3 rounded-2xl font-bold text-slate-600 bg-slate-100">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Add Modal -->
+<div id="modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center p-4 z-[60]">
+    <div class="bg-white rounded-3xl w-full max-w-md p-6">
+        <div class="flex justify-between items-center mb-5">
+            <h2 class="text-xl font-black">Nova Transação</h2>
+            <button onclick="toggleModal()" class="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center"><i class="fas fa-times text-slate-500 text-sm"></i></button>
+        </div>
+        <form id="transaction-form" onsubmit="saveTransaction(event)">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Descrição</label>
+                    <input type="text" id="desc" required class="w-full p-3 rounded-2xl border border-slate-200 outline-none focus:border-green-400" placeholder="Ex: Aluguel, Salário, Gasolina...">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Valor</label>
+                        <input type="number" step="0.01" id="amount" required class="w-full p-3 rounded-2xl border border-slate-200 outline-none focus:border-green-400" placeholder="0,00">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Categoria</label>
+                        <select id="category" class="w-full p-3 rounded-2xl border border-slate-200 outline-none focus:border-green-400">
+                            <option value="RECEITA">💰 Receita</option>
+                            <option value="FIXAS">🏠 Despesa Fixa</option>
+                            <option value="CARTAO">💳 Cartão</option>
+                            <option value="ALIMENTACAO">🍽 Alimentação</option>
+                            <option value="TRANSPORTE">🚗 Transporte</option>
+                            <option value="SAUDE">🏥 Saúde</option>
+                            <option value="LAZER">🎮 Lazer</option>
+                            <option value="OUTROS">📦 Outros</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Observações</label>
+                    <input type="text" id="obs" class="w-full p-3 rounded-2xl border border-slate-200 outline-none focus:border-green-400" placeholder="Detalhe opcional...">
+                </div>
+                <button type="submit" class="w-full py-4 rounded-2xl font-black text-lg text-white" style="background:#111827">Salvar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
-const API='https://meu-dindin-lake.vercel.app/api/sync', CLIENT='164141962348-ncp32kh8hlp5vns14k0ir8uu5bp18j2i.apps.googleusercontent.com';
-const money=n=>'R$ '+Number(n||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
-const today=()=>new Date().toISOString().slice(0,10), monthKey=(d=today())=>String(d).slice(0,7);
-const uid=()=>Date.now()+Math.floor(Math.random()*1000);
-const categories=['Alimentação','Mercado','Moradia','Transporte','Combustível','Saúde','Educação','Lazer','Assinaturas','Compras','Pets','Impostos','Salário','Renda extra','Outros'];
-let state=loadState(),token=localStorage.getItem('meudindin_google_id_token')||null,cloudReady=false,saveTimer=null,activeView='dashboard';
-function loadState(){let tx=[];try{tx=JSON.parse(localStorage.getItem('meudindin_classic_data')||'[]')}catch(e){};let s={};try{s=JSON.parse(localStorage.getItem('meudindin_complete_data')||'{}')}catch(e){};return {transactions:Array.isArray(s.transactions)?s.transactions:tx.map(t=>({...t,kind:t.category==='RECEITA'?'income':'expense',category:legacyCategory(t.category),method:t.category==='CARTAO'?'card':'pix',accountId:null,cardId:null})),accounts:Array.isArray(s.accounts)?s.accounts:[],cards:Array.isArray(s.cards)?s.cards:[],goals:Array.isArray(s.goals)?s.goals:[],budgets:s.budgets&&typeof s.budgets==='object'?s.budgets:{},recurringTemplates:Array.isArray(s.recurringTemplates)?s.recurringTemplates:[]}}
-function legacyCategory(c){return ({RECEITA:'Salário',FIXAS:'Moradia',CARTAO:'Outros',ALIMENTACAO:'Alimentação',TRANSPORTE:'Transporte',SAUDE:'Saúde',LAZER:'Lazer',OUTROS:'Outros'})[c]||c||'Outros'}
-function persist(){localStorage.setItem('meudindin_complete_data',JSON.stringify(state));localStorage.setItem('meudindin_classic_data',JSON.stringify(state.transactions));renderAll();scheduleSave()}
-function showView(v,b){activeView=v;document.querySelectorAll('main section[id^="view-"]').forEach(x=>x.classList.add('hidden'));document.getElementById('view-'+v).classList.remove('hidden');document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.view===v));if(v==='transactions')renderTransactions();if(v==='cards')renderCardsDetail();if(v==='goals')renderGoals()}
-function openModal(id){document.getElementById(id).classList.add('open')}function closeModal(id){document.getElementById(id).classList.remove('open')}
-function openTx(){document.getElementById('tx-form').reset();document.getElementById('tx-date').value=today();fillAccountSelects();toggleTxFields();openModal('tx-modal')}
-function fillAccountSelects(){['tx-account','tx-from','tx-to'].forEach(id=>{let el=document.getElementById(id);el.innerHTML=state.accounts.map(a=>'<option value="'+a.id+'">'+escapeHtml(a.name)+'</option>').join('')||'<option value="">Cadastre uma conta primeiro</option>'});['tx-card','tx-pay-card'].forEach(id=>{let el=document.getElementById(id);el.innerHTML=state.cards.map(c=>'<option value="'+c.id+'">'+escapeHtml(c.name)+'</option>').join('')||'<option value="">Cadastre um cartão primeiro</option>'})}
-function toggleTxFields(){let kind=document.getElementById('tx-kind').value,method=document.getElementById('tx-method').value;document.getElementById('category-field').classList.toggle('hidden',kind==='transfer'||kind==='payment');document.getElementById('payment-field').classList.toggle('hidden',kind!=='expense');document.getElementById('account-field').classList.toggle('hidden',!(kind==='income'||kind==='payment'||(kind==='expense'&&method!=='card')));document.getElementById('card-field').classList.toggle('hidden',kind!=='expense'||method!=='card');document.getElementById('transfer-field').classList.toggle('hidden',kind!=='transfer');document.getElementById('payment-card-field').classList.toggle('hidden',kind!=='payment');if(kind==='payment')document.getElementById('account-field').classList.remove('hidden')}
-function saveTx(e){e.preventDefault();let kind=document.getElementById('tx-kind').value,amount=Number(document.getElementById('tx-amount').value);if(!amount||amount<=0)return alert('Informe um valor válido.');let t={id:uid(),kind,amount,desc:document.getElementById('tx-desc').value.trim(),date:document.getElementById('tx-date').value+'T12:00:00',note:document.getElementById('tx-note').value.trim(),category:document.getElementById('tx-category').value};if(kind==='expense'){let method=document.getElementById('tx-method').value;t.method=method;if(method==='card'){t.cardId=document.getElementById('tx-card').value;if(!t.cardId)return alert('Cadastre ou selecione o cartão.')}else{t.accountId=document.getElementById('tx-account').value;if(!t.accountId)return alert('Cadastre ou selecione a conta de origem.')}}if(kind==='income'){t.accountId=document.getElementById('tx-account').value;if(!t.accountId)return alert('Cadastre a conta que recebeu.')}if(kind==='transfer'){t.fromAccountId=document.getElementById('tx-from').value;t.toAccountId=document.getElementById('tx-to').value;if(!t.fromAccountId||!t.toAccountId||t.fromAccountId===t.toAccountId)return alert('Selecione duas contas diferentes.')}if(kind==='payment'){t.accountId=document.getElementById('tx-account').value;t.cardId=document.getElementById('tx-pay-card').value;if(!t.accountId||!t.cardId)return alert('Selecione a conta e o cartão da fatura.')}state.transactions.push(t);if(kind==='expense'&&document.getElementById('tx-recurring').checked){let rid=String(uid());t.recurringId=rid;state.recurringTemplates.push({id:rid,desc:t.desc,amount:t.amount,category:t.category,method:t.method,accountId:t.accountId||null,cardId:t.cardId||null,day:Number(t.date.slice(8,10)),lastGenerated:monthKey(t.date)})}persist();closeModal('tx-modal')}
-function balance(a){return Number(a.initialBalance||0)+state.transactions.reduce((s,t)=>{if(t.kind==='income'&&t.accountId===a.id)s+=Number(t.amount);if(t.kind==='expense'&&t.method!=='card'&&t.accountId===a.id)s-=Number(t.amount);if(t.kind==='payment'&&t.accountId===a.id)s-=Number(t.amount);if(t.kind==='transfer'){if(t.fromAccountId===a.id)s-=Number(t.amount);if(t.toAccountId===a.id)s+=Number(t.amount)}return s},0)}
-function cardSpent(c,month=monthKey()){return state.transactions.filter(t=>t.cardId===c.id&&t.kind==='expense'&&t.method==='card'&&monthKey(t.date)===month).reduce((s,t)=>s+Number(t.amount),0)}
-function cardDebt(c){return state.transactions.filter(t=>t.cardId===c.id&&(t.kind==='expense'&&t.method==='card'||t.kind==='payment')).reduce((s,t)=>s+(t.kind==='payment'?-Number(t.amount):Number(t.amount)),0)}
-function monthTx(){return state.transactions.filter(t=>monthKey(t.date)===monthKey())}
-function totals(){let ts=monthTx();return {income:ts.filter(t=>t.kind==='income').reduce((s,t)=>s+t.amount,0),expense:ts.filter(t=>t.kind==='expense').reduce((s,t)=>s+t.amount,0)}}
-function renderAll(){let total=state.accounts.reduce((s,a)=>s+balance(a),0),tot=totals();document.getElementById('net-balance').textContent=money(total);document.getElementById('month-income').textContent=money(tot.income);document.getElementById('month-expense').textContent=money(tot.expense);document.getElementById('account-list').innerHTML=state.accounts.length?state.accounts.map(a=>'<div class="panel p-4 flex justify-between items-center"><div><b>'+escapeHtml(a.name)+'</b><div class="text-xs text-slate-500">'+accountType(a.type)+'</div></div><div class="text-right"><b>'+money(balance(a))+'</b><button class="block text-xs text-blue-600 mt-1 ml-auto" onclick="editAccount(\''+a.id+'\')">Editar</button></div></div>').join(''):'<div class="panel p-4 text-sm text-slate-500">Cadastre suas contas bancárias e cofrinhos para acompanhar os saldos.</div>';document.getElementById('card-list').innerHTML=state.cards.length?state.cards.map(c=>'<div class="rounded-2xl p-4 text-white bg-gradient-to-br from-slate-700 to-slate-950"><div class="text-xs text-white/60">'+escapeHtml(c.bank||'Cartão de crédito')+'</div><b class="text-lg">'+escapeHtml(c.name)+'</b><div class="flex justify-between mt-4 text-xs"><span>Fatura atual<br><b class="text-base">'+money(cardDebt(c))+'</b></span><span class="text-right">Limite disponível<br><b class="text-base">'+money(Math.max(0,Number(c.limit||0)-cardDebt(c)))+'</b></span></div><button onclick="editCard(\''+c.id+'\')" class="text-xs underline mt-3">Editar cartão</button></div>').join(''):'<div class="panel p-4 text-sm text-slate-500 col-span-2">Cadastre seus cartões para separar os gastos e acompanhar cada fatura.</div>';renderCategorySummary();renderInsights();renderBudget();renderGoalSummary();fillAccountSelects();renderTransactions();renderCardsDetail();renderGoals();renderTips();renderRecurring()}
-function accountType(t){return ({checking:'Conta corrente',savings:'Cofrinho / reserva',cash:'Dinheiro em mãos',investment:'Investimento'})[t]||'Conta'}
-function renderCategorySummary(){let ts=monthTx().filter(t=>t.kind==='expense'),map={};ts.forEach(t=>map[t.category]=(map[t.category]||0)+Number(t.amount));let entries=Object.entries(map).sort((a,b)=>b[1]-a[1]);document.getElementById('category-summary').innerHTML=entries.length?entries.map(([k,v])=>'<div><div class="flex justify-between text-sm"><span>'+escapeHtml(k)+'</span><b>'+money(v)+'</b></div><div class="h-2 bg-slate-100 rounded-full mt-1"><div class="h-2 bg-emerald-500 rounded-full" style="width:'+Math.max(3,v/Math.max(...entries.map(x=>x[1]))*100)+'%"></div></div></div>').join(''):'<p class="text-sm text-slate-500">Seus gastos por categoria aparecerão aqui.</p>'}
-function renderInsights(){let ts=monthTx(),ex=ts.filter(t=>t.kind==='expense'),inc=ts.filter(t=>t.kind==='income').reduce((s,t)=>s+t.amount,0),spent=ex.reduce((s,t)=>s+t.amount,0),top={};ex.forEach(t=>top[t.category]=(top[t.category]||0)+t.amount);let best=Object.entries(top).sort((a,b)=>b[1]-a[1])[0];let msgs=[];if(!ts.length)msgs.push('Registre suas movimentações para receber análises reais.');else{if(inc&&spent>inc)msgs.push('Atenção: as despesas deste mês superam as receitas em '+money(spent-inc)+'.');else if(inc)msgs.push('Você já comprometeu '+Math.round(spent/inc*100)+'% das receitas registradas neste mês.');if(best)msgs.push('Sua maior categoria de gasto é '+best[0]+', com '+money(best[1])+'.');let cards=state.cards.map(c=>({name:c.name,used:cardSpent(c)})).sort((a,b)=>b.used-a.used)[0];if(cards&&cards.used)msgs.push('O cartão com maior movimentação neste mês é '+cards.name+' ('+money(cards.used)+').')}document.getElementById('insights').innerHTML=msgs.map(m=>'<p class="p-3 bg-slate-50 rounded-xl">'+escapeHtml(m)+'</p>').join('')}
-function renderBudget(){let ts=monthTx().filter(t=>t.kind==='expense'),html=Object.entries(state.budgets).map(([cat,limit])=>{let used=ts.filter(t=>t.category===cat).reduce((s,t)=>s+t.amount,0),pct=limit?Math.min(100,used/limit*100):0;return '<div class="mb-3"><div class="flex justify-between text-sm"><b>'+escapeHtml(cat)+'</b><span>'+money(used)+' / '+money(limit)+'</span></div><div class="h-2 bg-slate-100 rounded-full mt-1"><div class="h-2 '+(pct>=100?'bg-red-500':'bg-emerald-500')+' rounded-full" style="width:'+pct+'%"></div></div></div>'}).join('');document.getElementById('budget-summary').innerHTML=html||'<p class="text-sm text-slate-500">Defina limites por categoria para acompanhar o orçamento.</p>';document.getElementById('budgets-detail').innerHTML=html||'<p class="text-sm text-slate-500">Nenhum limite configurado.</p>'}
-function renderGoalSummary(){document.getElementById('goal-summary').innerHTML=state.goals.length?state.goals.slice(0,3).map(g=>goalHtml(g)).join(''):'<p class="text-sm text-slate-500">Crie metas para acompanhar sua evolução.</p>'}
-function goalHtml(g){let p=Math.min(100,Number(g.target)?Number(g.current||0)/Number(g.target)*100:0);return '<div class="p-3 bg-slate-50 rounded-xl"><div class="flex justify-between text-sm"><b>'+escapeHtml(g.name)+'</b><b>'+Math.round(p)+'%</b></div><div class="h-2 bg-slate-200 rounded-full mt-2"><div class="h-2 bg-emerald-500 rounded-full" style="width:'+p+'%"></div></div><div class="flex justify-between text-xs text-slate-500 mt-2"><span>'+money(g.current)+'</span><span>'+money(g.target)+'</span></div></div>'}
-function renderTransactions(){let el=document.getElementById('tx-list');if(!el)return;let q=(document.getElementById('search-tx')?.value||'').toLowerCase(),m=document.getElementById('filter-month')?.value||'all';let list=state.transactions.filter(t=>(m==='all'||monthKey(t.date)===m)&&((t.desc||'').toLowerCase().includes(q)||(t.category||'').toLowerCase().includes(q))).sort((a,b)=>new Date(b.date)-new Date(a.date));el.innerHTML=list.length?list.map(t=>{let detail=t.kind==='expense'?(t.method==='card'?'Cartão: '+(state.cards.find(c=>c.id===t.cardId)?.name||'Não identificado'):(t.method==='pix'?'Pix · ':'')+(state.accounts.find(a=>a.id===t.accountId)?.name||'Conta não informada')):t.kind==='income'?'Entrada em '+(state.accounts.find(a=>a.id===t.accountId)?.name||'conta'):t.kind==='payment'?'Pagamento de fatura · '+(state.cards.find(c=>c.id===t.cardId)?.name||'Cartão'):'Transferência entre contas';return '<div class="panel p-4 flex justify-between gap-3"><div class="min-w-0"><b class="block truncate">'+escapeHtml(t.desc)+'</b><div class="text-xs text-slate-500 mt-1">'+escapeHtml(t.category||detail)+' · '+new Date(t.date).toLocaleDateString('pt-BR')+'</div><div class="text-xs text-slate-400">'+escapeHtml(detail)+'</div>'+(t.note?'<div class="text-xs text-slate-400">'+escapeHtml(t.note)+'</div>':'')+'</div><div class="text-right shrink-0"><b class="'+(t.kind==='income'?'text-emerald-600':t.kind==='expense'?'text-red-600':'text-slate-700')+'">'+(t.kind==='income'?'+':t.kind==='expense'?'-':'')+money(t.amount)+'</b><button onclick="deleteTx(\''+t.id+'\')" class="block text-xs text-red-400 ml-auto mt-2">Excluir</button></div></div>'}).join(''):'<div class="panel p-5 text-center text-sm text-slate-500">Nenhum lançamento encontrado.</div>'}
-function deleteTx(id){if(confirm('Excluir este lançamento?')){state.transactions=state.transactions.filter(t=>String(t.id)!==String(id));persist()}}
-function renderCardsDetail(){let el=document.getElementById('cards-detail');if(!el)return;el.innerHTML=state.cards.length?state.cards.map(c=>'<div class="panel p-4"><div class="flex justify-between"><div><b>'+escapeHtml(c.name)+'</b><div class="text-xs text-slate-500">'+escapeHtml(c.bank||'')+' · fecha dia '+c.close+' · vence dia '+c.due+'</div></div><button class="text-sm text-blue-600" onclick="editCard(\''+c.id+'\')">Editar</button></div><div class="grid grid-cols-2 mt-4"><div><small class="text-slate-500">Gastos neste mês</small><b class="block">'+money(cardSpent(c))+'</b></div><div><small class="text-slate-500">Saldo da fatura</small><b class="block">'+money(cardDebt(c))+'</b></div></div><div class="text-xs text-slate-500 mt-2">Limite disponível: '+money(Math.max(0,c.limit-cardDebt(c)))+'</div></div>').join(''):'<p class="panel p-4 text-sm text-slate-500">Nenhum cartão cadastrado.</p>'}
-function renderGoals(){let el=document.getElementById('goals-detail');if(el)el.innerHTML=state.goals.length?state.goals.map(g=>'<div class="panel p-4">'+goalHtml(g)+'<button onclick="editGoal(\''+g.id+'\')" class="text-xs text-blue-600 mt-2">Editar meta</button></div>').join(''):'<p class="panel p-4 text-sm text-slate-500">Nenhuma meta cadastrada.</p>'}
-function openAccount(){document.getElementById('acc-id').value='';document.getElementById('acc-name').value='';document.getElementById('acc-type').value='checking';document.getElementById('acc-balance').value=0;openModal('account-modal')}
-function editAccount(id){let a=state.accounts.find(x=>x.id===id);if(!a)return;document.getElementById('acc-id').value=id;document.getElementById('acc-name').value=a.name;document.getElementById('acc-type').value=a.type;document.getElementById('acc-balance').value=a.initialBalance;openModal('account-modal')}
-function saveAccount(e){e.preventDefault();let id=document.getElementById('acc-id').value,obj={id:id||String(uid()),name:document.getElementById('acc-name').value.trim(),type:document.getElementById('acc-type').value,initialBalance:Number(document.getElementById('acc-balance').value)||0};let i=state.accounts.findIndex(a=>a.id===id);if(i>=0)state.accounts[i]=obj;else state.accounts.push(obj);persist();closeModal('account-modal')}
-function openCard(){document.getElementById('card-id').value='';document.getElementById('card-name').value='';document.getElementById('card-bank').value='';document.getElementById('card-limit').value=0;openModal('card-modal')}
-function editCard(id){let c=state.cards.find(x=>x.id===id);if(!c)return;document.getElementById('card-id').value=id;document.getElementById('card-name').value=c.name;document.getElementById('card-bank').value=c.bank||'';document.getElementById('card-limit').value=c.limit||0;document.getElementById('card-close').value=c.close||20;document.getElementById('card-due').value=c.due||10;openModal('card-modal')}
-function saveCard(e){e.preventDefault();let id=document.getElementById('card-id').value,obj={id:id||String(uid()),name:document.getElementById('card-name').value.trim(),bank:document.getElementById('card-bank').value.trim(),limit:Number(document.getElementById('card-limit').value)||0,close:Number(document.getElementById('card-close').value)||1,due:Number(document.getElementById('card-due').value)||1};let i=state.cards.findIndex(c=>c.id===id);if(i>=0)state.cards[i]=obj;else state.cards.push(obj);persist();closeModal('card-modal')}
-function openGoal(){document.getElementById('goal-id').value='';document.getElementById('goal-name').value='';document.getElementById('goal-target').value='';document.getElementById('goal-current').value=0;document.getElementById('goal-date').value='';openModal('goal-modal')}
-function editGoal(id){let g=state.goals.find(x=>x.id===id);if(!g)return;document.getElementById('goal-id').value=id;document.getElementById('goal-name').value=g.name;document.getElementById('goal-target').value=g.target;document.getElementById('goal-current').value=g.current;document.getElementById('goal-date').value=g.date||'';openModal('goal-modal')}
-function saveGoal(e){e.preventDefault();let id=document.getElementById('goal-id').value,obj={id:id||String(uid()),name:document.getElementById('goal-name').value.trim(),target:Number(document.getElementById('goal-target').value),current:Number(document.getElementById('goal-current').value)||0,date:document.getElementById('goal-date').value};let i=state.goals.findIndex(g=>g.id===id);if(i>=0)state.goals[i]=obj;else state.goals.push(obj);persist();closeModal('goal-modal')}
-function setBudget(){let sel=document.getElementById('budget-category');sel.innerHTML=categories.map(c=>'<option>'+c+'</option>').join('');document.getElementById('budget-amount').value='';openModal('budget-modal')}
-function saveBudget(e){e.preventDefault();state.budgets[document.getElementById('budget-category').value]=Number(document.getElementById('budget-amount').value);persist();closeModal('budget-modal')}
-function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-const tips=[
-['Organização','Faça um raio-x financeiro','Anote todas as contas, dívidas, receitas e saldos. Sem diagnóstico, qualquer planejamento vira chute.'],
-['Organização','Registre no mesmo dia','Lance cada compra assim que acontecer. Registros atrasados costumam ser esquecidos ou estimados incorretamente.'],
-['Organização','Separe necessidade de desejo','Antes de comprar, pergunte se é essencial, importante ou apenas vontade momentânea.'],
-['Organização','Revise seu orçamento semanalmente','Uma revisão curta toda semana evita descobrir o problema só no fechamento do mês.'],
-['Organização','Use categorias consistentes','Classifique pelo que comprou, não pelo meio de pagamento. Gasolina continua sendo transporte mesmo paga no cartão.'],
-['Organização','Defina um dia financeiro','Reserve 20 minutos por semana para conferir saldos, faturas, contas e metas.'],
-['Organização','Guarde comprovantes importantes','Mantenha notas e comprovantes de despesas relevantes para garantia, imposto ou reembolso.'],
-['Organização','Planeje o mês antes de começar','Liste vencimentos e receitas previstas para antecipar períodos apertados.'],
-['Organização','Não confunda saldo com limite','Limite do cartão é crédito emprestado, não dinheiro disponível.'],
-['Organização','Feche o mês com uma revisão','Compare o planejado com o realizado e ajuste os limites do próximo mês.'],
-['Cartões e dívidas','Pague a fatura integral','O rotativo do cartão pode consumir rapidamente sua renda. Se não puder pagar, negocie antes do vencimento.'],
-['Cartões e dívidas','Tenha um cartão principal','Concentrar compras pode facilitar o controle, desde que o limite não incentive gastar mais.'],
-['Cartões e dívidas','Dê nome a cada cartão no app','Identifique banco e bandeira para saber qual cartão está concentrando os gastos.'],
-['Cartões e dívidas','Acompanhe compras parceladas','Registre o valor total e o compromisso mensal para não comprometer renda futura sem perceber.'],
-['Cartões e dívidas','Não use um cartão para pagar outro','Isso pode mascarar o endividamento e aumentar o custo financeiro.'],
-['Cartões e dívidas','Conheça fechamento e vencimento','Comprar depois do fechamento pode dar mais prazo, mas não deve ser motivo para antecipar consumo.'],
-['Cartões e dívidas','Evite pagar só o mínimo','O pagamento mínimo financia o saldo restante com juros elevados.'],
-['Cartões e dívidas','Revise assinaturas no cartão','Confira cobranças recorrentes e cancele serviços que não usa.'],
-['Cartões e dívidas','Negocie dívidas pelo custo','Priorize juros mais altos, mantendo pagamentos mínimos das demais obrigações.'],
-['Cartões e dívidas','Não confunda fatura com gasto novo','A compra já é despesa; pagar a fatura é quitar a dívida, não registrar a mesma despesa novamente.'],
-['Economia','Comece a reserva com pouco','Automatize um valor pequeno após receber. Consistência vale mais que esperar sobrar.'],
-['Economia','Monte reserva de emergência','Busque gradualmente de três a seis meses de despesas essenciais, ajustando ao tipo de renda e estabilidade.'],
-['Economia','Deixe a reserva acessível e segura','Emergência exige liquidez e baixo risco, não aposta em rentabilidade alta.'],
-['Economia','Crie um cofrinho para cada objetivo','Separar dinheiro por finalidade reduz a chance de gastar a reserva em compras do dia a dia.'],
-['Economia','Compare preço por unidade','Preço por quilo, litro ou unidade ajuda a comparar embalagens diferentes.'],
-['Economia','Planeje compras de mercado','Lista e cardápio semanal reduzem desperdício e compras por impulso.'],
-['Economia','Leve água e lanche quando possível','Pequenas compras diárias podem somar um valor relevante no fim do mês.'],
-['Economia','Revise planos e tarifas','Internet, celular, banco e seguros podem ter alternativas mais econômicas.'],
-['Economia','Faça uma pausa antes de comprar','Espere 24 horas para compras não essenciais. Para valores altos, espere mais.'],
-['Economia','Economize energia com hábitos','Acompanhe consumo, evite desperdício e avalie aparelhos eficientes quando precisar substituir.'],
-['Investimentos','Quite dívidas caras antes de investir','Juros de dívidas caras normalmente superam retornos conservadores.'],
-['Investimentos','Entenda liquidez','Saiba quando poderá resgatar o dinheiro e se existe carência ou prazo de liquidação.'],
-['Investimentos','Conheça seu perfil de risco','Escolha investimentos compatíveis com prazo, objetivos e capacidade de suportar perdas.'],
-['Investimentos','Diversifique com critério','Evite concentrar todo o patrimônio em um único emissor, ativo ou estratégia.'],
-['Investimentos','Desconfie de retorno garantido alto','Rentabilidade elevada sem risco é sinal de alerta.'],
-['Investimentos','Considere taxas e impostos','Compare retorno líquido, custos, tributação e prazo antes de decidir.'],
-['Investimentos','Invista com objetivo e prazo','Dinheiro de curto prazo pede menor exposição a oscilações.'],
-['Investimentos','Não siga dicas sem entender','Pesquise o produto, os riscos e as regras antes de aplicar.'],
-['Investimentos','Aporte com regularidade','Aportes compatíveis com seu orçamento ajudam a construir patrimônio ao longo do tempo.'],
-['Investimentos','Revise a carteira periodicamente','Reavalie quando objetivos, prazo ou tolerância a risco mudarem.'],
-['Consumo','Calcule o custo total do carro','Inclua combustível, seguro, IPVA, manutenção, estacionamento e depreciação.'],
-['Consumo','Compare custo por uso','Um item barato pouco usado pode sair mais caro que um produto durável.'],
-['Consumo','Evite comprar por promoção','Desconto só gera economia se o produto já fazia sentido no orçamento.'],
-['Consumo','Planeje refeições fora','Defina uma verba para restaurantes e acompanhe sem culpa, mas sem perder o limite.'],
-['Consumo','Cuidado com frete e taxas','Inclua custos adicionais no preço final da compra online.'],
-['Consumo','Pesquise antes de fechar','Compare preço, garantia, reputação e política de devolução.'],
-['Consumo','Faça inventário da despensa','Use o que já tem antes de comprar mais e reduzir desperdício.'],
-['Consumo','Avalie compras parceladas','Compare o preço à vista e o total parcelado; parcela pequena também compromete meses futuros.'],
-['Consumo','Desative compras por impulso','Remova cartões salvos e notificações promocionais se isso facilitar gastos desnecessários.'],
-['Consumo','Defina um teto para lazer','Planejar lazer evita que diversão vire dívida.'],
-['Metas','Transforme desejo em número','Defina valor, prazo e contribuição mensal necessária para alcançar a meta.'],
-['Metas','Divida metas grandes em etapas','Marcos menores tornam o progresso visível e ajudam a manter a motivação.'],
-['Metas','Pague-se primeiro','Separe o valor da meta no início do mês, em vez de esperar sobrar.'],
-['Metas','Revise metas quando a renda mudar','Ajuste prazo e aporte sem abandonar o objetivo por causa de um mês difícil.'],
-['Metas','Separe reserva de objetivos','Emergência, viagem e compras planejadas devem ter finalidades diferentes.'],
-['Metas','Acompanhe seu patrimônio líquido','Some ativos e subtraia dívidas para entender a evolução real do patrimônio.'],
-['Metas','Planeje despesas anuais','IPVA, seguros, matrícula e impostos não são surpresas: reserve mensalmente.'],
-['Metas','Celebre progresso sem estourar o orçamento','Reconheça pequenas conquistas sem criar uma nova dívida.'],
-['Metas','Tenha metas realistas','Considere inflação, imprevistos e capacidade de poupança ao definir prazos.'],
-['Metas','Revise o progresso todo mês','Atualize valores guardados e o que falta para concluir cada objetivo.'],
-    ["Organização","Crie uma margem para imprevistos","Não comprometa 100% da renda prevista. Uma margem evita que qualquer variação vire dívida."],
-    ["Organização","Atualize os saldos bancários","Confira periodicamente o saldo real no banco e corrija diferenças de lançamentos esquecidos."],
-    ["Organização","Registre transferências separadamente","Mover dinheiro entre suas próprias contas não é receita nem despesa."],
-    ["Organização","Use a data correta da compra","A data da transação ajuda a fechar o mês certo e comparar períodos com precisão."],
-    ["Organização","Diferencie gasto e pagamento","A compra no cartão é despesa; pagar a fatura é quitação, não uma segunda despesa."],
-    ["Organização","Faça conciliação da conta","Compare o extrato bancário com os lançamentos do aplicativo ao menos uma vez por mês."],
-    ["Organização","Separe finanças pessoais e profissionais","Misturar movimentações dificulta entender quanto custa sua vida e quanto seu trabalho gera."],
-    ["Organização","Acompanhe despesas pequenas","Café, estacionamento e taxas parecem pouco isoladamente, mas acumulam."],
-    ["Cartões e dívidas","Ajuste limites com responsabilidade","Limite alto não significa maior capacidade financeira. Peça apenas o que faz sentido para seu orçamento."],
-    ["Cartões e dívidas","Ative alertas de compra","Notificações ajudam a identificar transações desconhecidas rapidamente."],
-    ["Cartões e dívidas","Confira a fatura antes do vencimento","Procure cobranças duplicadas, assinaturas esquecidas e compras que não reconhece."],
-    ["Cartões e dívidas","Evite parcelar despesas recorrentes","Parcelar mercado ou combustível pode deixar várias faturas futuras comprometidas."],
-    ["Cartões e dívidas","Use cartão virtual em compras online","Quando disponível, o cartão virtual reduz exposição dos dados do cartão físico."],
-    ["Cartões e dívidas","Tenha um plano para sair das dívidas","Liste saldo, juros e parcelas. Defina uma ordem e acompanhe a redução mensal."],
-    ["Cartões e dívidas","Não pague fatura com dinheiro da reserva","Se isso for inevitável, trate como alerta e reponha a reserva com prioridade."],
-    ["Economia","Programe transferências para o cofrinho","Automatizar o hábito de guardar reduz a dependência de disciplina diária."],
-    ["Economia","Faça uma semana sem compras extras","Experimente reduzir compras não essenciais por sete dias e observe o resultado."],
-    ["Economia","Compare tarifas bancárias","Avalie pacotes, anuidade, saques e transferências cobradas pela instituição."],
-    ["Economia","Aproveite cashback sem gastar mais","Cashback só é vantagem quando a compra já estava planejada e o preço é competitivo."],
-    ["Economia","Planeje manutenção preventiva","Pequenas manutenções programadas podem evitar reparos maiores e emergenciais."],
-    ["Economia","Crie uma verba para presentes","Aniversários e datas comemorativas são previsíveis; reserve um valor ao longo do ano."],
-    ["Economia","Evite desperdício de alimentos","Organize validade, armazenamento e porções para aproveitar melhor o que compra."],
-    ["Investimentos","Entenda a proteção do FGC","Verifique se o produto e a instituição são cobertos, os limites e as condições da garantia."],
-    ["Investimentos","Não invista dinheiro de contas próximas","Valores destinados a aluguel, fatura ou compromissos imediatos precisam estar disponíveis."],
-    ["Investimentos","Leia as regras de resgate","Liquidez diária, carência e prazo de crédito são características diferentes."],
-    ["Investimentos","Desconfie de pressão para investir","Promessas com urgência, segredo ou indicação de conhecidos merecem verificação independente."],
-    ["Investimentos","Evite concentrar em uma única empresa","Diversificação reduz o impacto de problemas específicos, mas não elimina riscos."],
-    ["Investimentos","Compare com objetivos reais","A melhor aplicação é a que atende prazo, liquidez e risco necessários ao objetivo."],
-    ["Consumo","Calcule o custo de assinaturas anuais","Divida o valor anual por 12 para entender quanto do orçamento mensal está comprometido."],
-    ["Consumo","Avalie garantia e assistência","Preço menor pode não compensar se o produto tiver suporte ruim ou manutenção cara."],
-    ["Consumo","Evite comprar para aliviar estresse","Identifique gatilhos emocionais e crie alternativas que não envolvam consumo."],
-    ["Consumo","Planeje abastecimentos","Acompanhe gasto por mês e consumo médio do veículo para identificar variações fora do padrão."],
-    ["Consumo","Defina limite para aplicativos de entrega","Taxas, adicionais e frequência podem elevar muito o custo da alimentação."],
-    ["Consumo","Revise compras no débito e Pix","Facilidade de pagamento não deve eliminar a conferência do valor e do destinatário."],
-    ["Consumo","Compre usado quando fizer sentido","Avalie estado, procedência, garantia e custo de manutenção antes de decidir."],
-    ["Metas","Calcule o aporte mensal necessário","Divida o valor que falta pelo número de meses disponíveis para estimar o esforço mensal."],
-    ["Metas","Aumente aportes quando receber extra","Use parte de bônus, restituição ou renda extra para acelerar metas sem contar com isso no orçamento fixo."],
-    ["Metas","Proteja o dinheiro de cada objetivo","Mantenha o valor separado e evite usar para despesas comuns."],
-    ["Metas","Revise prioridades a cada trimestre","Metas podem mudar; reorganize a ordem sem perder a visão do conjunto."],
-    ["Metas","Inclua inflação em objetivos distantes","O custo futuro de uma compra pode ser maior. Atualize o valor-alvo periodicamente."]
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});
+
+const DICAS = [
+    { icon:'💰', titulo:'Regra 50-30-20', texto:'Divida sua renda: 50% para necessidades, 30% para desejos e 20% para poupança ou dívidas. Uma fórmula simples e eficaz.' },
+    { icon:'🏦', titulo:'Reserva de emergência', texto:'Guarde pelo menos 3 a 6 meses dos seus gastos mensais em uma conta de fácil acesso. Comece com pequenos valores.' },
+    { icon:'📊', titulo:'Controle seus gastos fixos', texto:'Despesas fixas acima de 60% da renda é um sinal de alerta. Renegocie contratos e planos quando possível.' },
+    { icon:'💳', titulo:'Cuidado com o cartão de crédito', texto:'Pague sempre o valor total da fatura. Os juros do rotativo chegam a 400% ao ano — um dos maiores do mundo.' },
+    { icon:'🎯', titulo:'Defina metas financeiras', texto:'Ter um objetivo claro (viagem, carro, casa) aumenta a motivação para economizar. Coloque um prazo e valor.' },
+    { icon:'🛒', titulo:'Lista antes de comprar', texto:'Antes de ir ao mercado, faça uma lista e siga ela. Compras por impulso são uma das principais fontes de desperdício.' },
+    { icon:'📈', titulo:'Invista o quanto antes', texto:'O tempo é seu maior aliado nos investimentos. Mesmo R$ 100 por mês aplicados por 20 anos fazem diferença enorme.' },
+    { icon:'🔔', titulo:'Revise assinaturas', texto:'Streaming, academia, apps — some tudo. Muitas pessoas pagam por serviços que mal usam. Cancele o desnecessário.' },
+    { icon:'🍽️', titulo:'Alimentação consome muito', texto:'Comer fora é prático mas caro. Preparar refeições em casa pode reduzir seus gastos com alimentação em até 60%.' },
+    { icon:'🚗', titulo:'Transporte inteligente', texto:'Calcule o custo real do seu carro (seguro, IPVA, combustível, manutenção). Às vezes o transporte público sai bem mais barato.' },
 ];
-function renderTips(){let f=document.getElementById('tip-filter')?.value||'Todas',arr=tips.filter(t=>f==='Todas'||t[0]===f);document.getElementById('tips-list').innerHTML=arr.map(t=>'<article class="panel p-4"><span class="pill">'+t[0]+'</span><h3 class="font-black mt-2">'+t[1]+'</h3><p class="text-sm text-slate-600 mt-1">'+t[2]+'</p></article>').join('')}
-function randomTip(){let t=tips[Math.floor(Math.random()*tips.length)];document.getElementById('tip-filter').value=t[0];renderTips();document.getElementById('tips-list').firstElementChild?.scrollIntoView({behavior:'smooth',block:'start'})}
-function exportBackup(){let blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='meu-din-din-backup-completo.json';a.click();URL.revokeObjectURL(a.href)}
-function renderRecurring(){let el=document.getElementById('recurring-list');if(!el)return;el.innerHTML=state.recurringTemplates.length?state.recurringTemplates.map(r=>`<div class="flex justify-between gap-2 py-2 border-b border-slate-100"><span>${escapeHtml(r.desc)} · ${money(r.amount)}</span><button class="text-red-500 text-xs" onclick="removeRecurring('${r.id}')">Remover</button></div>`).join(''):'Nenhuma despesa recorrente cadastrada.'}
-function removeRecurring(id){state.recurringTemplates=state.recurringTemplates.filter(r=>r.id!==id);persist()}
-function processRecurring(){let mk=monthKey(),day=Number(today().slice(8,10)),changed=false;for(const r of state.recurringTemplates){if(Number(r.day)>day||r.lastGenerated===mk)continue;let exists=state.transactions.some(t=>t.recurringId===r.id&&monthKey(t.date)===mk);if(!exists){state.transactions.push({id:uid(),kind:'expense',amount:Number(r.amount),desc:r.desc,category:r.category,method:r.method,accountId:r.accountId,cardId:r.cardId,recurringId:r.id,date:mk+'T12:00:00',note:'Lançamento recorrente automático'});changed=true}r.lastGenerated=mk;changed=true}if(changed){localStorage.setItem('meudindin_complete_data',JSON.stringify(state));localStorage.setItem('meudindin_classic_data',JSON.stringify(state.transactions));scheduleSave()}}
-function printReport(){let t=monthTx(),tot=totals(),rows=t.map(x=>'<tr><td>'+new Date(x.date).toLocaleDateString('pt-BR')+'</td><td>'+escapeHtml(x.desc)+'</td><td>'+escapeHtml(x.category||x.kind)+'</td><td>'+money(x.amount)+'</td></tr>').join('');let w=window.open('','_blank');if(!w)return alert('Permita a abertura de janelas para gerar o relatório.');w.document.write('<html><head><title>Relatório Meu Din Din</title><style>body{font:14px Arial;padding:30px;color:#172033}h1{font-size:22px}table{width:100%;border-collapse:collapse;margin-top:20px}td,th{padding:9px;border-bottom:1px solid #ddd;text-align:left}</style></head><body><h1>Meu Din Din — Relatório mensal</h1><p>Período: '+monthKey()+'</p><p>Receitas: '+money(tot.income)+' | Despesas: '+money(tot.expense)+' | Resultado: '+money(tot.income-tot.expense)+'</p><table><tr><th>Data</th><th>Descrição</th><th>Categoria</th><th>Valor</th></tr>'+rows+'</table><script>window.onload=()=>window.print()<\\/script></body></html>');w.document.close()}
-function exportCSV(){let rows=[['Data','Descrição','Tipo','Categoria','Valor','Meio','Conta','Cartão'],...state.transactions.map(t=>[t.date,t.desc,t.kind,t.category||'',t.amount,t.method||'',state.accounts.find(a=>a.id===t.accountId)?.name||'',state.cards.find(c=>c.id===t.cardId)?.name||''])];let csv=rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));a.download='meu-din-din-lancamentos.csv';a.click();URL.revokeObjectURL(a.href)}
-function importBackup(e){let file=e.target.files[0];if(!file)return;let reader=new FileReader();reader.onload=()=>{try{let x=JSON.parse(reader.result);if(!Array.isArray(x.transactions)||!Array.isArray(x.accounts)||!Array.isArray(x.cards))throw Error();if(!confirm('Substituir os dados completos atuais pelo backup?'))return;state={transactions:x.transactions,accounts:x.accounts,cards:x.cards,goals:x.goals||[],budgets:x.budgets||{},recurringTemplates:x.recurringTemplates||[]};persist();alert('Backup importado.')}catch(err){alert('Arquivo de backup inválido.')}};reader.readAsText(file)}
-function scheduleSave(){if(!cloudReady||!token)return;clearTimeout(saveTimer);saveTimer=setTimeout(async()=>{try{let r=await fetch(API,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({action:'save',transactions:state.transactions,financeData:{accounts:state.accounts,cards:state.cards,goals:state.goals,budgets:state.budgets,recurringTemplates:state.recurringTemplates}})});let j=await r.json();if(!r.ok)throw Error(j.error||'Falha ao sincronizar');document.getElementById('sync-status').textContent='Sincronizado com Google.'}catch(e){document.getElementById('sync-status').textContent='Erro ao sincronizar: '+e.message}},700)}
-async function syncCloud(){if(!token)return;try{document.getElementById('sync-status').textContent='Sincronizando...';let r=await fetch(API,{headers:{Authorization:'Bearer '+token}}),j=await r.json();if(!r.ok)throw Error(j.error||'Falha no login');if(j.exists){state.transactions=j.transactions||[];let d=j.financeData||{};state.accounts=d.accounts||state.accounts;state.cards=d.cards||state.cards;state.goals=d.goals||state.goals;state.budgets=d.budgets||state.budgets;state.recurringTemplates=d.recurringTemplates||state.recurringTemplates;localStorage.setItem('meudindin_classic_data',JSON.stringify(state.transactions));localStorage.setItem('meudindin_complete_data',JSON.stringify(state))}else{cloudReady=true;await saveNow()}cloudReady=true;processRecurring();document.getElementById('sync-status').textContent='Sincronizado com Google.';renderAll()}catch(e){token=null;localStorage.removeItem('meudindin_google_id_token');localStorage.removeItem('meudindin_access_mode');document.getElementById('login-error').textContent=e.message;document.getElementById('login').style.display='flex'}}
-async function saveNow(){if(!token)return;let r=await fetch(API,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({action:'save',transactions:state.transactions,financeData:{accounts:state.accounts,cards:state.cards,goals:state.goals,budgets:state.budgets}})});if(!r.ok)throw Error('Não foi possível salvar os dados')}
-function offline(){token=null;cloudReady=false;localStorage.removeItem('meudindin_google_id_token');localStorage.setItem('meudindin_access_mode','offline');document.getElementById('login').style.display='none';document.getElementById('sync-status').textContent='Modo local: dados somente neste aparelho.'}
-function logout(){token=null;cloudReady=false;localStorage.removeItem('meudindin_google_id_token');localStorage.removeItem('meudindin_access_mode');document.getElementById('login').style.display='flex'}
-function initLogin(){let mode=localStorage.getItem('meudindin_access_mode');if(token){syncCloud()}else if(mode==='offline'){document.getElementById('sync-status').textContent='Modo local: dados somente neste aparelho.'}else{document.getElementById('login').style.display='flex'}if(window.google?.accounts?.id){google.accounts.id.initialize({client_id:CLIENT,callback:async r=>{token=r.credential;localStorage.setItem('meudindin_google_id_token',token);localStorage.setItem('meudindin_access_mode','cloud');await syncCloud()}});google.accounts.id.renderButton(document.getElementById('google-button'),{theme:'outline',size:'large',shape:'pill',text:'continue_with',width:260});google.accounts.id.renderButton(document.getElementById('google-button-settings'),{theme:'outline',size:'medium',shape:'pill',text:'signin_with',width:200})}else setTimeout(initLogin,700)}
-document.getElementById('filter-month').innerHTML='<option value="all">Todos os meses</option>'+Array.from(new Set(state.transactions.map(t=>monthKey(t.date)))).sort().reverse().map(m=>'<option value="'+m+'">'+m+'</option>').join('');
-renderAll();initLogin();if(!token)processRecurring();
-</script></body></html>
+
+let dicaIndex = 0;
+function renderDica() {
+    const d = DICAS[dicaIndex];
+    document.getElementById('dica-atual').querySelector('.tip-icon').textContent = d.icon;
+    document.getElementById('dica-titulo').textContent = d.titulo;
+    document.getElementById('dica-texto').textContent = d.texto;
+}
+function dicaProxima() { dicaIndex = (dicaIndex + 1) % DICAS.length; renderDica(); }
+function dicaAnterior() { dicaIndex = (dicaIndex - 1 + DICAS.length) % DICAS.length; renderDica(); }
+function toggleDicas() {
+    const box = document.getElementById('dicas-box');
+    box.classList.toggle('hidden');
+    if (!box.classList.contains('hidden')) renderDica();
+}
+function toggleSidePanel(open) {
+    const panel = document.getElementById('side-panel');
+    const backdrop = document.getElementById('side-panel-backdrop');
+    panel.classList.toggle('open', open);
+    backdrop.classList.toggle('open', open);
+}
+
+
+let transactions = JSON.parse(localStorage.getItem('meudindin_classic_data') || localStorage.getItem('meudindin_data')) || [
+    {id:1,desc:'Salário',amount:5000,category:'RECEITA',obs:'Receita mensal',date:new Date().toISOString()},
+    {id:2,desc:'Aluguel',amount:1200,category:'FIXAS',obs:'Despesa fixa',date:new Date().toISOString()},
+    {id:3,desc:'Cartão Visa',amount:450,category:'CARTAO',obs:'Parcela 1/3',date:new Date().toISOString()},
+    {id:4,desc:'Gasolina',amount:80,category:'TRANSPORTE',obs:'Posto Shell',date:new Date().toISOString()},
+    {id:5,desc:'Lanchonete',amount:25,category:'ALIMENTACAO',obs:'Almoço',date:new Date().toISOString()}
+];
+let currentTab='all', recognition=null, isRecording=false;
+let voiceParsed = null;
+let editingId = null;
+let googleIdToken = localStorage.getItem('meudindin_google_id_token') || null;
+let cloudSyncReady = false;
+let cloudSaveTimer = null;
+const CLOUD_SYNC_API = 'https://meu-dindin-lake.vercel.app/api/sync';
+
+function setCloudStatus(message, error = false) {
+    const el = document.getElementById('cloud-sync-status');
+    const dot = document.getElementById('cloud-sync-dot');
+    if (el) {
+        const connected = !error && /sincronizad|salvo na nuvem|ativada/i.test(message);
+        el.textContent = error ? message : (connected ? 'Nuvem sincronizada' : (/desconectado/i.test(message) ? 'Nuvem desconectada' : 'Conectar nuvem'));
+        el.className = 'text-[11px] font-semibold ' + (error ? 'text-red-500' : (connected ? 'text-emerald-600' : 'text-slate-500'));
+    }
+    if (dot) dot.className = 'w-2 h-2 rounded-full ' + (error ? 'bg-red-500' : (/sincronizad|salvo na nuvem|ativada/i.test(message) ? 'bg-emerald-500' : 'bg-slate-300'));
+}
+
+async function handleGoogleCredential(response) {
+    googleIdToken = response.credential;
+    localStorage.setItem('meudindin_google_id_token', googleIdToken);
+    localStorage.setItem('meudindin_access_mode', 'cloud');
+    const errorEl = document.getElementById('google-gate-error');
+    if (errorEl) errorEl.classList.add('hidden');
+    await syncFromCloud();
+}
+
+async function syncFromCloud() {
+    if (!googleIdToken) return;
+    setCloudStatus('Conectando à sua conta...');
+    try {
+        const response = await fetch(CLOUD_SYNC_API, {
+            headers: { Authorization: 'Bearer ' + googleIdToken }
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Falha no login.');
+        if (result.exists) {
+            localStorage.setItem('meudindin_local_backup_before_cloud', JSON.stringify(transactions));
+            transactions = result.transactions;
+            localStorage.setItem('meudindin_classic_data', JSON.stringify(transactions));
+            render();
+            updateAlerta();
+            setCloudStatus('Dados da nuvem carregados e sincronizados.');
+        } else {
+            await saveCloudData(true);
+            setCloudStatus('Sincronização ativada. Seus dados foram enviados à nuvem.');
+        }
+        cloudSyncReady = true;
+        const accessGate = document.getElementById('access-gate');
+        if (accessGate) accessGate.style.display = 'none';
+        localStorage.setItem('meudindin_access_mode', 'cloud');
+        document.getElementById('google-signin').classList.add('hidden');
+        document.getElementById('google-signout').classList.remove('hidden');} catch (error) {
+        cloudSyncReady = false;
+        googleIdToken = null;
+        localStorage.removeItem('meudindin_google_id_token');
+        localStorage.removeItem('meudindin_access_mode');
+        setCloudStatus(error.message || 'Não foi possível sincronizar.', true);
+        showAccessGate(error.message || 'Sua conexão expirou. Conecte novamente para recuperar os dados da nuvem.');
+    }
+}
+
+let lastForegroundSyncAt = 0;
+let foregroundSyncInFlight = false;
+
+async function refreshCloudWhenAppReturns() {
+    if (document.visibilityState !== 'visible' || !cloudSyncReady || !googleIdToken || foregroundSyncInFlight) return;
+    const now = Date.now();
+    if (now - lastForegroundSyncAt < 30000) return;
+    lastForegroundSyncAt = now;
+    foregroundSyncInFlight = true;
+    try {
+        await syncFromCloud();
+    } finally {
+        foregroundSyncInFlight = false;
+    }
+}async function saveCloudData(initial = false) {
+    if (!googleIdToken) return;
+    const response = await fetch(CLOUD_SYNC_API, {
+        method: 'POST',
+        headers: {
+            Authorization: 'Bearer ' + googleIdToken,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ action: 'save', transactions })
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Falha ao salvar na nuvem.');
+    if (!initial) setCloudStatus('Salvo na nuvem agora.');
+}
+
+function scheduleCloudSave() {
+    if (!cloudSyncReady) return;
+    clearTimeout(cloudSaveTimer);
+    cloudSaveTimer = setTimeout(async () => {
+        try { await saveCloudData(); }
+        catch (error) { setCloudStatus(error.message || 'Erro ao salvar na nuvem.', true); }
+    }, 900);
+}
+
+function signOutGoogle() {
+    googleIdToken = null;
+    cloudSyncReady = false;
+    localStorage.removeItem('meudindin_google_id_token');
+    localStorage.removeItem('meudindin_access_mode');
+    if (window.google && google.accounts && google.accounts.id) google.accounts.id.disableAutoSelect();
+    document.getElementById('google-signin').classList.remove('hidden');
+    document.getElementById('google-signout').classList.add('hidden');
+    setCloudStatus('Desconectado. Os dados locais continuam neste aparelho.');
+    showAccessGate();
+}
+
+function showAccessGate(message = '') {
+    const gate = document.getElementById('access-gate');
+    if (gate) gate.style.display = 'flex';
+    const errorEl = document.getElementById('google-gate-error');
+    if (errorEl) {
+        errorEl.textContent = message;
+        errorEl.classList.toggle('hidden', !message);
+    }
+}
+function enterOfflineMode() {
+    googleIdToken = null;
+    cloudSyncReady = false;
+    localStorage.removeItem('meudindin_google_id_token');
+    localStorage.setItem('meudindin_access_mode', 'offline');
+    const gate = document.getElementById('access-gate');
+    if (gate) gate.style.display = 'none';
+    document.getElementById('google-signout').classList.add('hidden');setCloudStatus('Modo local. Dados salvos somente neste aparelho.');
+}
+function initGoogleSignIn() {
+    const mode = localStorage.getItem('meudindin_access_mode');
+    if (mode === 'offline' && !googleIdToken) {
+        const gate = document.getElementById('access-gate');
+        if (gate) gate.style.display = 'none';
+        setCloudStatus('Modo local. Dados salvos somente neste aparelho.');
+    } else if (!googleIdToken) {
+        showAccessGate();
+    }
+    if (!window.google || !google.accounts || !google.accounts.id) {
+        setTimeout(initGoogleSignIn, 500);
+        return;
+    }
+    google.accounts.id.initialize({
+        client_id: '164141962348-ncp32kh8hlp5vns14k0ir8uu5bp18j2i.apps.googleusercontent.com',
+        callback: handleGoogleCredential,
+        auto_select: false
+    });
+    const options = { theme: 'outline', size: 'large', shape: 'pill', text: 'continue_with', width: 260 };
+    google.accounts.id.renderButton(document.getElementById('google-signin-gate'), options);
+    google.accounts.id.renderButton(document.getElementById('google-signin'), {
+        theme: 'outline', size: 'medium', shape: 'pill', text: 'signin_with', width: 190
+    });
+    if (googleIdToken) {
+        localStorage.setItem('meudindin_access_mode', 'cloud');
+        syncFromCloud();
+    } else if (mode !== 'offline') {
+        showAccessGate();
+    }
+}
+
+
+const CAT_CONFIG={
+    RECEITA:{icon:'fa-arrow-up',bg:'bg-green-100',text:'text-green-600',label:'Receita'},
+    FIXAS:{icon:'fa-home',bg:'bg-blue-100',text:'text-blue-600',label:'Fixa'},
+    CARTAO:{icon:'fa-credit-card',bg:'bg-purple-100',text:'text-purple-600',label:'Cartão'},
+    ALIMENTACAO:{icon:'fa-utensils',bg:'bg-yellow-100',text:'text-yellow-600',label:'Alimentação'},
+    TRANSPORTE:{icon:'fa-car',bg:'bg-orange-100',text:'text-orange-600',label:'Transporte'},
+    SAUDE:{icon:'fa-heartbeat',bg:'bg-emerald-100',text:'text-emerald-600',label:'Saúde'},
+    LAZER:{icon:'fa-gamepad',bg:'bg-pink-100',text:'text-pink-600',label:'Lazer'},
+    OUTROS:{icon:'fa-box',bg:'bg-slate-100',text:'text-slate-600',label:'Outros'}
+};
+
+// Ordem importa: categorias mais específicas primeiro para evitar conflito
+const CAT_KEYWORDS = [
+    { cat:'RECEITA',   words:['salário','salario','recebi','entrada','renda','freelance','recebimento','ganho','ganhos','recebo'] },
+    { cat:'TRANSPORTE',words:['gasolina','combustível','combustivel','uber','ônibus','onibus','metrô','metro','táxi','taxi','posto de gasolina','passagem','99','cabify','mototaxi'] },
+    { cat:'CARTAO',    words:['cartão','cartao','visa','mastercard','crédito','credito','débito','debito','parcela','fatura'] },
+    { cat:'ALIMENTACAO',words:['mercado','supermercado','restaurante','lanche','comida','pizza','hambúrguer','hamburguer','almoço','almoco','jantar','café','cafe','padaria','delivery','ifood','feira','açougue','acougue'] },
+    { cat:'SAUDE',     words:['farmácia','farmacia','médico','medico','hospital','remédio','remedio','consulta','exame','dentista','plano de saúde','academia'] },
+    { cat:'LAZER',     words:['cinema','show','netflix','spotify','viagem','passeio','festa','parque','praia','balada','entretenimento','disney','amazon prime','jogo','ingresso'] },
+    { cat:'FIXAS',     words:['aluguel','condomínio','condominio','financiamento','prestação','prestacao','conta de luz','internet','água','agua','gás','gas','energia','telefone','boleto'] },
+];
+
+function detectarCategoria(text) {
+    const lower = text.toLowerCase();
+    for (const { cat, words } of CAT_KEYWORDS) {
+        for (const w of words) {
+            if (lower.includes(w)) return cat;
+        }
+    }
+    return 'OUTROS';
+}
+
+function extrairValor(text) {
+    const padroes = [
+        /(\d+(?:[.,]\d{1,2})?)\s*(?:reais?|real|dólares?|euros?|R\$|\$|€)/i,
+        /(?:R\$|\$|€)\s*(\d+(?:[.,]\d{1,2})?)/i,
+        /(\d+(?:[.,]\d{1,2})?)/
+    ];
+    for (const p of padroes) {
+        const m = text.match(p);
+        if (m) return parseFloat(m[1].replace(',','.'));
+    }
+    return null;
+}
+
+// ========== VOZ ==========
+function toggleVoiceOverlay() {
+    if (isRecording) { stopVoice(); return; }
+    startVoice();
+}
+
+function startVoice() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { alert('Use o Chrome para reconhecimento de voz.'); return; }
+    recognition = new SR();
+    recognition.lang = 'pt-BR';
+    recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
+    recognition.onstart = () => {
+        isRecording = true;
+        document.getElementById('voice-overlay').classList.add('active');
+        document.getElementById('mic-center').classList.add('recording');
+    };
+    recognition.onresult = (e) => {
+        const transcript = Array.from(e.results).map(r => r[0].transcript).join('');
+        document.getElementById('voice-transcript').textContent = '"' + transcript + '"';
+        if (e.results[e.results.length-1].isFinal) { stopVoice(); processarVoz(transcript); }
+    };
+    recognition.onend = () => stopVoice();
+    recognition.onerror = () => stopVoice();
+    recognition.start();
+}
+
+function stopVoice() {
+    isRecording = false;
+    if (recognition) { try { recognition.stop(); } catch(e){} }
+    document.getElementById('voice-overlay').classList.remove('active');
+    document.getElementById('mic-center').classList.remove('recording');
+    document.getElementById('voice-transcript').textContent = 'Fale seu gasto agora';
+}
+
+function processarVoz(text) {
+    const valor = extrairValor(text);
+    if (!valor) { alert('Não consegui identificar um valor.\nTente: "Gastei 50 reais no mercado"'); return; }
+    const categoria = detectarCategoria(text);
+    const desc = text.charAt(0).toUpperCase() + text.slice(1).substring(0, 50);
+    voiceParsed = { desc, amount: valor, category: categoria, obs: '' };
+
+    const cur = document.getElementById('currency').value;
+    const isIncome = categoria === 'RECEITA';
+
+    document.getElementById('vc-desc').textContent = desc;
+    document.getElementById('vc-valor').textContent = `${isIncome ? '+' : '-'} ${cur} ${valor.toLocaleString('pt-BR',{minimumFractionDigits:2})}`;
+    document.getElementById('vc-valor').className = `font-black text-lg ${isIncome ? 'text-green-500' : 'text-red-500'}`;
+    document.getElementById('vc-category').value = categoria;
+
+    document.getElementById('confirm-voice-modal').classList.add('active');
+}
+
+function atualizarCorVoz() {
+    if (!voiceParsed) return;
+    const cat = document.getElementById('vc-category').value;
+    const cur = document.getElementById('currency').value;
+    const isIncome = cat === 'RECEITA';
+    const valor = voiceParsed.amount;
+    document.getElementById('vc-valor').textContent = `${isIncome ? '+' : '-'} ${cur} ${valor.toLocaleString('pt-BR',{minimumFractionDigits:2})}`;
+    document.getElementById('vc-valor').className = `font-black text-lg ${isIncome ? 'text-green-500' : 'text-red-500'}`;
+}
+
+function confirmarVoz() {
+    if (!voiceParsed) return;
+    const categoria = document.getElementById('vc-category').value;
+    transactions.push({ id: Date.now(), ...voiceParsed, category: categoria, date: new Date().toISOString() });
+    saveToLocal();
+    cancelarVoz();
+}
+
+function cancelarVoz() {
+    document.getElementById('confirm-voice-modal').classList.remove('active');
+    voiceParsed = null;
+}
+
+// ========== EDIÇÃO ==========
+function abrirEdicao(id) {
+    const t = transactions.find(x => x.id === id);
+    if (!t) return;
+    editingId = id;
+    document.getElementById('edit-desc').value = t.desc;
+    document.getElementById('edit-amount').value = t.amount;
+    document.getElementById('edit-category').value = t.category;
+    document.getElementById('edit-obs').value = t.obs || '';
+    document.getElementById('edit-modal').classList.add('active');
+}
+
+function fecharEdicao() {
+    document.getElementById('edit-modal').classList.remove('active');
+    editingId = null;
+}
+
+function salvarEdicao() {
+    const desc = document.getElementById('edit-desc').value.trim();
+    const amount = parseFloat(document.getElementById('edit-amount').value);
+    const category = document.getElementById('edit-category').value;
+    const obs = document.getElementById('edit-obs').value.trim();
+    if (!desc) { alert('Informe uma descrição.'); return; }
+    if (!amount || amount <= 0) { alert('Informe um valor válido.'); return; }
+    const idx = transactions.findIndex(x => x.id === editingId);
+    if (idx === -1) return;
+    transactions[idx] = { ...transactions[idx], desc, amount, category, obs };
+    saveToLocal();
+    fecharEdicao();
+}
+
+// ========== CRUD ==========
+function saveToLocal() { localStorage.setItem('meudindin_classic_data', JSON.stringify(transactions)); render(); updateAlerta(); scheduleCloudSave(); }
+function exportData() {
+    const payload = JSON.stringify(transactions, null, 2);
+    const blob = new Blob([payload], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'meu-dindin-backup.json'; a.click();
+    URL.revokeObjectURL(url);
+}
+
+
+function toggleModal() {
+    const m = document.getElementById('modal');
+    m.classList.toggle('hidden'); m.classList.toggle('flex');
+    document.getElementById('transaction-form').reset();
+}
+
+function saveTransaction(e) {
+    e.preventDefault();
+    transactions.push({
+        id: Date.now(),
+        desc: document.getElementById('desc').value,
+        amount: parseFloat(document.getElementById('amount').value),
+        category: document.getElementById('category').value,
+        obs: document.getElementById('obs').value,
+        date: new Date().toISOString()
+    });
+    saveToLocal(); toggleModal();
+}
+
+function deleteTransaction(id) {
+    if (!confirm('Excluir esta transação?')) return;
+    transactions = transactions.filter(t => t.id !== id);
+    saveToLocal();
+}
+
+function switchTab(tab, btn) {
+    currentTab = tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    render();
+}
+
+function updateSummary() {
+    const cur = document.getElementById('currency').value;
+    const income = transactions.filter(t => t.category === 'RECEITA').reduce((s,t) => s+t.amount, 0);
+    const expense = transactions.filter(t => t.category !== 'RECEITA').reduce((s,t) => s+t.amount, 0);
+    const fmt = v => `${cur} ${v.toLocaleString('pt-BR',{minimumFractionDigits:2})}`;
+    document.getElementById('total-income').innerText = fmt(income);
+    document.getElementById('total-expenses').innerText = fmt(expense);
+    document.getElementById('total-balance').innerText = fmt(income - expense);
+}
+
+function updateAlerta() {
+    const box = document.getElementById('alerta-box');
+    const txt = document.getElementById('alerta-text');
+    const expense = transactions.filter(t => t.category !== 'RECEITA').reduce((s,t) => s+t.amount, 0);
+    const income = transactions.filter(t => t.category === 'RECEITA').reduce((s,t) => s+t.amount, 0);
+    box.classList.remove('hidden');
+    if (!income) { txt.innerText = 'Adicione sua receita para ver a análise do mês.'; return; }
+    if (expense > income) txt.innerText = '⚠️ Gastos superaram a receita! Revise seus lançamentos.';
+    else if (expense > income * 0.7) txt.innerText = '💡 Mais de 70% da renda comprometida. Confira as dicas!';
+    else if (expense < income * 0.5) txt.innerText = '🎉 Ótimo controle! Você está gastando menos da metade da renda.';
+    else txt.innerText = '✅ Finanças equilibradas. Continue assim!';
+}
+
+function render() {
+    const list = document.getElementById('transaction-list');
+    list.innerHTML = '';
+    const cur = document.getElementById('currency').value;
+    const filtered = currentTab === 'all' ? transactions : transactions.filter(t => t.category === currentTab);
+    if (!filtered.length) {
+        list.innerHTML = '<p class="text-center text-slate-400 py-10">Nenhuma transação encontrada.</p>';
+        updateSummary(); return;
+    }
+    filtered.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(t => {
+        const isIncome = t.category === 'RECEITA';
+        const cfg = CAT_CONFIG[t.category] || CAT_CONFIG.OUTROS;
+        const div = document.createElement('div');
+        div.className = 'card p-4 flex justify-between items-center';
+        div.innerHTML = `
+            <div class="flex items-center gap-3">
+                <div class="${cfg.bg} ${cfg.text} w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0">
+                    <i class="fas ${cfg.icon} text-base"></i>
+                </div>
+                <div>
+                    <h4 class="font-bold text-slate-800 text-sm">${t.desc}</h4>
+                    <div class="flex items-center gap-2 mt-0.5">
+                        <span class="cat-badge cat-${t.category}">${cfg.label}</span>
+                        ${t.obs ? `<span class="text-xs text-slate-400">${t.obs}</span>` : ''}
+                    </div>
+                </div>
+            </div>
+            <div class="text-right flex-shrink-0 ml-2">
+                <p class="font-black text-base ${isIncome?'text-green-500':'text-red-500'}">${isIncome?'+':'-'} ${cur} ${t.amount.toLocaleString('pt-BR',{minimumFractionDigits:2})}</p>
+                <div class="flex gap-2 justify-end mt-1">
+                    <button onclick="abrirEdicao(${t.id})" class="text-[10px] text-blue-400 hover:text-blue-600 uppercase font-bold"><i class="fas fa-pen"></i> editar</button>
+                    <button onclick="deleteTransaction(${t.id})" class="text-[10px] text-slate-300 hover:text-red-400 uppercase font-bold"><i class="fas fa-trash"></i> excluir</button>
+                </div>
+            </div>`;
+        list.appendChild(div);
+    });
+    updateSummary();
+}
+
+function shareWhatsApp() {
+    const cur = document.getElementById('currency').value;
+    const income = transactions.filter(t => t.category === 'RECEITA').reduce((s,t) => s+t.amount, 0);
+    const expense = transactions.filter(t => t.category !== 'RECEITA').reduce((s,t) => s+t.amount, 0);
+    const fmt = v => `${cur} ${v.toLocaleString('pt-BR',{minimumFractionDigits:2})}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(`*💰 meu din din - Resumo do Mês*\n\n✅ Receitas: ${fmt(income)}\n❌ Despesas: ${fmt(expense)}\n─────────────────\n💵 Saldo: ${fmt(income-expense)}\n\n_meu-dindin.pages.dev_`)}`,'_blank');
+}
+
+document.getElementById('currency').addEventListener('change', updateSummary);
+render();
+updateAlerta();
+window.addEventListener('load', initGoogleSignIn);
+document.addEventListener('visibilitychange', refreshCloudWhenAppReturns);
+window.addEventListener('focus', refreshCloudWhenAppReturns);
+window.addEventListener('pageshow', refreshCloudWhenAppReturns);
+</script>
+<script src="/ai.js?v=9"></script>
+</body>
+</html>
