@@ -27,13 +27,13 @@ public class BalanceWidgetProvider extends AppWidgetProvider {
         PendingIntent pi = PendingIntent.getActivity(context, 0, open, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         for (int id : ids) {
             RemoteViews v = new RemoteViews(context.getPackageName(), R.layout.widget_balance);
-            v.setTextViewText(R.id.balance, money(income - expense));
-            v.setTextViewText(R.id.income, "Entradas  " + money(income));
-            v.setTextViewText(R.id.expenses, "Saídas  " + money(expense));
-            v.setTextViewText(R.id.updated, updated + " · Toque para abrir");
+            v.setTextViewText(R.id.widget_balance, money(income - expense));
+            v.setTextViewText(R.id.widget_income, "Entradas  " + money(income));
+            v.setTextViewText(R.id.widget_expense, "Saídas  " + money(expense));
+            v.setTextViewText(R.id.widget_updated, updated + " · Toque para abrir");
             v.setOnClickPendingIntent(R.id.widget_root, pi);
-            v.setOnClickPendingIntent(R.id.balance, pi);
-            v.setOnClickPendingIntent(R.id.updated, pi);
+            v.setOnClickPendingIntent(R.id.widget_balance, pi);
+            v.setOnClickPendingIntent(R.id.widget_updated, pi);
             manager.updateAppWidget(id, v);
         }
     }
