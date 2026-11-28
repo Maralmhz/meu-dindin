@@ -1,5 +1,4 @@
 import { get, put } from "@vercel/blob";
-import { randomBytes, createHash } from "node:crypto";
 
 const CLIENT_ID = "164141962348-ncp32kh8hlp5vns14k0ir8uu5bp18j2i.apps.googleusercontent.com";
 const ALLOWED_EMAIL = "maralmhz@gmail.com";
@@ -47,14 +46,6 @@ export default async function handler(req, res) {
     const subject = await verifyGoogleToken(req);
     const pathname = "meu-dindin/users/" + subject + ".json";
 
-    if (req.method === "POST" && req.body && req.body.action === "create-widget-token") {
-      const token = randomBytes(32).toString("base64url");
-      const tokenHash = createHash("sha256").update(token).digest("hex");
-      await put("meu-dindin/widget-tokens/" + tokenHash + ".json", JSON.stringify({ subject, createdAt: new Date().toISOString() }), {
-        access: "private", addRandomSuffix: false, allowOverwrite: true, contentType: "application/json", cacheControlMaxAge: 0
-      });
-      return send(res, 200, { ok: true, token }, origin);
-    }
 
     if (req.method === "GET") {
       const file = await get(pathname, { access: "private", useCache: false });
