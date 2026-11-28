@@ -456,6 +456,22 @@ async function syncFromCloud() {
     }
 }
 
+let lastForegroundSyncAt = 0;
+let foregroundSyncInFlight = false;
+
+async function refreshCloudWhenAppReturns() {
+    if (document.visibilityState !== 'visible' || !cloudSyncReady || !googleIdToken || foregroundSyncInFlight) return;
+    const now = Date.now();
+    if (now - lastForegroundSyncAt < 30000) return;
+    lastForegroundSyncAt = now;
+    foregroundSyncInFlight = true;
+    try {
+        await syncFromCloud();
+    } finally {
+        foregroundSyncInFlight = false;
+    }
+}
+
 async function connectAndroidWidget() {
     if (!googleIdToken) { alert('Conecte sua conta Google primeiro.'); return; }
     const button = document.getElementById('widget-connect');
@@ -837,6 +853,9 @@ document.getElementById('currency').addEventListener('change', updateSummary);
 render();
 updateAlerta();
 window.addEventListener('load', initGoogleSignIn);
+document.addEventListener('visibilitychange', refreshCloudWhenAppReturns);
+window.addEventListener('focus', refreshCloudWhenAppReturns);
+window.addEventListener('pageshow', refreshCloudWhenAppReturns);
 </script>
 </body>
 </html>
