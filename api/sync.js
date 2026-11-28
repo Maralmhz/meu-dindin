@@ -24,14 +24,14 @@ function send(res, status, body, origin) {
 async function verifyGoogleToken(req) {
   const auth = req.headers.authorization || "";
   const match = auth.match(/^Bearer\s+(.+)$/i);
-  if (!match) throw new Error("Faça login com sua conta Google.");
+  if (!match) throw Object.assign(new Error("Faça login com sua conta Google."), { statusCode: 401 });
   const response = await fetch("https://oauth2.googleapis.com/tokeninfo?id_token=" + encodeURIComponent(match[1]));
-  if (!response.ok) throw new Error("Sessão Google inválida. Entre novamente.");
+  if (!response.ok) throw Object.assign(new Error("Sessão Google inválida. Entre novamente."), { statusCode: 401 });
   const claims = await response.json();
   if (claims.aud !== CLIENT_ID || claims.email_verified !== "true" ||
       String(claims.email || "").toLowerCase() !== ALLOWED_EMAIL ||
       !claims.sub || Number(claims.exp) * 1000 <= Date.now()) {
-    throw new Error("Esta conta Google não está autorizada para acessar o Meu Dindin.");
+    throw Object.assign(new Error("Esta conta Google não está autorizada para acessar o Meu Dindin."), { statusCode: 403 });
   }
   return claims.sub;
 }
@@ -80,6 +80,13 @@ export default async function handler(req, res) {
     });
     return send(res, 200, { ok: true, updatedAt: new Date().toISOString() }, origin);
   } catch (error) {
-    return send(res, 401, { error: error.message || "Não foi possível sincronizar." }, origin);
+    const status = Number(error && error.statusCode) || 500;
+    if (status >= 500) console.error("[meu-dindin sync]", error);
+    return send(
+      res,
+      status,
+      { error: status >= 500 ? "Falha temporária ao acessar os dados. Tente novamente." : (error.message || "Não foi possível sincronizar.") },
+      origin
+    );
   }
 }
